@@ -1,0 +1,17 @@
+16 1
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\NetTemperat.oap 
+C:\Users\User\YandexDisk\MillicomNew\Millicom\NetTemperat.oap 
+C:\Users\salib\YandexDisk\Millicom\MeanShift.oap 
+C:\Users\Салибек\YandexDisk\MillicomNew\Millicom\NetTemperat.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALU range test.oap 
+C:\Users\User\YandexDisk\MillicomNew\Millicom\ALU range test.oap 
+C:\Users\Салибек\YandexDisk\MillicomNew\Millicom\FSM.oap 
+C:\Users\User\YandexDisk\MillicomNew\Millicom\FSM.oap 
+C:\Users\Салибек\YandexDisk\MillicomNew\CompilerCore_work\StrGen\InOut.oap 
+C:\Users\User\YandexDisk\MillicomNew\CompilerCore_work\StrGen\NetTemperat.oap 
+C:\Users\salib\YandexDisk\Методическая работа\Дипломы 2020\Эльжан\Neuron.oap 
+C:\Users\User\YandexDisk\MillicomNew\CompilerCore_work\StrGen\InOut.oap 
+C:\Users\User\YandexDisk\MillicomNew\CompilerCore_work\StrGen\ALUGeneral.oap 
+C:\Users\User\YandexDisk\MillicomNew\CompilerCore_work\StrGen\GeneralALU.oap 
+C:\Users\User\YandexDisk\MillicomNew\CompilerCore_work\StrGen\ALE.oap 
+C:\Users\salib\YandexDisk\MillicomNew\CompilerCore_work\StrGen\ALE.oap 
