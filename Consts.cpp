@@ -43,8 +43,8 @@ int LoadPoint::ToInt() { // Перевод в integer
 		return 0;
 	switch (Type >> 1)
 	{
-	case Ddouble: return *(double*)Point; break;
-	case Dfloat: return *(float*)Point; break;
+	case Ddouble: return (int)*(double*)Point; break;
+	case Dfloat: return (int)*(float*)Point; break;
 	case Dint: return *(int*)Point; break;
 	case Dbool: return *(bool*)Point; break;
 	case Dstring: return atoi((*(string*)Point).c_str());
@@ -462,6 +462,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 	}
 }
 
+// Запуск программы
 void FU::ProgExec(void* UK, FU* ProgBus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
 	if (!UK)return;
@@ -476,6 +477,12 @@ void FU::ProgExec(void* UK, FU* ProgBus, vector<ip>::iterator* Start) // Исполне
 				ProgBus->ProgFU(i->atr, i->Load);
 		}
 	ProgStop = false;
+}
+// Запуск программы по указателю из нарузки ИП
+void FU::ProgExec(LoadPoint Uk, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+{
+	if(Uk.Type>>1==DIC)
+		ProgExec(Uk.Point, Bus, Start);
 }
 
 void FU::MkExec(int MK, LoadPoint Load, FU* BusContext) // Выдача МК с нагрузкой

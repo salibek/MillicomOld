@@ -49,27 +49,36 @@ void List::ProgFU(int MK, LoadPoint Load)
 			if (Load.Type >> 1 == DIC)
 				ProgExec(Load.Point, Bus, nullptr);
 		break;
-	case 10: // SuccessProgSet Установить указатель на программу, выполняемую при удачном поиска в линии списка
+	case 10: // SuccessLineProgSet Установить указатель на программу, выполняемую при удачном поиска в линии списка
 		Searcher.SuccessProg = (IC_type)Load.Point;
 		break;
-	case 11: // SuccessAfterProgSet Установить указатель на программу, выполняемую при удачном поиска в линии списка после обоработки программ линии
+	case 11: // SuccessAfterLineProgSet Установить указатель на программу, выполняемую при удачном поиска в линии списка после обоработки программ линии
 		Searcher.SuccessAfterProg = (IC_type)Load.Point;
 		break;
-	case 15: // FailProgSet Установить указатель на программу, выполняемую в случае неудачного поиска в линии списка
+	case 12: // SuссessProgSet Установить указатель на программу, выполняемую в случае удачного поиска во всем  списке
+		SuссessProg = Load.Point;
+		break;
+	case 15: // FailLineProgSet Установить указатель на программу, выполняемую в случае неудачного поиска в линии списка
 		Searcher.FailProg = (IC_type)Load.Point;
 		break;
-	case 16: // FailAfterProgSet Установить указатель на программу, выполняемую в случае неудачного поиска в линии списка после обоработки программ линии
+	case 16: // FailAfterLineProgSet Установить указатель на программу, выполняемую в случае неудачного поиска в линии списка после обоработки программ линии
 		Searcher.FailAfterProg = (IC_type)Load.Point;
 		break;
-	case 17: // FailAllProgSet Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке
-		FailAllProg = (IC_type)Load.Point;
+	case 17: // FailProgSet Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке
+		FailProg = Load.Point;
+		break;
+	case 18: // SuссessLineProgSet Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке
+		SuссessLineProg = Load.Point;
 		break;
 
 	case 20: // ProgAtrSet Установить атрибут программы
 		if (Load.Point != nullptr && Load.Type >> 1 == Dint)
 			Searcher.Prog_atr = *(int *)Load.Point;
 		break;
-	case 25: // BackOut Вылаить входной объект для поиска
+	case 21: //LineAtrDef Установить атрибут линии списка по умолчанию
+		LineAtr = Load.ToInt();
+		break;
+	case 25: // BackOut Вылать входной объект для поиска
 		if (Load.Type == TPPoint)
 			(*(LoadPoint*)Load.Point) = Searcher.Obj;
 		break;
@@ -96,10 +105,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 			else if(Searcher.Obj.Type >> 1 == DIP)
 				MkExec(*((int*)Load.Point), ((ip*)(Searcher.Obj.Point))->Load);
 		break;
-	case 90: // ProgAtrSet  Установить атрибут программы
-		if ((Load.Type >> 1) == Dint)
-			Searcher.Prog_atr = *(int*)Load.Point;
-		break;
+
 	case 100: // RezOut Выдача результата сравнения
 		if (Load.Type == Tbool)
 			*(bool*)Load.Point = Searcher.Rez;
@@ -113,6 +119,67 @@ void List::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 106: // MkAtrClear Очистить список МК
 		Searcher.MkAtrClear();
+		break;
+
+	case 120: // LineAtrSet Установить атрибут текущей строки
+		if (LineUk != nullptr)
+			LineUk->atr = Load.ToInt();
+		break;
+	case 121: // LastLineAtrSet Установить атрибут последней строки
+		if (ListHead != nullptr)
+			(ListHead->end() - 1)->atr = Load.ToInt();
+		break;
+	case 125: // LineAtrInc Инкремент атрибута текущей строки
+		if (LineUk != nullptr)
+			LineUk->atr++;
+		break;
+	case 126: // LastLineAtrInc Инкремент атрибута последней строки
+		if (ListHead != nullptr)
+			(ListHead->end() - 1)->atr++;
+		break;
+	case 127: // LineAtrDec Декримент атрибута текущей строки
+		if (LineUk != nullptr)
+			LineUk->atr--;
+		break;
+	case 128: // LastLineAtrDec Декримент атрибута последней строки
+		if (ListHead != nullptr)
+			(ListHead->end() - 1)->atr--;
+		break;
+	case 130: // LineZeroExec Запуск программы при нуле атрибута текущей строки
+		if (!LineUk->atr) ProgExec(Load);
+		break;
+	case 131: // LastLineZeroExec Запуск программы при нуле атрибута последней строки
+		if (!(ListHead->end() - 1)->atr) ProgExec(Load);
+		break;
+	case 133: // LineAtrNZeroExec Запуск программы при не нуле атрибута текущей строки
+		if (LineUk->atr) ProgExec(Load);
+		break;
+	case 134: // LastLineAtrNZeroExec Запуск программы при не нуле атрибута последней строки
+		if ((ListHead->end() - 1)->atr) ProgExec(Load);
+		break;
+	case 135: // LineAtrBiggerExec Запуск программы при атрибуте текущей строки больше 0
+		if (LineUk->atr > 0) ProgExec(Load);
+		break;
+	case 136: // LastLineAtrBiggerExec Запуск программы при атрибуте последней строки больше 0
+		if ((ListHead->end() - 1)->atr > 0) ProgExec(Load);
+		break;
+	case 137: // LineAtrBiggerZeroExec Запуск программы при атрибуте текущей строки больше или райным 0
+		if (LineUk->atr >= 0) ProgExec(Load);
+		break;
+	case 138: // LastLineAtrBiggerZeroExec Запуск программы при атрибуте последней строки больше или равным 0
+		if ((ListHead->end() - 1)->atr >= 0) ProgExec(Load);
+		break;
+	case 139: // LineAtrLessExec Запуск программы при атрибуте текущей строки меньше 0
+		if (LineUk->atr < 0) ProgExec(Load);
+		break;
+	case 140: // LastAtrLineLessExec Запуск программы при атрибуте последней строки меньше 0
+		if ((ListHead->end() - 1)->atr < 0) ProgExec(Load);
+		break;
+	case 141: // LineAtrLessZeroExec Запуск программы при атрибуте текущей строки меньше или равным 0
+		if (LineUk->atr <= 0) ProgExec(Load);
+		break;
+	case 142: // LastAtrLineLessZeroExec Запуск программы при атрибуте последней строки меньше или равным 0
+		if ((ListHead->end() - 1)->atr <= 0) ProgExec(Load);
 		break;
 
 
@@ -137,15 +204,15 @@ void List::ProgFU(int MK, LoadPoint Load)
 		if (ListHead == nullptr) ListHead = new vector<ip>;
 		if (ListHead == nullptr)
 			ListHead = new vector<ip>;
-		ListHead->push_back({ Atr, Load });
+		ListHead->push_back({ LineAtr, Load });
 		break;
 	case 161: // LineCopyAdd Добавить копию строки
 		if (ListHead == nullptr) ListHead = new vector<ip>;
-		ListHead->push_back({ Atr, TIC, ICCopy(Load) });
+		ListHead->push_back({ LineAtr, TIC, ICCopy(Load) });
 		break;
 	case 163: //  LineCopyAddPrevLoadSet Добавить линию в список и поместить ссылку на нее в нагрузку последней ИП последней строки
 	 	if (ListHead == nullptr) ListHead = new vector<ip>;
-		ListHead->push_back({ Atr, TIC, ICCopy(Load) });
+		ListHead->push_back({ LineAtr, TIC, ICCopy(Load) });
 		if (ListHead->size() > 1)
 			ListHead->at(ListHead->size() - 2).Load = { TIC, (ListHead->back().Load.Point) };
 		break;
@@ -311,26 +378,6 @@ void List::ProgFU(int MK, LoadPoint Load)
 			LineUk = ListHead->begin()._Ptr+ LineNum;
 		}
 		break;
-	// Программы по срезультатам сравнения номеров строк
-	case 210: // EqProgExec
-		if (LineNumOld == LineNum) ProgExec(Load.Point);
-		break;
-	case 211: // BiggerProgExec
-		if (LineNumOld < LineNum) ProgExec(Load.Point);
-		break;
-	case 212: // SmallerProgExec
-		if (LineNumOld > LineNum) ProgExec(Load.Point);
-		break;
-	case 213: // BigerEqProgExec
-		if (LineNumOld <= LineNum) ProgExec(Load.Point);
-		break;
-	case 214: // SmallerEqProgExec
-		if (LineNumOld >= LineNum) ProgExec(Load.Point);
-		break;
-
-	case 219: // LineNumSet Установить номер найденной строки (нужно для организации операций сравнения)
-		LineNum = Load.ToInt();
-		break;
 	case 220: // FindOr Поиск ИЛИ
 	case 221: // FindOrLastLine Поиск ИЛИ в последней строке
 	case 226: // FindAnd Поиск И
@@ -340,19 +387,19 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 236: // FindAndSource Поиск И в источнике
 	case 237: // FindAndSourceLastLine Поиск И в источнике в последней строке
 	{
-		int Count = 0; // счетчик совпадений
+		LineCount = 0; // счетчик совпадений
 		LineNumOld = LineNum;
-		LineNum = -1; // Номер первой совпадающей линии
+		LineNum = 0; // Номер первой совпадающей линии
 		int LineNumFirst = -1;
 		if (ListHead == nullptr)
 		{
 			Searcher.Template = { 0,nullptr };
 			Searcher.FindOr({ 0,nullptr });
-			ProgExec(FailAllProg, Bus, nullptr);
+			ProgExec(FailProg, Bus, nullptr);
 			break;
 		}
 		auto i = ListHead->begin();
-		if (MK % 2 == 1)
+		if (MK % 2 != 0)
 			i = ListHead->end() - 1;
 		for (; i != ListHead->end(); i++)
 		{
@@ -363,7 +410,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 			case 220: // FindOr		
 				Searcher.FindOr(Load);
 				break;
-			case 225: // FindAnd 
+			case 226: // FindAnd 
 				Searcher.FindAnd(Load);
 				break;
 			case 230: // FindXor
@@ -375,8 +422,8 @@ void List::ProgFU(int MK, LoadPoint Load)
 			}
 			if (Searcher.Rez)
 			{
-				Count++;
-				if (Count==1)
+				LineCount++;
+				if (LineCount==1)
 				{
 					if (MK % 2 == 1)
 						LineNumFirst = ListHead->size() - 1;
@@ -388,7 +435,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 			}
 			LineNum++;
 		}
-		if (Count)
+		if (LineCount)
 		{
 			LineUk = &ListHead->at(LineNumFirst);
 			LineNum = LineNumFirst;
@@ -397,14 +444,72 @@ void List::ProgFU(int MK, LoadPoint Load)
 		{
 			LineNum == -1;
 			LineUk = nullptr;
-			ProgExec(FailAllProg, Bus, nullptr);
+			ProgExec(FailProg, Bus, nullptr);
 		}
 	}
-		break;
+	if (LineNum > LineNumOld)  ProgExec(BibberProg);
+	if (LineNum < LineNumOld)  ProgExec(LessProg);
+	if (LineNum >= LineNumOld) ProgExec(BibberEQProg);
+	if (LineNum < LineNumOld)  ProgExec(LessEQProg);
+	if (LineNum == LineNumOld) ProgExec(EQProg);
+	break;
 	case 400: // LineOutMk Выдать МК с найденной линией
-		if (Load.Point != nullptr && Load.Type >> 1 == Dint)
-			MkExec(*(int*)Load.Point, LineUk->Load);
+			MkExec(Load, LineUk->Load);
 		break;
+	case 401: // LineOut Выдать найденную линиию
+			Load.Write(LineUk->Load.Point);
+		break;
+
+		// Программы по срезультатам сравнения номеров строк
+	case 450: // EqProgExec
+		if (LineNumOld == LineNum) ProgExec(Load.Point);
+		break;
+	case 451: // BiggerProgExec
+		if (LineNumOld < LineNum) ProgExec(Load.Point);
+		break;
+	case 452: // SmallerProgExec
+		if (LineNumOld > LineNum) ProgExec(Load.Point);
+		break;
+	case 453: // BigerEqProgExec
+		if (LineNumOld <= LineNum) ProgExec(Load.Point);
+		break;
+	case 454: // SmallerEqProgExec
+		if (LineNumOld >= LineNum) ProgExec(Load.Point);
+		break;
+	case 455: // DifferenceOut Выдать различие старой найденной линии и новой
+		Load.Write(LineNum - LineNumOld);
+		break;
+	case 456: // DifferenceOutMk Выдать МК с различием старой найденной линии и новой
+	{
+		int temp = LineNum - LineNumOld;
+		MkExec(Load, { Cint,&temp });
+		break; }
+	case 459: // LineNumSet Установить номер найденной строки (нужно для организации операций сравнения)
+		LineNum = Load.ToInt();
+		break;
+	case 460: //LineCountOut Выдать количество найденных строк
+		Load.Write(LineCount);
+		break;
+	case 461: //LineCountOutMk Выдать МК с количеством найденных строк
+		MkExec(Load, { Cint, &LineCount });
+		break;
+
+	case 470: // LessProgSet
+		LessProg = Load.Point;
+		break;
+	case 471: // LessProgSet
+		BibberProg = Load.Point;
+		break;
+	case 472: // LessProgSet
+		EQProg = Load.Point;
+		break;
+	case 473: // LessProgSet
+		LessEQProg = Load.Point;
+		break;
+	case 474: // LessProgSet
+		BibberEQProg = Load.Point;
+		break;
+
 	default:
 		CommonMk(MK, Load);
 		break;

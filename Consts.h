@@ -138,6 +138,7 @@ public:
 class FU {  // Ядро функционального устройства
 public:
 	virtual void ProgFU(int MK, LoadPoint Load) {}; // Реализация логики работы ФУ
+	void ProgFU(LoadPoint MK, LoadPoint Load) { if ((MK.Type >> 1) == Dint) ProgFU(Load.ToInt(), Load); }; // Реализация логики работы ФУ
 	void Scheduling(); // Запуск МК после разрешенрия планировщика
 	int FUtype = 0; // Тип ФУ
 	string FUName; //  Имя ФУ
@@ -151,8 +152,9 @@ public:
 
 	void MkExec(int MK, LoadPoint Load, FU* BusContext = nullptr); // Выполнить одну милликоманду 
 	void MkExec(LoadPoint MK, LoadPoint Load, FU* BusContext = nullptr); // Выдача МК с нагрузкой
-    void ProgExec(void *Uk, FU* Bus=nullptr, vector<ip>::iterator *Start=nullptr); // Исполнение программы из ИК
-	int GotoAtr, SubAtr; // Атрибуты перехода в программе и входа в подпрограмму
+	void ProgExec(void* Uk, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
+	void ProgExec(LoadPoint Uk, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
+	int SubAtr; // Атрибут входа в подпрограмму
 
 	FU *Bus; // Ссылка на контекст Шины
 	int FUMkRange = 1000; // Диапазон МК для каждого ФУ

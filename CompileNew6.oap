@@ -4313,28 +4313,30 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="UnicReset" Mk=18 Hint="Сбросить список уникальных атрибутов"}
   Obj={Mnemo="LexBufSizeSet" Mk=20 Hint="Установить размер буфера лексем"}
 
-  Obj={Mnemo="LexemaReplaceToReceiver" Mk=28 Hint="Выдать лексему из нагрузка МК получателю, заменив тукущую лексему в буфере"}
-  Obj={Mnemo="LexemaReplaceCopyToReceiver" Mk=29 Hint="Выдать копию лексемы из нагрузки МК получателю, заменив тукущую лексему в буфере"}
-  Obj={Mnemo="LexemaToReceiver" Mk=30 Hint="Выдать лексему из нагрузка МК получателю"}
-  Obj={Mnemo="LexemaCopyToReceiver" Mk=31 Hint="Выдать копию лексемы из нагрузки МК получателю"}
-  Obj={Mnemo="LastLexemaToReceiver" Mk=32 Hint="Выдать последнюю лексему получателю"}
-  Obj={Mnemo="LastLexemaCopyToReceiver" Mk=33 Hint="Выдать копию последней лексемы получателю"}
-  Obj={Mnemo="LastLexemaOutMk" Mk=35 Hint="Выдать MK c последней лексемой"}
-  Obj={Mnemo="LastLexemaCopyOutMk" Mk=36 Hint="Выдать МК с копией последней лексемы"}
+  Obj={Mnemo="ReplaceToReceiver" Mk=28 Hint="Выдать лексему из нагрузка МК получателю, заменив тукущую лексему в буфере"}
+  Obj={Mnemo="ReplaceCopyToReceiver" Mk=29 Hint="Выдать копию лексемы из нагрузки МК получателю, заменив тукущую лексему в буфере"}
+//  Obj={Mnemo="ToReceiver" Mk=30 Hint="Выдать лексему из нагрузка МК получателю"}
+//  Obj={Mnemo="CopyToReceiver" Mk=31 Hint="Выдать копию лексемы из нагрузки МК получателю"}
+  Obj={Mnemo="OutMk" Mk=35 Hint="Выдать MK c последней лексемой"}
+  Obj={Mnemo="CopyOutMk" Mk=36 Hint="Выдать МК с копией последней лексемы"}
+  Obj={Mnemo="PrevOutMk" Mk=45 Hint="Выдать МК с предыдущей лексемой"}
+  Obj={Mnemo="PrevCopyOutMk" Mk=46 Hint="Выдать МК с копией предыдущей лексемы"}
 
-  Obj={Mnemo="PrevLexemaToReseiver" Mk=40 Hint="Выдать предыдущую лексему получателю"}
-  Obj={Mnemo="PrevLexemaCopyToReseiver" Mk=41 Hint="Выдать копию предыдущей лексемы получателю"}
-  Obj={Mnemo="PrevLexemaOutMk" Mk=45 Hint="Выдать МК с предыдущей лексемой"}
-  Obj={Mnemo="PrevLexemaCopyOutMk" Mk=46 Hint="Выдать МК с копией предыдущей лексемы"}
+//  Obj={Mnemo="PrevToReseiver" Mk=40 Hint="Выдать предыдущую лексему получателю"}
+//  Obj={Mnemo="PrevCopyToReseiver" Mk=41 Hint="Выдать копию предыдущей лексемы получателю"}
+
+//  Obj={Mnemo="ToReceiver" Mk=32 Hint="Выдать последнюю лексему получателю"}
+//  Obj={Mnemo="CopyToReceiver" Mk=33 Hint="Выдать копию последней лексемы получателю"}
+
  
-  Obj={Mnemo="LastLexemaAtrSet" Mk=50 Hint="Установить атрибут последней лексемы"}
-  Obj={Mnemo="PrevLexemaAtrSet" Mk=51 Hint="Установить атрибут предыдущей лексемы"}
-  Obj={Mnemo="LastLexemaLoadSet" Mk=55 Hint="Установить нагрзузку у последней лексемы"}
-  Obj={Mnemo="PrevLexemaLoadSet" Mk=56 Hint="Установить нагрзузку у предыдущей лексемы"}
-  Obj={Mnemo="LastLexemaLoadCopySet" Mk=57 Hint="Установить копию нагрзузки у последней лексемы"}
-  Obj={Mnemo="PrevLexemaLoadCopySet" Mk=58 Hint="Установить копию нагрзузки у предыдущей лексемы"}
-  Obj={Mnemo="LastLexemaVarSet" Mk=65 Hint="Установить тип переменной для нагрузки последней лексемы"}
-  Obj={Mnemo="PrevLexemaVarSet" Mk=66 Hint="Установить тип переменной для нагрузки предыдущей лексемы"}
+  Obj={Mnemo="AtrSet" Mk=50 Hint="Установить атрибут последней лексемы"}
+  Obj={Mnemo="PrevAtrSet" Mk=51 Hint="Установить атрибут предыдущей лексемы"}
+  Obj={Mnemo="LoadSet" Mk=55 Hint="Установить нагрзузку у последней лексемы"}
+  Obj={Mnemo="PrevLoadSet" Mk=56 Hint="Установить нагрзузку у предыдущей лексемы"}
+  Obj={Mnemo="LoadCopySet" Mk=57 Hint="Установить копию нагрзузки у последней лексемы"}
+  Obj={Mnemo="PrevLoadCopySet" Mk=58 Hint="Установить копию нагрзузки у предыдущей лексемы"}
+  Obj={Mnemo="VarSet" Mk=65 Hint="Установить тип переменной для нагрузки последней лексемы"}
+  Obj={Mnemo="PrevVarSet" Mk=66 Hint="Установить тип переменной для нагрузки предыдущей лексемы"}
 
   Obj={Mnemo="Stop" Mk=99 Hint="Остановить лексический анализ"}
   Obj={Mnemo="Lexing" Mk=100 Hint="Лексический разбор строки"}
@@ -4376,8 +4378,26 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=231 Mnemo="FindXorLastLine" Hint="Поиск XOR в последней строке"}
     Obj={Mk=236 Mnemo="FindAndSource" Hint="Поиск И в источнике"}
     Obj={Mk=237 Mnemo="FindAndSourceLastLine" Hint="Поиск И в источнике в последней строке"}
+    Obj={Mk=401 Mnemo="LineOut" Hint="Выдать найденную линию"}
     Obj={Mk=400 Mnemo="LineOutMk" Hint="Выдать МК с найденной линией"}
   }
+  Obj={Mnemo="Prog by line num comparision" Hint="Поиск по результатам сравнения номеров строк" Comment
+     Obj={Mk=450 Mnemo="EqProgExec" Hint="Программа, если равно"}
+     Obj={Mk=451 Mnemo="BiggerProgExec" Hint="Программа, если больше"}
+     Obj={Mk=452 Mnemo="SmallerProgExec" Hint="Программа, если меньше"}
+     Obj={Mk=453 Mnemo="BigerEqProgExec" Hint="Программа, если больше или равно"}
+     Obj={Mk=454 Mnemo="SmallerEqProgExec" Hint="Программа, если меньше или равно"}
+     Obj={Mk=456 Mnemo="DifferenceOutMk" Hint="Выдать МК с различием старой найденной линии и новой"}
+
+     Obj={Mk=470 Mnemo="EqProgSet" Hint="Установить программу, если равно"}
+     Obj={Mk=471 Mnemo="BiggerProgSet" Hint="Установить программу, если больше"}
+     Obj={Mk=472 Mnemo="SmallerProgSet" Hint="Установить программу, если меньше"}
+     Obj={Mk=473 Mnemo="BigerEqProgSet" Hint="Установить программу, если больше или равно"}
+     Obj={Mk=474 Mnemo="SmallerEqProgSet" Hint="Установить программу, если меньше или равно"}
+
+     Obj={Mk=459 Mnemo="LineNumSet" Hint="Установить номер найденной строки (нужно для организации операций сравнения)"}
+  }
+
   Obj={Mnemo="Line modification" Hint="Изменение строк списка" Comment
     Obj={Mk=150 Mnemo="LastLineOut" Hint="Выдать ссылку на последнюю линию списка"}
     Obj={Mk=151 Mnemo="LastLinePop" Hint="Выдать ссылку на последнюю линию списка и удалить из списка"}
@@ -4413,12 +4433,15 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=7 Mnemo="MkModeSet" Hint="Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0). При пустой нагрузке режим устанавливается"}
   Obj={Mk=8 Mnemo="EmptyProgExec" Hint="Выполнить программу, если список пуст"}
   Obj={Mk=9 Mnemo="FullProgExec" Hint="Выполнить программу, если список не пуст"}
-  Obj={Mk=10 Mnemo="SuccessProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиска в линии списка"}
-  Obj={Mk=11 Mnemo="SuccessAfterProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиска в линии списка после обоработки программ линии"}
-  Obj={Mk=15 Mnemo="FailProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска в линии списка"}
-  Obj={Mk=16 Mnemo="FailAfterProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска в линии списка после обоработки программ линии"}
-  Obj={Mk=17 Mnemo="FailAllProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
-  Obj={Mk=20 Mnemo="ProgAtrSet" Hint="Установить атрибут программы"}
+  Obj={Mk=10 Mnemo="SuccessLineProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиска в линии списка"}
+  Obj={Mk=11 Mnemo="SuccessAfterLineProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиска в линии списка после обоработки программ линии"}
+  Obj={Mk=12 Mnemo="SuccessProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиске в спике"}
+  Obj={Mk=15 Mnemo="FailLineProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска в линии списка"}
+  Obj={Mk=16 Mnemo="FailAfterLineProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска в линии списка после обоработки программ линии"}
+  Obj={Mk=17 Mnemo="FailProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
+  Obj={Mk=18 Mnemo="SuccessLineProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
+  Obj={Mk=19 Mnemo="SuссessProgSet" Hint=" Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
+  Obj={Mk=23 Mnemo="ProgAtrSet" Hint="Установить атрибут программы"}
   Obj={Mk=25 Mnemo="BackOut" Hint="Выдать входной объект для поиска"}
   Obj={Mk=30 Mnemo="BackOutMk" Hint="Выдать МК со входным объектом для поиска"}
   Obj={Mk=31 Mnemo="CopyBackOutMk" Hint="Выдать МК с копией входного объекта для поиска"}

@@ -12,7 +12,7 @@ struct MkFu
 
 class Lex : public FU {
 private:
-	void LexOut(bool Copy=false);
+	void LexOut(bool Copy=false, int MK = -1);
 	string ABC_templ = "_QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm"; // Алфавит символов
 	set<char> Seps_templ = {'<', '>', '~', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '+', '=', '-', '{', '}', '[', ']', '?', ';', ':', ',', '.', '\\', '/', '|', '\"'};// Алфавит разделителей
 	set<string> SepsComlex2 = { "^=", "*=", "%=", "/=", "++", "--", "-=","+=","<>", ">=", "<=", "!!", "!=", "||", "|=", "&&", "&=", "^^", "^=" };

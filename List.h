@@ -13,10 +13,14 @@ public:
 	int MultiLineMode = 0; // 0 - поиск только первого совпадения, 1 - поиск всех совпадений
 	int ReceiverMk = 0; // Мк для выдаваемой лексемы
 	int *ReceiverMkUk = &ReceiverMk; // Указатель на Мк для выдаваемой лексемы
+	int LineCount = 0; // Количество найденных строк
+	int LineAtr = Atr; // Атрибут линии списка
+	void* LessProg = nullptr, * BibberProg = nullptr, *EQProg = nullptr, *LessEQProg = nullptr, *BibberEQProg = nullptr;
 	vector<int> LineStack; // Стек номеров линий
 	Search Searcher;
-	IC_type FailAllProg = nullptr;
-//	vector<ip> *LineProg = nullptr;
+	void *FailLineProg = nullptr;
+	void *FailProg = nullptr;
+	void* SuссessLineProg = nullptr, * SuссessProg = nullptr;
 	vector<ip> *DefProg = nullptr;
 	List(FU *BusContext, FU *Templ) : FU(BusContext) { ProgFU(0, { 0, nullptr }); Bus = BusContext; Searcher.MainFU = this; };
 	List() : FU() { List(nullptr, nullptr); };

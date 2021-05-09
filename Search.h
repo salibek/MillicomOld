@@ -22,6 +22,7 @@ public:
 	int IP_Num = -1, IPTempl_Num=-1; // Номер первой найденной ИП и ИП в шаблоне
 	vector<ip>* BiggerProg = nullptr, *EqProg = nullptr, * SmallerProg = nullptr; // Указатели на программы по запуску подпрограммы по номеру найденной ИП в шаблоне
 	int Prog_atr = ProgAtr; // Атрибут программы, выполняющейся при успешном поиске (<0 атрибут не учитывается)
+	int Sub_atr = SubMk; // Атрибут программы, выполняющейся при успешном поиске (<0 атрибут не учитывается)
 	void Clear();
 	void MkAtrAdd(int MK) { MkAtr.insert(MK); };
 	void MkAtrClear() { MkAtr.clear(); };

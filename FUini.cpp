@@ -16,6 +16,7 @@
 #include "SchedulerEventser.h"
 #include "MeanShift.h"
 #include "Gauss.h"
+#include "Bag.h"
 
 using namespace std;
 
@@ -97,4 +98,9 @@ FU* MeanShiftIni(FU* BusContext, FU* TEmpl)
 FU* GaussIni(FU* BusContext, FU* TEmpl)
 {
 	return (FU*) new Gauss(BusContext, TEmpl);
+}
+
+FU* BagIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new Bag(BusContext, TEmpl);
 }

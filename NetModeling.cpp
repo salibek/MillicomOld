@@ -25,7 +25,7 @@ void TemperatEx::ProgFU(int MK, LoadPoint Load)
 	MK &= 3;
 
 
-	if (T.size() >= it)
+	if (T.size() >= it) // ≈сли данные от новой интерации и длина вектора еще не соответствует номеру итерации 
 	{
 		T.resize(it + 1);
 		T_Neighbours.resize(it + 1);
@@ -39,7 +39,7 @@ void TemperatEx::ProgFU(int MK, LoadPoint Load)
 //		cout << Y << "," << X << " " << it << "|" << T_Neighbours[it-1][0] << " " << T_Neighbours[it-1][1] << " " << T_Neighbours[it-1][2] << " " << T_Neighbours[it-1][3] << " " << endl;
 		if (FConst)
 			T[it] = T[0];
-		else
+		else // ѕраво вычислени€ температуры и передачи данных сосед€м
 		{
 			T[it] = T[it - 1] + tay * a * (T_Neighbours[it - 1][0] + T_Neighbours[it - 1][1] + T_Neighbours[it - 1][2] + T_Neighbours[it - 1][3] - 4 * T[it - 1]) / h2;
 		}

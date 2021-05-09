@@ -31,7 +31,7 @@ int main()
 	//MSh.ProgFU(5, LP);
 //	Bus.ProgFU(10, LP);
 
-	string STR = "temp.ind";
+	string STR = "ALE2.ind";
 	Bus.ProgFU(10, {Cstring, &STR});
 	//	int temp = 8; // Тип ФУ 8 - ФУ InOut
 	//	Bus.ProgFU(1, {Cint,&temp});

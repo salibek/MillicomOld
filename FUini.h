@@ -19,3 +19,4 @@ FU* SchedulerIni(FU* BusContext, FU* TEmpl);
 FU* EventserIni(FU* BusContext, FU* TEmpl);
 FU* MeanShiftIni(FU* BusContext, FU* TEmpl);
 FU* GaussIni(FU* BusContext, FU* TEmpl);
+FU* BagIni(FU* BusContext, FU* TEmpl);

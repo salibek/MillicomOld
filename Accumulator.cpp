@@ -593,7 +593,7 @@ void	Accumulator::fu_min(LoadPoint load)
 
 	if (((tmp == Tstring || tmp == Cstring || tmp2 == Tstring || tmp2 == Cstring)))
 		error_msg(2);
-	else if ((int)load.Point == 0)
+	else if (*(int*)load.Point == 0)
 		error_msg(3);
 	switch (r_tmp >> 1)
 	{

@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClCompile Include="Accumulator.cpp" />
     <ClCompile Include="AluGeneral.cpp" />
+    <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Consts.cpp" />
@@ -171,6 +172,7 @@
   <ItemGroup>
     <ClInclude Include="Accumulator.h" />
     <ClInclude Include="AluGeneral.h" />
+    <ClInclude Include="Bag.h" />
     <ClInclude Include="Bus.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Consts.h" />
