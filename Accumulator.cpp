@@ -62,6 +62,14 @@ void		Accumulator::SmallerEQ(LoadPoint load)
 	set({ Cbool,t });
 };
 
+void		Accumulator::Remainder(LoadPoint load)
+{
+	sub(load);
+	bool* t = new bool(getSign() || !getLogic());
+	set({ Cbool,t });
+};
+
+
 void		Accumulator::Clear() // ������� ������������
 {
 	if (accumulator.Point == nullptr || accumulator.Type == 0) return;
@@ -89,10 +97,13 @@ void	Accumulator::error_msg(int error_code)
 	{
 	case 1:
 		cout << "Not registered operation!";
+		break;
 	case 2:
 		cout << "Not allowed operation!";
+		break;
 	case 3:
 		cout << "Divided by zero!";
+		break;
 	}
 }
 
@@ -227,9 +238,26 @@ void	Accumulator::calc(int MK, LoadPoint load)
 	case E_MK::SmallerEQ:
 		SmallerEQ(load);
 		break;
-
+	case E_MK::Remainder:
+		Remainder(load);
+		break;
+	case E_MK::XOR_BIT:
+		XOR_BIT(load);
 	default:
 		error_msg(1);
+		break;
+	}
+}
+
+void Accumulator::XOR_BIT(LoadPoint load)
+{
+	switch (accumulator.Type >> 1)
+	{
+	case Dint :
+		*(int*)accumulator.Point^=load.ToInt();
+		break;
+	case Dchar:
+		*(char*)accumulator.Point ^= load.ToChar();
 		break;
 	}
 }

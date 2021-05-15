@@ -6,6 +6,7 @@ using namespace std;
 
 void List::ProgFU(int MK, LoadPoint Load)
 {
+	ProgExec(PrefixProg); // Предварительная программа, вызываемая при приходе любой МК
 	switch (MK)
 	{
 	case 0: // Reset
@@ -40,15 +41,36 @@ void List::ProgFU(int MK, LoadPoint Load)
 			}
 		break;
 	case 8:// EmptyProgExec Выполнить программу, если список пуст
-		if (ListHead == nullptr || ListHead->size() == 0)
-			if(Load.Type>>1==DIC)
-				ProgExec(Load.Point, Bus, nullptr);
+//		if (ListHead == nullptr || ListHead->size() == 0)
+//			if(Load.Type>>1==DIC)
+//				ProgExec(Load.Point, Bus, nullptr);
+//		break;
+	case 9:// FullExec Выполнить программу, если список не пуст
 		break;
-	case 9:// FullProgExec Выполнить программу, если список не пуст
-		if (ListHead != nullptr && ListHead->size() != 0)
-			if (Load.Type >> 1 == DIC)
-				ProgExec(Load.Point, Bus, nullptr);
+	case 14: // OneLineExec Выполнить программу, если в списке только одна строка
 		break;
+	case 13: // MoreOneLineExec Выполнить программу, если в списке больше одной строка
+		if (MK==8 && (ListHead == nullptr || ListHead->size() == 0)||\
+			ListHead != nullptr && ListHead->size() != 0 &&\
+			(MK==9 || MK==10 && ListHead->size() != 0 || MK == 14 && ListHead->size() == 1 ||\
+				MK == 13 && ListHead->size() >1 ) )
+//			ProgExec(Load);
+			if (Load.Point != nullptr && Load.Type >> 1 == DIC)
+				ProgExec(Load);
+			else
+				ProgExec(Prog);
+		else if(Load.Point == nullptr)
+			ProgExec(ElseProg);
+		break;
+//		if (ListHead != nullptr && ListHead->size() >1)
+//			if (ListHead != nullptr && ListHead->size() == 1)
+//				if (Load.Point != nullptr && Load.Type >> 1 == DIC)
+//					ProgExec(Load);
+//				else
+//					ProgExec(Prog);
+//			else if (Load.Point == nullptr)
+//				ProgExec(ElseProg);
+//		break;
 	case 10: // SuccessLineProgSet Установить указатель на программу, выполняемую при удачном поиска в линии списка
 		Searcher.SuccessProg = (IC_type)Load.Point;
 		break;
@@ -67,7 +89,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 17: // FailProgSet Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке
 		FailProg = Load.Point;
 		break;
-	case 18: // SuссessLineProgSet Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке
+	case 18: // SuссessLineProgSet Установить указатель на программу, выполняемую в случае удачного поиска во всем  списке
 		SuссessLineProg = Load.Point;
 		break;
 
@@ -75,7 +97,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 		if (Load.Point != nullptr && Load.Type >> 1 == Dint)
 			Searcher.Prog_atr = *(int *)Load.Point;
 		break;
-	case 21: //LineAtrDef Установить атрибут линии списка по умолчанию
+	case 21: //MarcAtrDef Установить атрибут марки списка по умолчанию
 		LineAtr = Load.ToInt();
 		break;
 	case 25: // BackOut Вылать входной объект для поиска
@@ -92,7 +114,6 @@ void List::ProgFU(int MK, LoadPoint Load)
 		break;
 
 	case 35: // LoadBackOut Выдать нагрузку входного объекта для поиска
-//		if (Load.Type == TPPoint)
 		if (Searcher.Obj.Type >> 1 == DIC)
 			Load.Point = ((IC_type)(Searcher.Obj.Point))->begin()->Load.Point;
 		else if (Searcher.Obj.Type >> 1 == DIP)
@@ -121,106 +142,162 @@ void List::ProgFU(int MK, LoadPoint Load)
 		Searcher.MkAtrClear();
 		break;
 
-	case 120: // LineAtrSet Установить атрибут текущей строки
+	case 120: // MarkAtrSet Установить атрибут текущей строки
 		if (LineUk != nullptr)
 			LineUk->atr = Load.ToInt();
 		break;
-	case 121: // LastLineAtrSet Установить атрибут последней строки
+	case 121: // LastMarkAtrSet Установить атрибут последней строки
 		if (ListHead != nullptr)
 			(ListHead->end() - 1)->atr = Load.ToInt();
 		break;
-	case 125: // LineAtrInc Инкремент атрибута текущей строки
+	case 122: //MarkAtrOut Выдать маркер текущей строки
+		if (LineUk != nullptr)
+			Load.Write(LineUk->atr);
+		break;
+	case 123: //MarkAtrOutMk Выдать МК с маркером текущей строки
+		if (LineUk != nullptr)
+			MkExec(Load, { Cint, &LineUk->atr });
+		break;
+	case 124: //LastMarkAtrOut Выдать маркер последней строки
+		if(ListHead!=nullptr && !ListHead->size())
+			Load.Write((ListHead->end()-1)->atr);
+		break;
+	case 129: //LastMarkAtrOutMk Выдать МК с маркером последней строки
+		if (ListHead != nullptr && !ListHead->size())
+			MkExec(Load, { Cint, &(ListHead->end() - 1)->atr });
+		break;
+	case 125: //  MarkAtrInc Инкремент атрибута текущей строки
 		if (LineUk != nullptr)
 			LineUk->atr++;
 		break;
-	case 126: // LastLineAtrInc Инкремент атрибута последней строки
+	case 126: // LastMarkAtrInc Инкремент атрибута последней строки
 		if (ListHead != nullptr)
 			(ListHead->end() - 1)->atr++;
 		break;
-	case 127: // LineAtrDec Декримент атрибута текущей строки
+	case 127: //  MarkAtrDec Декримент атрибута текущей строки
 		if (LineUk != nullptr)
 			LineUk->atr--;
 		break;
-	case 128: // LastLineAtrDec Декримент атрибута последней строки
+	case 128: // LastMarkAtrDec Декримент атрибута последней строки
 		if (ListHead != nullptr)
 			(ListHead->end() - 1)->atr--;
 		break;
-	case 130: // LineZeroExec Запуск программы при нуле атрибута текущей строки
-		if (!LineUk->atr) ProgExec(Load);
+	case 130: // MarkAtrZeroExec Запуск программы при нуле атрибута текущей строки или равестве c нагрузкой МК
+		if (LineUk == nullptr) break;
+		if (Load.Type >> 1 == DIC) {
+			if (LineUk->atr)
+				ProgExec(Load);
+		}
+		else if(LineUk->atr == Load.ToInt())
+			ProgExec(Prog);
+		else
+			ProgExec(ElseProg);
 		break;
-	case 131: // LastLineZeroExec Запуск программы при нуле атрибута последней строки
-		if (!(ListHead->end() - 1)->atr) ProgExec(Load);
+	case 131: // LastMarkAtrZeroExec Запуск программы при нуле атрибута последней строки или равестве c нагрузкой МК
+		if (ListHead == nullptr || ListHead->size() == 0) break;
+		if (Load.Type >> 1 == DIC) {
+			if (!(ListHead->end() - 1)->atr)
+				ProgExec(Load);
+		}
+		else if (Load.Point==nullptr && (ListHead->end() - 1)->atr ==0 || (ListHead->end() - 1)->atr == Load.ToInt())
+			ProgExec(Prog);
+		else
+			ProgExec(ElseProg);
 		break;
-	case 133: // LineAtrNZeroExec Запуск программы при не нуле атрибута текущей строки
+	case 133: // MarkAtrNZeroExec Запуск программы при не нуле атрибута текущей строки
 		if (LineUk->atr) ProgExec(Load);
 		break;
-	case 134: // LastLineAtrNZeroExec Запуск программы при не нуле атрибута последней строки
+	case 134: // LastMarkAtrNZeroExec Запуск программы при не нуле атрибута последней строки
 		if ((ListHead->end() - 1)->atr) ProgExec(Load);
 		break;
-	case 135: // LineAtrBiggerExec Запуск программы при атрибуте текущей строки больше 0
+	case 135: // MarkAtrBiggerExec Запуск программы при атрибуте текущей строки больше 0
 		if (LineUk->atr > 0) ProgExec(Load);
 		break;
-	case 136: // LastLineAtrBiggerExec Запуск программы при атрибуте последней строки больше 0
+	case 136: // LastMarkAtrBiggerExec Запуск программы при атрибуте последней строки больше 0
 		if ((ListHead->end() - 1)->atr > 0) ProgExec(Load);
 		break;
-	case 137: // LineAtrBiggerZeroExec Запуск программы при атрибуте текущей строки больше или райным 0
+	case 137: // MarkAtrBiggerZeroExec Запуск программы при атрибуте текущей строки больше или райным 0
 		if (LineUk->atr >= 0) ProgExec(Load);
 		break;
-	case 138: // LastLineAtrBiggerZeroExec Запуск программы при атрибуте последней строки больше или равным 0
+	case 138: // LastMarkAtrBiggerZeroExec Запуск программы при атрибуте последней строки больше или равным 0
 		if ((ListHead->end() - 1)->atr >= 0) ProgExec(Load);
 		break;
-	case 139: // LineAtrLessExec Запуск программы при атрибуте текущей строки меньше 0
+	case 139: // MarkAtrLessExec Запуск программы при атрибуте текущей строки меньше 0
 		if (LineUk->atr < 0) ProgExec(Load);
 		break;
-	case 140: // LastAtrLineLessExec Запуск программы при атрибуте последней строки меньше 0
+	case 140: // LastMarkAtrLessExec Запуск программы при атрибуте последней строки меньше 0
 		if ((ListHead->end() - 1)->atr < 0) ProgExec(Load);
 		break;
-	case 141: // LineAtrLessZeroExec Запуск программы при атрибуте текущей строки меньше или равным 0
+	case 141: // MarkAtrLessZeroExec Запуск программы при атрибуте текущей строки меньше или равным 0
 		if (LineUk->atr <= 0) ProgExec(Load);
 		break;
-	case 142: // LastAtrLineLessZeroExec Запуск программы при атрибуте последней строки меньше или равным 0
+	case 142: // LastMarkAtrLessZeroExec Запуск программы при атрибуте последней строки меньше или равным 0
 		if ((ListHead->end() - 1)->atr <= 0) ProgExec(Load);
 		break;
 
-
-	case 150: //LastLineOut Выдать ссылку на последнюю линию списка
-	case 151: //LastLinePop Выдать ссылку на последнюю линию списка и удалить из списка
-	case 152: //LastLineDel Выдать ссылку на последнюю линию списка и удалить из ИК
+	case 150: //LastOut Выдать ссылку на последнюю линию списка
+	case 151: //LastPop Выдать ссылку на последнюю линию списка и удалить из списка
+	case 152: //LastDel Выдать ссылку на последнюю линию списка и удалить из ИК
 		if (Load.Type == Tvoid)
 			*(void**)Load.Point = (void*)ListHead->back().Load.Point;
 		if (MK == 152) ICDel((void*)ListHead->back().Load.Point);
-		if (MK == 151 || MK == 152) ListHead->pop_back();
+		if (MK == 151 || MK == 152) 
+			ListHead->pop_back();
 		break;
-	case 155: //LastLineOutMK Выдать ссылку на последнюю линию списка
-	case 156: //LastLinePopMK Выдать ссылку на последнюю линию списка и удалить из списка
-	case 157: //LastLineDelMk Выдать ссылку на последнюю линию списка и удалить из ИК
+	case 153: //LastIpOutMk Выдать ссылку на последнюю ИП последней линии
+		MkExec(Load, { CIP,(void*)&((IC_type)ListHead->back().Load.Point)->back() });
+		break;
+	case 154: // LastIpCopyOutMk Выдать МК со ссылкой на последнюю ИП последней линии
+		MkExec(Load, { CIC,((IC_type)ListHead->back().Load.Point)->back().Сlone() });
+		break;
+	case 155: //LastOutMK Выдать ссылку на последнюю линию списка
+	case 156: //LastPopMK Выдать ссылку на последнюю линию списка и удалить из списка
+	case 157: //LastDelMk Выдать ссылку на последнюю линию списка и удалить из ИК
 		if (ListHead == nullptr) break;
 		if(Load.Point!=nullptr)
 			MkExec(*(int*)Load.Point, ListHead->back().Load);
 		if (MK == 157) ICDel((void*)ListHead->back().Load.Point);
-		if (MK == 156 || MK == 157) ListHead->pop_back();
+		if (MK == 156 || MK == 157) 
+			ListHead->pop_back();
 		break;
-	case 160: // LineAdd Добавить строку
+	case 158: // LastLoadOutMK Выдать МК с нагрузкой последней ИП последней линии
+		MkExec(Load, ((IC_type)(ListHead->back().Load.Point))->back().Load);
+		break;
+	case 145: //LineIcOutMk Выдать ссылку на последнюю ИП текущей линии
+		MkExec(Load, { CIP,&((IC_type)ListHead->back().Load.Point)->back() });
+		break;
+	case 146: // LineIcCopyOutMk Выдать МК со ссылкой на последнюю ИП текущей линии
+//		MkExec(Load, { CIC,((IC_type)ListHead->back().Load.Point)->back().СloneToIC() });
+		break;
+
+	case 160: // LineAdd Добавить новую строку всписок
 		if (ListHead == nullptr) ListHead = new vector<ip>;
 		if (ListHead == nullptr)
 			ListHead = new vector<ip>;
-		ListHead->push_back({ LineAtr, Load });
+		if(Load.Point!=nullptr)
+			ListHead->push_back({ LineAtr, Load });
 		break;
 	case 161: // LineCopyAdd Добавить копию строки
 		if (ListHead == nullptr) ListHead = new vector<ip>;
-		ListHead->push_back({ LineAtr, TIC, ICCopy(Load) });
+		if (Load.Point != nullptr)
+			ListHead->push_back({ LineAtr, TIC, ICCopy(Load) });
 		break;
 	case 163: //  LineCopyAddPrevLoadSet Добавить линию в список и поместить ссылку на нее в нагрузку последней ИП последней строки
 	 	if (ListHead == nullptr) ListHead = new vector<ip>;
-		ListHead->push_back({ LineAtr, TIC, ICCopy(Load) });
+		if(Load.Point==nullptr)
+			ListHead->push_back({ LineAtr, TIC, new vector<ip> });
+		else
+			ListHead->push_back({ LineAtr, TIC, ICCopy(Load) });
 		if (ListHead->size() > 1)
-			ListHead->at(ListHead->size() - 2).Load = { TIC, (ListHead->back().Load.Point) };
+			((IC_type)ListHead->at(ListHead->size() - 2).Load.Point)->back().Load = ListHead->back().Load;
 		break;
 	case 162: // LineCopyTreeAdd Добавить копию ОА-графа
 		if (ListHead == nullptr) ListHead = new vector<ip>;
 		// ....
 		break;
-	
+	case 164: // LineLoadOutMk Выдать МК с нагрузкой последней ИП текущей линии
+		MkExec(Load, ((IC_type)(LineUk->Load.Point))->back().Load);
+		break;
 	case 165: // LineExcludeMk Исключить линию списка
 		if (ListHead == nullptr || ListHead->size() == 0) break;
 		if(Load.Point!=nullptr && Load.Type>>1==Dint) MkExec(*(int*)Load.Point, { TIC , (void*)ListHead->back().Load.Point });
@@ -249,11 +326,26 @@ void List::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 170: // LastAttach Конкатенация ИК к последней линии списка
 	case 171: // LastCopyAttach Конкатенация копии ИК к последней линии списка
+		if (ListHead == nullptr)
+		{
+			ListHead = new vector<ip>;
+			ListHead->push_back({ LineAtr,{ CIC,new vector<ip>} });
+		}
 		if (ListHead != nullptr && Load.Point != nullptr)
-			if (Load.Type >> 1 == DIP)
+			if (Load.Type >> 1 == DIP || Load.Type >> 1 == DIC)
 			{
-				((IC_type)ListHead->back().Load.Point)->push_back(*(ip*)Load.Point);
-				if (MK == 170 && Load.Type == CIP) { delete (ip*)Load.Point; Load.Point = nullptr; Load.Type = 0; }
+//				ListHead->push_back({});
+				if (Load.Type >> 1 == DIP)
+				{
+					((IC_type)ListHead->back().Load.Point)->push_back(*(ip*)Load.Point);
+					if (MK == 170 && Load.Type == CIP) { delete (ip*)Load.Point; Load.Point = nullptr; Load.Type = 0; }
+				}
+				else if (Load.Type >> 1 == DIC)
+				{
+					for (auto i : *(IC_type)Load.Point)
+						((IC_type)ListHead->back().Load.Point)->push_back(i);
+					if (MK == 170 && Load.Type == CIP) { delete (ip*)Load.Point; Load.Point = nullptr; Load.Type = 0; }
+				}
 			}
 		else
 			{
@@ -331,34 +423,21 @@ void List::ProgFU(int MK, LoadPoint Load)
 
 		break;
 	}
-	case 180: // LastPointVarTypeSet // Установить тип 'переменная' в последней ИП последней линии
-	case 182: // LinePointVarTypeSet // Установить тип 'переменная' в последней ИП текущей линии
-	case 181: // LastPointConstTypeSet // Установить тип 'константа' в последней ИП последней линии
-	case 183: // LinePointConstTypeSet // Установить тип 'константа' в последней ИП текущей линии
-	{	
-		IC_type t;
-		if (ListHead != nullptr || ListHead->size()==0) break;
-		if (MK  == 180 || MK==181)
-		{
-			if (ListHead->back().Load.Point == nullptr || ListHead->back().Load.Type >> 1 != DIC || ((IC_type)ListHead->back().Load.Point)->size() > 0)
-				break;
-			t = (IC_type)ListHead->back().Load.Point;
-		}
-		else
-		{
-			if (LineUk == nullptr || LineUk->Load.Point == nullptr || LineUk->Load.Type >> 1 != DIC || ((IC_type)LineUk->Load.Point)->size()==0)
-				break;
-			t = (IC_type)LineUk->Load.Point;
-		}
-				switch (MK)
-				{
-				case 180: 
-				case 182: t->back().Load.VarTypeSet(); break;
-				case 181: 
-				case 183: t->back().Load.ConstTypeSet(); break;
-				}
-	break;
-	}
+	case 180: // LineVarTypeSet // Установить тип 'переменная' в последней ИП текущей линии
+		if (ListHead == nullptr || !ListHead->size() || \
+			LineUk == nullptr || LineUk->Load.Point == nullptr || \
+			LineUk->Load.Type>>1!=DIC || !((IC_type)LineUk->Load.Point)->size())
+			break;
+		((IC_type)LineUk->Load.Point)->back().Load.VarTypeSet(Load.ToBool(true));
+		break;
+	case 182: // LastVarTypeSet // Установить тип 'переменная' в последней ИП последней линии
+		if (ListHead == nullptr || !ListHead->size() || \
+			ListHead->back().Load.Type >> 1 != DIC || !((IC_type)ListHead->back().Load.Point)->size())
+			break;
+		((IC_type)ListHead->back().Load.Point)->back().Load.VarTypeSet(Load.ToBool(true));
+		break;
+//	case 181: // LastPointConstTypeSet // Установить тип 'константа' в последней ИП последней линии
+//	case 183: // LinePointConstTypeSet // Установить тип 'константа' в последней ИП текущей линии
 	case 200: // LineToLast Установить текущую строку на последнюю строку
 		if(ListHead!=nullptr && ListHead->size()>0 && ListHead->back().Load.Point!=nullptr && ListHead->back().Load.Type>>1==DIC)
 			LineUk = &ListHead->back();
@@ -380,8 +459,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 220: // FindOr Поиск ИЛИ
 	case 221: // FindOrLastLine Поиск ИЛИ в последней строке
-	case 226: // FindAnd Поиск И
-	case                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              227: // FindAndLastLine Поиск И в последней строке
+	case 226: // FindAnd Поиск И                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             227: // FindAndLastLine Поиск И в последней строке
 	case 230: // FindXor Поиск XOR
 	case 231: // FindXorLastLine Поиск XOR в последней строке
 	case 236: // FindAndSource Поиск И в источнике
@@ -453,6 +531,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 	if (LineNum < LineNumOld)  ProgExec(LessEQProg);
 	if (LineNum == LineNumOld) ProgExec(EQProg);
 	break;
+
 	case 400: // LineOutMk Выдать МК с найденной линией
 			MkExec(Load, LineUk->Load);
 		break;
@@ -462,7 +541,8 @@ void List::ProgFU(int MK, LoadPoint Load)
 
 		// Программы по срезультатам сравнения номеров строк
 	case 450: // EqProgExec
-		if (LineNumOld == LineNum) ProgExec(Load.Point);
+		if(Load.Point==nullptr)
+			if (LineNumOld == LineNum) ProgExec(Load.Point);
 		break;
 	case 451: // BiggerProgExec
 		if (LineNumOld < LineNum) ProgExec(Load.Point);
@@ -509,7 +589,23 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 474: // LessProgSet
 		BibberEQProg = Load.Point;
 		break;
-
+	// Программы по анализу строк
+	case 500: // LineEmptyExec Выполнить подпрограмму, если текущая строка пустая
+		if (ListHead != nullptr && LineUk != nullptr && ((IC_type)LineUk->Load.Point)->size()==0)
+			ProgExec(Load);
+		break;
+	case 501: //LineFullExec  Выполнить подпрограмму, если текущая строка не пустая
+		if (ListHead != nullptr && LineUk != nullptr && ((IC_type)LineUk->Load.Point)->size() != 0)
+			ProgExec(Load);
+		break;
+	case 505: // LastEmptyExec  Выполнить подпрограмму, если последняя строка пустая
+		if (ListHead != nullptr && ListHead->size() != 0 && ((IC_type)ListHead->back().Load.Point)->size() == 0)
+			ProgExec(Load);
+		break;
+	case 506: //LastFullExec Выполнить подпрограмму, если последняя строка не пустая
+		if (ListHead != nullptr && ListHead->size() != 0 && ((IC_type)ListHead->back().Load.Point)->size() != 0)
+			ProgExec(Load);
+		break;
 	default:
 		CommonMk(MK, Load);
 		break;

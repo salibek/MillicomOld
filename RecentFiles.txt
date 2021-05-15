@@ -1,5 +1,7 @@
 16 1
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\NetTemperat2.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALE2.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALE2.ind 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALE.oap 
 C:\Users\User\YandexDisk\MillicomNew\Millicom\ListTest.oap 
@@ -13,5 +15,3 @@ C:\Users\salib\YandexDisk\MillicomNew\Millicom\NetTemperat.oap
 C:\Users\Салибек\YandexDisk\MillicomNew\Millicom\NetTemperat.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALU range test.oap 
 C:\Users\User\YandexDisk\MillicomNew\Millicom\ALU range test.oap 
-C:\Users\Салибек\YandexDisk\MillicomNew\Millicom\FSM.oap 
-C:\Users\User\YandexDisk\MillicomNew\Millicom\FSM.oap 

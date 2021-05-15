@@ -13,7 +13,7 @@ void AluGeneral::ProgFU(int MK, LoadPoint Load)
 //		ThreadStack.back().Parent = this;
 		break;
 	case E_MK::PROG:
-	case E_MK::PROG_CYCLE:  
+	case E_MK::PROG_CYCLE:
 	case E_MK::PROG_POST:
 	case E_MK::PROG_BREAK:
 	case E_MK::YES_PROG:
@@ -126,7 +126,7 @@ void AluGeneral::ProgFU(int MK, LoadPoint Load)
 	case E_MK::INV_BIT: case E_MK::OR_BIT: case E_MK::AND_BIT: case E_MK::MR_BIT:
 	case E_MK::ML_BIT:
 	case E_MK::EQ: case E_MK::NotEQ: case E_MK::Bigger: case E_MK::BiggerEQ:
-	case E_MK::Smaller: case E_MK::SmallerEQ:
+	case E_MK::Smaller: case E_MK::SmallerEQ: case E_MK::Remainder: case E_MK::XOR_BIT:
 		if (ThreadStack.back().AluStack.size() == 0)
 		{
 			ThreadStack.back().AluStack.push_back({});
@@ -203,6 +203,16 @@ void AluGeneral::ProgFU(int MK, LoadPoint Load)
 				ThreadStack.back().MinProg = Load.Point;
 		break;
 	}
+	case 130: //VarNew Создать и инициализировать новую переменную
+		NewVar =Load.Clone();
+		NewVar.VarTypeSet(true);
+		break;
+	case 131: // VarOut Выдать ссылку на новую переменную
+		Load.Write(NewVar);
+		break;
+	case 132: // VarOutMk Выдать MK со ссылкой на новую переменную
+		MkExec(Load, NewVar);
+		break;
 	default:
 		CommonMk(MK, Load);
 		break;

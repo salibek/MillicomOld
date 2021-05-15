@@ -29,6 +29,7 @@ class AluGeneral : public FU
 {
 private:
 	int breakCounter = 0;
+	LoadPoint NewVar = { 0,nullptr }; // Ссылка на созданную новую переменную 
 public:
 	vector <ThreadContext> ThreadStack; // Стек контекстов
 	ip* DivisinByZeroProg = nullptr; // Программа, вызываемая при делении на 0

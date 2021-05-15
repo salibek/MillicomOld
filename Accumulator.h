@@ -61,6 +61,8 @@
 		void		BiggerEQ(LoadPoint load);
 		void		Smaller(LoadPoint load);
 		void		SmallerEQ(LoadPoint load);
+		void		Remainder(LoadPoint load);
+		void		XOR_BIT(LoadPoint load);
 		LoadPoint	getCos();
 		LoadPoint	getSin();
 	};

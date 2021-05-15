@@ -8,7 +8,7 @@ void TemperatEx::ProgFU(int MK, LoadPoint Load)
 	{
 		Modeling->SchedulerFlag = false;
 		Modeling->qmk.push_back({ MK, Load });
-		if (Load.Type % 2 == 1) Load.Point=Load.VarCopy(); //  опирование константы
+		if (Load.Type % 2 == 1) Load.Point=Load.VarClone(); //  опирование константы
 		if(Load.Point!=nullptr)
 			((Scheduler*)(Modeling->scheduler))->Scheduling(this, ReadTime);
 		else
@@ -23,7 +23,6 @@ void TemperatEx::ProgFU(int MK, LoadPoint Load)
 	}
 	int it = MK >> 2; // Ќомер итерации
 	MK &= 3;
-
 
 	if (T.size() >= it) // ≈сли данные от новой интерации и длина вектора еще не соответствует номеру итерации 
 	{
@@ -165,7 +164,7 @@ void NetManager::ProgFU(int MK, LoadPoint Load)
 			Modeling->SchedulerFlag = false;
 			SchedulerFlag = true;
 			Modeling->qmk.push_back({ MK, Load });
-			if (Load.Type % 2 == 1) Load.Point = Load.VarCopy();
+			if (Load.Type % 2 == 1) Load.Point = Load.VarClone();
 			((Scheduler*)(Modeling->scheduler))->Scheduling(this, ManageTime);
 			return;
 		}

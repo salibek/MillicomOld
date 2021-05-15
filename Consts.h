@@ -43,10 +43,14 @@ public:
 	void Write(bool x);
 	void Write(char x);
 	void Write(string x);
-	void Write(void* x);
+	void Write(void* x) { Point = x; };
+	void Write(LoadPoint* x) { if (Type == TPPoint) Point = x->Point; Type = CPPoint; };
+	void Write(LoadPoint x) { Point = x.Point; Type = x.Type; };
+	void WriteVar(LoadPoint x) { Point = x.Point; Type = x.Type; Type |= 1; Type--; }; //Записать ссылку и сделать ее переменной
+	void WriteConst(LoadPoint x) {Point = x.Point; Type = x.Type; Type |= 1;}; // Записать ссылку и сделать ее константой
 
 	string ToStr(); // Первод в string
-	bool ToBool(); // Перевод в bool
+	bool ToBool(bool define = false); // Перевод в bool
 	int ToInt(); // Перевод в integer
 	double ToDouble(); // Перевод в double
 	float ToFloat();// Перевод во float
@@ -54,14 +58,14 @@ public:
 	void Copy(LoadPoint *LP);
 	void Clear(); // Сброс нагрузки ИП
 	void VarClear(); // Сброс нагрузки ИП в том числе и с переменной (переменная стирается)
-	void* VarCopy(); // Копирование значения нагрузки
+	void* VarClone(); // Копирование значения нагрузки
 	void VarDel();// Удаление нагрузки ИП
 	void print(void* AtrMnemo=nullptr, string offset=""); // Параметр - указатель на табл. мнемоник атрибутов
 	LoadPoint Clone(); // Дублировать нагрузку
 	void ConstTypeSet(bool F = true) { if (F)Type |= 1; else VarTypeSet(); }; // Установить тип 'константа'
     // Установить тип 'переменная'
 	void VarTypeSet(bool F = true) {
-		if (!F) { ConstTypeSet(); return; } Type |= 1; if (Type >= 0)Type -= 1; else Type += 1;}
+		if (!F) { ConstTypeSet(); return; } Type |= 1; Type -= 1;}
 	LoadPoint IpOut() // Возвращается указатель на ИП или на первую ИП из ИК, иначе null
 	{
 		if (Type >> 1 == DIP) return *this;
@@ -105,12 +109,19 @@ public:
 			Load.Copy(&((vector<ip>*)LP.Point)->begin()->Load);
 		}
 	};
-	ip* сlone()
+	ip* Сlone()
 	{
 		ip* ip_new = new ip;
 		ip_new->copy(*this);
 		return ip_new;
-	}
+	};
+
+	vector<ip>* СloneToIC()
+	{
+		vector<ip>* t = new vector<ip>;
+		t->push_back(*this);
+		return t;
+	};
 
 };
 
@@ -138,7 +149,8 @@ public:
 class FU {  // Ядро функционального устройства
 public:
 	virtual void ProgFU(int MK, LoadPoint Load) {}; // Реализация логики работы ФУ
-	void ProgFU(LoadPoint MK, LoadPoint Load) { if ((MK.Type >> 1) == Dint) ProgFU(Load.ToInt(), Load); }; // Реализация логики работы ФУ
+//	virtual void ProgFU(LoadPoint MK, LoadPoint Load)
+//	{ if ((MK.Type >> 1) == Dint) ProgFU(Load.ToInt(), Load); }; // Реализация логики работы ФУ
 	void Scheduling(); // Запуск МК после разрешенрия планировщика
 	int FUtype = 0; // Тип ФУ
 	string FUName; //  Имя ФУ
@@ -161,7 +173,9 @@ public:
 	bool ProgStop = false; // Флаг остановки программы, выполняемой ProgExec
 
 	void CommonMk(int Mk, LoadPoint Uk); // Выполнение общих МК для ФУ
-	IC_type PrefixProg = nullptr, PostfixProg = nullptr, Prog=nullptr; // Программы презапуска и послезапуска во время прихода МК, просто программа
+	IC_type PrefixProg = nullptr, PostfixProg = nullptr, Prog = nullptr, ElseProg = nullptr; // Программы презапуска и послезапуска во время прихода МК, просто программа, альтернативная программа
+private:
+//	int ProgSetFaze = 0; // Фаза для установки программы ProgSet, ElseProgSet
 };
 
 void ICDel(void* Uk);// Удаление ИК

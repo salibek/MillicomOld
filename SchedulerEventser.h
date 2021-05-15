@@ -8,7 +8,6 @@ class Eventser: public FU
 	bool start = false; // Флаг запуска процесса моделирования
 	double CurrentTime = 0; // Текущее время моделирования
 	void* FinProg = nullptr; // Программа, запускаемая по завершении моделирования
-	double CurrTime = 0; // Текущее время
 	int EventCount = 0; // Счетчик событий
 public:
 	void ProgFU(int MK, LoadPoint Load) override;

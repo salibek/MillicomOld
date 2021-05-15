@@ -45,7 +45,11 @@ void Eventser::ProgFU(int MK, LoadPoint Load)
 		ProgExec(FinProg);
 		break;
 	case 5: // WorkSet Установить флаг рабочего режима
-		work = Load.ToBool();	
+		work = Load.ToBool();
+		break;
+	case 45: //TimeSet Установить текущее модельное время
+		CurrentTime = Load.ToDouble();
+		break;
 	case 50: // TimeOut Выдать текущее модельное время
 		if(Load.Type==Tdouble)
 		break;

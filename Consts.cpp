@@ -21,10 +21,10 @@ string LoadPoint::ToStr() // Перевод в bool
 	}
 }
 
-bool LoadPoint::ToBool() // Перевод в bool
+bool LoadPoint::ToBool(bool define) // Перевод в bool (по умолчания false)
 {
 	if (Point == nullptr)
-		return false;
+		return define;
 	switch (Type >> 1)
 	{
 	case Ddouble: return *(double*)Point; break;
@@ -206,17 +206,6 @@ void LoadPoint::Write(string x)
 	}
 }
 
-void LoadPoint::Write(void* x)
-{
-	switch (Type)
-	{
-//	case TIP:
-//		*((void*)Load.Point) = x;
-//		break;
-	}
-}
-
-
 void ICDel(void* Uk) // Удаление ИК
 {
 	for (auto &&i : *(IC_type)Uk)
@@ -229,7 +218,7 @@ void* ICCopy(LoadPoint uk) // Копирование ИК
 	IC_type CapsNew = new vector<ip>;
 	if (uk.Type >> 1 == DIP) // Если передается ИП
 	{
-		CapsNew->push_back(*(*(ip*)uk.Point).сlone());
+		CapsNew->push_back(*(*(ip*)uk.Point).Сlone());
 		return CapsNew;
 	}
 	IC_type Uk = (IC_type)uk.Point;
@@ -252,24 +241,30 @@ void GraphDel(void* Uk, LocatTable* Table = nullptr) // Удаление ОА-графа
 	return;
 }
 
-LoadPoint LoadPoint::Clone()
+LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 {
-	switch (Type)
+	switch (Type>>1)		
 	{
-	case Cstring: return { Type, new string(*(string*)Point) };
-	case Cint: return { Type, new int(*(int*)Point) };
-	case Cfloat: return { Type, new float(*(float*)Point)};
-	case Cdouble: return { Type,new double(*(double*)Point)};
-	case Cchar: return { Type,new char(*(char*)Point) };
-	case Cbool: return { Type,new bool(*(bool*)Point) };
-	case CPPoint: return { Type,new (void*)(*(void**)Point) };
-	case CIP: return { Type, (*(ip*)Point).сlone()};
-	case CIC: return { Type, Point = ICCopy(*this) };
+	case Dstring: return { Type, new string(*(string*)Point) };
+	case Dint: return { Type, new int(*(int*)Point) };
+	case Dfloat: return { Type, new float(*(float*)Point)};
+	case Ddouble: return { Type,new double(*(double*)Point)};
+	case Dchar: return { Type,new char(*(char*)Point) };
+	case Dbool: return { Type,new bool(*(bool*)Point) };
+	case DPPoint: return { Type,new (void*)(*(void**)Point) };
+	case DIC: return { Type, ICCopy(*this) };
+	case DIP: //return { Type, (*(ip*)Point).Сlone() };
+	{
+		vector<ip>* t = new vector<ip>;
+		t->push_back(*((ip*)Point));
+//		((ip*)Point)->Load.Clone();
+		return { Type, t };
+	}
 	default: return *this;
 	}
 }
 
-void* LoadPoint::VarCopy()
+void* LoadPoint::VarClone() // Вернуть ссылку на клонированное значение из нагрузки
 {
 	switch (Type<<1)
 	{
@@ -280,8 +275,8 @@ void* LoadPoint::VarCopy()
 	case Dchar: return new char(*(char*)Point);
 	case Dbool: return new bool(*(bool*)Point);
 	case DPPoint: return new (void*)(*(void**)Point);
-//	case DIP: return (*(ip*)Point).сlone();
-//	case DIC: return Point = ICCopy(*this);
+	case DIP: {IC_type t = new vector<ip>; t->push_back(*(ip*)Point); return t; }
+	case DIC: return ICCopy(*this);
 	}
 }
 
@@ -440,6 +435,13 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 			break;
 		case 991: // ProgSet // Установить указатель на программу
 			Prog = (IC_type)Load.Point;
+			break;
+		case 953: // ElseProgSet
+			ElseProg = (IC_type)Load.Point;
+			break;
+		case 954: // ProgSetExec Установить указатель на программу и выполнить ее
+			Prog = (IC_type)Load.Point;
+			ProgExec(((vector<ip>*)Prog), Bus, nullptr);
 			break;
 		case 995: //ContextOut Выдать указатель на контекст ФУ
 			if (Load.Type >> 1 == Dvoid || Load.Type >> 1 == DPPoint || Load.Type >> 1 == DFU)

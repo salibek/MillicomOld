@@ -14,12 +14,12 @@
 				if(Copy)
 					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, &LexBuf[ib] });
 				else
-					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, LexBuf[ib].сlone() });
+					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, LexBuf[ib].Сlone() });
 		}
 		else
 			if (Receiver != nullptr) 
 				if (Copy)
-					Receiver->ProgFU(MK, { TIP, LexBuf[ib].сlone() });
+					Receiver->ProgFU(MK, { TIP, LexBuf[ib].Сlone() });
 				else
 					Receiver->ProgFU(MK, { TIP, &LexBuf[ib] });
 	}
@@ -34,6 +34,7 @@
 				   //		FigureBuf = "";
 			UnicAtr.clear();
 			ReceiverMK = 0;
+			Receiver = Bus;
 			ErrProg = nullptr;
 			break;
 		case 5: //ReceiverMKSet
@@ -116,18 +117,36 @@
 
 //			if (Load.Type >> 1 == Dint)
 //				LexOut(false,Load.ToInt())
-				Receiver->ProgFU(Load, { TIP, &LexBuf[ib] });
+				if(Load.Type>>1==Dint)
+					Receiver->ProgFU(Load.ToInt(), { TIP, &LexBuf[ib] });
 		//	else if(Load.Point==0)
 
 			break;
 		case 36: // CopyOutMk Выдать МК с копией последней лексемы (если nil в нагрузке, то выдается на Receiver)
 			if (Load.Point!=nullptr) 
-				Receiver->ProgFU(Load, { TIP, LexBuf[ib].сlone() });
+				Receiver->ProgFU(*(int*)Load.Point, { TIP, LexBuf[ib].Сlone() });
 			else
-				Receiver->ProgFU(ReceiverMK, { TIP, LexBuf[ib].сlone() });
+				Receiver->ProgFU(ReceiverMK, { TIP, LexBuf[ib].Сlone() });
 			break;
-		
-//		case 40: //PrevToReseiver Выдать предыдущую лексему получателю
+		case 37: // LoadOut Выдать нагрузку текущей лексемы
+			Load.Write(LexBuf[ib].Load);
+			break;
+		case 38: // LoadOutMk Выдать МК с нагрузкой текущей лексемы
+			MkExec(Load, LexBuf[ib].Load);
+			break;
+		case 39: // LoadCopyOut Выдать нагрузку текущей лексемы
+			Load.Write(LexBuf[ib].Load.Clone());
+			break;
+		case 40: // LoadCopyOutMk Выдать МК с копией нагрузки текущей лексемы
+			MkExec(Load, LexBuf[ib].Load.Clone());
+			break;
+		case 41: // AtrOut Выдать атрибут текущей лексемы
+			Load.Write(LexBuf[ib].atr);
+			break;
+		case 42: // AtrOutMk Выдать МК с атрибутом текущей лексемы
+			MkExec(Load, { Cint, &LexBuf[ib].atr });
+			break;
+			//		case 40: //PrevToReseiver Выдать предыдущую лексему получателю
 //			if (Receiver != nullptr && Load.Type >> 1 == Dint) 
 //				Receiver->ProgFU(*(int*)Load.Point, { TIP, &LexBuf[(ib-1+ SizeBuf)% SizeBuf] });
 //			break;
@@ -139,13 +158,13 @@
 			if (Load.Point==nullptr)
 				Receiver->ProgFU(ReceiverMK, { TIP, &LexBuf[(ib - 1 + SizeBuf) % SizeBuf] });
 			else
-				Receiver->ProgFU(Load, { TIP, &LexBuf[(ib - 1 + SizeBuf) % SizeBuf] });
+				Receiver->ProgFU(*(int*)Load.Point, { TIP, &LexBuf[(ib - 1 + SizeBuf) % SizeBuf] });
 			break;
 		case 46: //PrevCopyOutMk Выдать МК с копией предыдущей лексемы (если нагрузка nil, то выдается на Receiver)
 			if (Load.Point == nullptr)
-				Receiver->ProgFU(ReceiverMK, { TIP, LexBuf[(ib - 1 + SizeBuf) % SizeBuf].сlone() });
+				Receiver->ProgFU(ReceiverMK, { TIP, LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Сlone() });
 			else	
-				Receiver->ProgFU(Load, { TIP, LexBuf[(ib - 1 + SizeBuf) % SizeBuf].сlone() });
+				Receiver->ProgFU(*(int*)Load.Point, { TIP, LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Сlone() });
 			break;
 		case 50: // AtrSet Установить атрибут последней лексемы
 			LexBuf[ib].atr=Load.ToInt();
@@ -172,6 +191,13 @@
 		case 66: // PrevVarSet Установить тип переменной для нагрузки предыдущей лексемы
 			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Load.Type |= 1;
 			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Load.Type--;
+			break;
+
+		case 70: // CendToReceiver Переслать лексему из нагрузки получателю
+			MkExec(ReceiverMK, Load);
+			break;
+		case 71: // CendCopyToReceiver Переслать копию лексемы из нагрузки получателю
+			MkExec(ReceiverMK, Load.Clone());
 			break;
 
 		case 99: // Stop Остановить лексический анализ

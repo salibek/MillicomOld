@@ -10,13 +10,28 @@ MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на нов
 
 NewFU={Mnemo="LogCons" FUType=FUConsNew Mnemo="Консоль для вывода соощений компилятора"}
 NewFU={Mnemo="Lex" FUType=FULexNew}
+NewFU={Mnemo="ALUG" FUType=FUALUG}
 NewFU={Mnemo="Stack" FUType=FUListNew Hint="Стек приоритетов арифметического графа"}
 NewFU={Mnemo="MnemoTable" FUType=FUListNew Hint="Таблица мнемоник"}
 NewFU={Mnemo="OpPriority" FUType=FUListNew Hint="Таблица приоритетов операций"}
 
 NewFU={Mnemo="StartExpr" FUType=FUListNew Hint="Начальное состояние"}
-NewFU={Mnemo="IniWait" FUType=FUListNew Hint="Ожидание присваивания"}
-NewFU={Mnemo="IniEQ" FUType=FUListNew Hint="После присваивания"}
+NewFU={Mnemo="IniWait" FUType=FUListNew Hint="Ожидание инициализации"}
+NewFU={Mnemo="IniEQ" FUType=FUListNew Hint="После инициализации"}
+NewFU={Mnemo="OperandWait" FUType=FUListNew Hint="Ожидание оператора"}
+NewFU={Mnemo="WaitAssign" FUType=FUListNew Hint="Ожидание присвоения"}
+NewFU={Mnemo="WaitAssign2" FUType=FUListNew Hint="Ожидание присвоения с возможность множественного присваивания"}
+NewFU={Mnemo="WaitAssign3" FUType=FUListNew Hint="Ожидание присвоения без возможность множественного присваивания"}
+NewFU={Mnemo="WaitAssign4" FUType=FUListNew Hint="Ожидание присвоения после оператора перед '='"}
+NewFU={Mnemo="VectAssign" FUType=FUListNew Hint="Векторное присвоение"}
+NewFU={Mnemo="WaitVectAssign" FUType=FUListNew Hint="Ожидание векторного присвоение"}
+NewFU={Mnemo="Assign" FUType=FUListNew Hint="Присвоение"}
+NewFU={Mnemo="FuncBrack" FUType=FUListNew Hint="Ожидание скобки функции"}
+NewFU={Mnemo="OperandWait2" FUType=FUListNew Hint="Ожидание оператора 2"}
+NewFU={Mnemo="OperationWait" FUType=FUListNew Hint="Ожидание оператора"}
+NewFU={Mnemo="SqrBrackWait" FUType=FUListNew Hint="Ожидание квадратной скобки"}
+
+NewFU={Mnemo="OperateionTranslate" FUType=FUListNew Hint="Транслирование операций для FUALU"}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
@@ -25,32 +40,179 @@ MainBus.ModeSet=2
 Sep*-4
 Var
 VarInt
+BracketAtr#-1
+PassAtr#-2
 
-OpPriority.Set=
->{Sep="%" Sep="+" Sep="-"}
+Stack.MarkAtrDef=0 // Атрибут линии по умолчанию
+
+OpPriority.Set= // Приоритет операций
+>{Sep="(" Sep=")" Sep="[" Sep="]"}
+>{Sep="!" Sep="~" Sep="++" Sep="--"}
+>{Sep="*" Sep="/" Sep="//" Sep="%"}
+>{Sep="+" Sep="-"}
+>{Sep="<<" Sep=">>"}
+>{Sep="<" Sep="<=" Sep=">" Sep=">="}
+>{Sep="==" Sep="<>" Sep="<=>"}
+>{Sep="&&"}
+>{Sep="^"}
+>{Sep="||"}
+>{Sep="&"}
+>{Sep="|"}
+
+OperateionTranslate.Set= // Операции для FUALU
+>{Sep="+" Stack.LastCopyAttach={FUALUG.Sum}}
+>{Sep="-" Stack.LastCopyAttach={FUALUG.Sub}}
+>{Sep="*" Stack.LastCopyAttach={FUALUG.Mul}}
+>{Sep="/" Stack.LastCopyAttach={FUALUG.Div}}
+>{Sep="//" Stack.LastCopyAttach={FUALUG.DivInt}}
+>{Sep="%" Stack.LastCopyAttach={FUALUG.Remainder}}
+>{Sep="**" Stack.LastCopyAttach={FUALUG.Pow}}
+>{Sep=">>" Stack.LastCopyAttach={FUALUG.Sub}}
+>{Sep="<<" Stack.LastCopyAttach={FUALUG.Sub}}
+>{Sep="&" Stack.LastCopyAttach={FUALUG.And}}
+>{Sep="&&" Stack.LastCopyAttach={FUALUG.AndBit}}
+>{Sep="|" Stack.LastCopyAttach={FUALUG.Or}}
+>{Sep="||" Stack.LastCopyAttach={FUALUG.OrBit}}
+>{Sep="^" Stack.LastCopyAttach={FUALUG.Xor}}
+>{Sep="^^" Stack.LastCopyAttach={FUALUG.XorBit}}
 
 Lex.ReceiverMkSet=StartExpr.FindAnd
 Lex.UnicAtrSet=Mnemo
 Lex.UnicMkSet=MnemoTable.FindAnd
+Lex.FinProgSet={ // Программа завершения анализа АЛВ
+	LogCons.LnOut="FinProg"
+	Stack.ElseProgSet={LogCons.LnOut="Wrong expression" Lex.Stop}
+	Stack.ProgSet={
+		Stack.LastOutMk=LogCons.LnOut
+		Stack.ProgSet={LogCons.LnOut="Rezult: " Stack.LastOutMk=ALUG.Calc ALUG.OutMk=LogCons.OutLn}
+		Stack.LastMarkAtrZeroExec
+		}
+	Stack.OneLineExec
+}
 
-MnemoTable.FailProgSet={Lex.OutMk=MnemoTable.LineCopyAdd Lex.OutMk}
+MnemoTable.FailProgSet={LogCons.LnOut="Mnemo" Lex.OutMk}
+MnemoTable.SuccessLineProgSet={MnemoTable.LineIcOutMk=Lex.CendToReceiver}
 
 \**\StartExpr.Set=
->{Mnemo Lex.ReceiverMkSet=IniWait.FindAnd}
->{VarInt Var}
->{Sep="("}
->{Sep="++"}
->{0 LogCons.OutLn="Error"}
+>{Mnemo Lex.OutMk=MnemoTable.LineCopyAdd Lex.ReceiverMkSet=IniWait.FindAnd LogCons.OutLn="StartExpr "}
+>{Var VarInt Stack.LastCopyAttach={FUALUG.OutSet} MnemoTable.LineLoadOutMk=Stack.LastLoadSet Stack.OutMk=LogCons.LnOut LogCons.OutLn="VarStart" Lex.ReceiverMkSet=WaitAssign.FindAnd}
+>{Sep="(" Lex.ReceiverMkSet=OperandWait2.FindAnd}
+>{Sep="++" Sep="--" Lex.ReceiverMkSet=OperandWait.FindAnd}
+>{0 LogCons.OutLn="Error 1" Lex.Stop}
+
+StartExpr.PrefixProgSet={Stack.Set} // Очистка стека
+
+\**\OperandWait.Set=
+>{Var VarInt LogCons.OutLn="End compilation" Lex.ReceiverMkSet=StartExpr.FindAnd}
+>{0 LogCons.OutLn="Error 4" Lex.Stop}
 
 \**\IniWait.Set=
->{Sep="="  Lex.ReceiverMkSet=IniEQ.FindAnd}
->{0 LogCons.OutLn="Error"}
+>{Sep="=" Lex.ReceiverMkSet=IniEQ.FindAnd LogCons.OutLn="IniWait"}
+>{0 LogCons.OutLn="Error 5" Lex.Stop}
 
 \**\IniEQ.Set=
->{Const ConstInt   MnemoTable.LastCopyAttach={Const="Var"} LogCons.OutLn="End compilation" Lex.ReceiverMkSet=StartExpr.FindAnd }
+>{Const ConstInt Lex.ReceiverMkSet=StartExpr.FindAnd LogCons.LnOut="IniEQ"
+  Lex.LoadCopyOutMk=ALUG.VarNew MnemoTable.LastCopyAttach={Var} ALUG.VarOutMk=MnemoTable.LastLoadSet
+ }
 >{Mnemo Var Lex.ReceiverMkSet=IniWait.FindAnd}
->{0 LogCons.OutLn="Error"}
+>{0 LogCons.OutLn="Error 6" Lex.Stop}
 
-Lex.Lexing="i=1"
+\**\WaitAssign.Set=
+>{Sep="," Lex.ReceiverMkSet=VectAssign.FindAnd}
+>{Sep="=" LogCons.LnOut="WaitAssign =" Lex.ReceiverMkSet=Assign.FindAnd}
+>{Sep="++" LogCons.OutLn="++" Stack.LastCopyAttach={FUALUG.Sum=1} Stack.LastOutMk=ALUG.Calc Lex.ReceiverMkSet=StartExpr.FindAnd}
+>{Sep="--" LogCons.OutLn="--" Stack.LastCopyAttach={FUALUG.Sub=1} Stack.LastOutMk=ALUG.Calc Lex.ReceiverMkSet=StartExpr.FindAnd}
+>{Sep="[" Lex.ReceiverMkSet=OperandWait2.FindAnd}
+>{Sep="+" Sep="-" Sep="*" Sep="/" Sep="%" Sep=">>" Sep="<<" Sep="&" Sep="^" Sep="|" Lex.ReceiverMkSet=OperandWait2.FindAnd}
+>{Sep="+=" Sep="-=" Sep="*=" Sep="/=" Sep="%=" Sep=">>=" Sep="<<=" Sep="&=" Sep="^=" Sep="|=" Lex.ReceiverMkSet=Assign.FindAnd}
+>{0 LogCons.LnOut="Error 2" Lex.Stop}
 
+\**\VectAssign.Set=
+>{Mnemo Lex.ReceiverMkSet=WaitVectAssign.FindAnd}
+>{Var VarInt Lex.ReceiverMkSet=WaitVectAssign.FindAnd}
+>{0 LogCons.OutLn="Error 7" Lex.Stop}
+
+\**\WaitVectAssign.Set=
+>{Sep="," Lex.ReceiverMkSet=VectAssign.FindAnd}
+>{Sep="=" Lex.ReceiverMkSet=Assign.FindAnd}
+>{0 LogCons.OutLn="Error 8" Lex.Stop}
+
+\**\Assign.Set=
+>{Sep="!" Sep="!!" Lex.ReceiverMkSet=OperandWait2.FindAnd}
+>{Const ConstInt Stack.LastCopyAttach={FUALUG.Set} Lex.LoadOutMk=Stack.LastLoadSet Lex.ReceiverMkSet=WaitAssign3.FindAnd 
+  LogCons.LnOut="Assign" Stack.LastOutMk=LogCons.LnOut}
+>{Var VarInt LogCons.LnOut="Assign var" Lex.ReceiverMkSet=WaitAssign2.FindAnd}
+>{Sep="(" FUList.Sub=BracketStack{Lex.ReceiverMkSet=OperandWait2.FindAnd Stack.LastCopyAttach={FUALUG.Set}
+  Stack.LineCopyAddPrevLoadSet={FUALUG.Set} Stack.LastMarkAtrSet=BracketAtr LogCons.LnOut="Assign ("}}
+>{Func Lex.ReceiverMkSet=FuncBrack.FindAnd Lex.ReceiverMkSet=FuncBrack.FindAnd}
+>{Mnemo Lex.ReceiverMkSet=IniWait.FindAnd Lex.ReceiverMkSet=IniWait.FindAnd}
+>{0 LogCons.OutLn="Error 9" Lex.OutMk=LogCons.LnOut Lex.Stop}
+
+\**\FuncBrack.Set=
+>{Sep="(" Lex.ReceiverMkSet=OperandWait2.FindAnd}
+>{0 LogCons.OutLn="Error"  Lex.Stop}
+
+\**\WaitAssign2.Set=
+>{Sep="+" Sep="-" Sep="*" Sep="**" Sep="%" Sep="/" Sep="//" Sep="%" Sep=">>" Sep="<<" Sep="&" Sep="^" Sep="^^" Sep="|" Sep="||"
+ LogCons.LnOut=" WaitAssign2 Operation "
+ Lex.OutMk=OperateionTranslate.FindAnd Lex.ReceiverMkSet=OperandWait2.FindAnd
+ }
+>{Sep="=" Lex.ReceiverMkSet=Assign.FindAnd LogCons.LnOut="WaitAssign2 back"
+ Stack.LastCopyAttach={FUALUG.OutSet} MnemoTable.LineLoadOutMk=Stack.LastLoadSet
+}
+>{0 LogCons.OutLn="Error" Lex.Stop}
+
+\**\WaitAssign3.Set=
+//>{Sep="+" Stack.LastCopyAttach={FUALUG.Sum} Lex.ReceiverMkSet=OperandWait2.FindAnd}
+>{Sep="+" Sep="-" Sep="*" Sep="**" Sep="%" Sep="/" Sep="//" Sep="%" Sep=">>" Sep="<<" Sep="&" Sep="^" Sep="^^" Sep="|" Sep="||" 
+ Lex.OutMk=OperateionTranslate.FindAnd Lex.ReceiverMkSet=OperandWait2.FindAnd
+ LogCons.LnOut=" WaitAssign3 Operation "
+ }
+>{0 LogCons.OutLn="Error" Lex.Stop}
+
+\**\OperandWait2.Set=
+>{Sep="!" Sep="!!" Lex.ReceiverMkSet=OperandWait2.FindAnd}
+>{Var VarInt Const ConstInt Lex.ReceiverMkSet=OperationWait.FindAnd
+ LogCons.LnOut="OperandWait2 operand "
+ Lex.LoadOutMk=LogCons.LnOut
+ Lex.LoadOutMk=Stack.LastLoadSet
+ Lex.ReceiverMkSet=OperationWait.FindAnd
+}
+>{Sep="(" Lex.ReceiverMkSet=OperandWait2.FindAnd
+ LogCons.LnOut=" OperandWait2 ( "
+ Stack.LineCopyAddPrevLoadSet={FUALUG.Set}
+ Stack.LastMarkAtrSet=BracketAtr
+ }
+>{Func Lex.ReceiverMkSet=FuncBrack.FindAnd}
+>{0 LogCons.OutLn="Error"  Lex.Stop}
+
+\**\OperationWait.Set=
+>{Mnemo="if" Lex.ReceiverMkSet=OperationWait.FindAnd}
+>{Mnemo="else" Lex.ReceiverMkSet=OperationWait.FindAnd}
+>{Sep="]" Lex.ReceiverMkSet=OperationWait.FindAnd}
+>{Sep=")" Lex.ReceiverMkSet=OperationWait.FindAnd
+  Stack.ProgSet={Stack.LastPopMk Lex.ReceiverMkSet=OperationWait.FindAnd LogCons.LnOut=" OperationWait )" Stack.OutMk=LogCons.LnOut}
+  Stack.ElseProgSet={Lex.Stop LogCons.OutLn=" '(' is not exist"}
+  Stack.LastMarkAtrZeroExec=BracketAtr
+}
+>{Sep="+" Sep="-" Sep="*" Sep="**" Sep="%" Sep="/" Sep="//" Sep="%" Sep=">>" Sep="<<" Sep="&" Sep="^" Sep="^^" Sep="|" Sep="||"
+  Lex.OutMk=OperateionTranslate.FindAnd Lex.ReceiverMkSet=OperandWait2.FindAnd
+  LogCons.LnOut="Operation"
+  }
+>{Sep="," Lex.ReceiverMkSet=SqrBrackWait.FindAnd}
+>{Sep="," Lex.ReceiverMkSet=OperandWait2.FindAnd}
+>{0 Lex.OutMk=StartExpr.FindAnd //Переход на обработку нового выражения
+ Stack.ElseProgSet={Lex.Stop LogCons.LnOut="Wrong expression"}
+ Stack.ProgSet={Lex.ReceiverMkSet=StartExpr.FindAnd 
+ Stack.LastOutMk=ALUG.Calc Stack.Set LogCons.LnOut="Calc"} // Выполнить арифметическое выражение
+ Stack.OneLineExec
+ } 
+
+\**\SqrBrackWait.Set=
+>{Sep="," Lex.ReceiverMkSet=OperandWait2.FindAnd}
+>{0 LogCons.OutLn="Error"  Lex.Stop}
+
+Lex.Lexing="i=10 i=i=(2+(1+3))+10"
+//ALUG.Set=0
+//ALUG.OutMk=LogCons.LnOut
 MnemoTable.OutMk=LogCons.LnOut

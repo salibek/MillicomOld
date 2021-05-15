@@ -166,6 +166,7 @@
     <ClCompile Include="SchedulerEventser.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="Gauss.cpp" />
+    <ClCompile Include="Simplex.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="StrGen.cpp" />
   </ItemGroup>
@@ -193,6 +194,7 @@
     <ClInclude Include="Neuro.h" />
     <ClInclude Include="SchedulerEventser.h" />
     <ClInclude Include="Search.h" />
+    <ClInclude Include="Simplex.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StrGen.h" />
   </ItemGroup>

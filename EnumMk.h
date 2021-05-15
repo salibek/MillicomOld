@@ -30,48 +30,50 @@ enum E_MK
 	OUT_MK,					// 24
 	
 	// �������� � ������������� 
-	RESET_A,
-	SET,					// 25
-	GET,					// 26
-	GET_LOGIC,				// 27
-	OUT_A,					// 28
-	SUM,					// 29
-	SUB,					// 30
-	DIV,					// 31
-	MULT,					// 32
-	INC,					// 33
-	DEC,					// 34
-	MIN,					// 35
-	MAX,					// 36
-	COS,					// 37
-	SIN,					// 38
-	TAN,
-	ASIN,					// 39
-	ACOS,					// 40
-	ATAN,					// 41
-	MOD,					// 42
-	SQRT,					// 43
-	POW,					// 44
-	ABS,					// 45
-	CEIL,					// 46
-	FLOOR,					// 47
-	ROUND,					// 48
-	LOG,					// 49
-	RANDOM,					// 50
-	INV,					// 51
-	AND,					// 52
-	OR,						// 53
-	DIV_INT,				// 54
-	XOR,					// 55
-	INV_BIT,				// 56
-	OR_BIT, 				// 57
-	AND_BIT,				// 58
-	MR_BIT,					// 59
-	ML_BIT,					// 60
+	RESET_A,				// 25
+	SET,					// 26
+	GET,					// 27
+	GET_LOGIC,				// 28
+	OUT_A,					// 29
+	SUM,					// 30
+	SUB,					// 31
+	DIV,					// 32
+	MULT,					// 33
+	INC,					// 34
+	DEC,					// 35
+	MIN,					// 36
+	MAX,					// 37
+	COS,					// 38
+	SIN,					// 39
+	TAN,					// 40
+	ASIN,					// 41
+	ACOS,					// 42
+	ATAN,					// 43
+	MOD,					// 44
+	SQRT,					// 45
+	POW,					// 46
+	ABS,					// 47
+	CEIL,					// 48
+	FLOOR,					// 49
+	ROUND,					// 50
+	LOG,					// 51
+	RANDOM,					// 52
+	INV,					// 53
+	AND,					// 54
+	OR,						// 55
+	DIV_INT,				// 56
+	XOR,					// 57
+	INV_BIT,				// 58
+	OR_BIT, 				// 59
+	AND_BIT,				// 60
+	MR_BIT,					// 61
+	ML_BIT,					// 62
 	EQ,						// 63
 	NotEQ,					// 64
-	Bigger,
-	BiggerEQ,
-	Smaller,
-	SmallerEQ
+	Bigger,					// 65
+	BiggerEQ,				// 66
+	Smaller,				// 67
+	SmallerEQ,				// 68
+	Remainder,				// 69
+	XOR_BIT					// 70
 };

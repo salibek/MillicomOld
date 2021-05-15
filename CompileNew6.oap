@@ -4319,6 +4319,13 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 //  Obj={Mnemo="CopyToReceiver" Mk=31 Hint="Выдать копию лексемы из нагрузки МК получателю"}
   Obj={Mnemo="OutMk" Mk=35 Hint="Выдать MK c последней лексемой"}
   Obj={Mnemo="CopyOutMk" Mk=36 Hint="Выдать МК с копией последней лексемы"}
+  Obj={Mnemo="LoadOut" Mk=37 Hint="Выдать нагрузку текущей лексемы"}
+  Obj={Mnemo="LoadOutMk" Mk=38 Hint="Выдать МК с нагрузкой текущей лексемы"}
+  Obj={Mnemo="LoadCopyOut" Mk=39 Hint="Выдать нагрузку текущей лексемы"}
+  Obj={Mnemo="LoadCopyOutMk" Mk=40 Hint="Выдать МК с копией нагрузки текущей лексемы"}
+  Obj={Mnemo="AtrOut" Mk=41 Hint="Выдать атрибут текущей лексемы"}
+  Obj={Mnemo="AtrOutMk" Mk=42 Hint="Выдать МК с атрибутом текущей лексемы"}
+
   Obj={Mnemo="PrevOutMk" Mk=45 Hint="Выдать МК с предыдущей лексемой"}
   Obj={Mnemo="PrevCopyOutMk" Mk=46 Hint="Выдать МК с копией предыдущей лексемы"}
 
@@ -4337,6 +4344,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="PrevLoadCopySet" Mk=58 Hint="Установить копию нагрзузки у предыдущей лексемы"}
   Obj={Mnemo="VarSet" Mk=65 Hint="Установить тип переменной для нагрузки последней лексемы"}
   Obj={Mnemo="PrevVarSet" Mk=66 Hint="Установить тип переменной для нагрузки предыдущей лексемы"}
+
+  Obj={Mnemo="CendToReceiver" Mk=70 Hint="Переслать лексему из нагрузки получателю"}
+  Obj={Mnemo="CendCopyToReceiver" Mk=71 Hint="Переслать копию лексемы из нагрузки получателю"}
+
 
   Obj={Mnemo="Stop" Mk=99 Hint="Остановить лексический анализ"}
   Obj={Mnemo="Lexing" Mk=100 Hint="Лексический разбор строки"}
@@ -4382,11 +4393,11 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=400 Mnemo="LineOutMk" Hint="Выдать МК с найденной линией"}
   }
   Obj={Mnemo="Prog by line num comparision" Hint="Поиск по результатам сравнения номеров строк" Comment
-     Obj={Mk=450 Mnemo="EqProgExec" Hint="Программа, если равно"}
-     Obj={Mk=451 Mnemo="BiggerProgExec" Hint="Программа, если больше"}
-     Obj={Mk=452 Mnemo="SmallerProgExec" Hint="Программа, если меньше"}
-     Obj={Mk=453 Mnemo="BigerEqProgExec" Hint="Программа, если больше или равно"}
-     Obj={Mk=454 Mnemo="SmallerEqProgExec" Hint="Программа, если меньше или равно"}
+     Obj={Mk=450 Mnemo="EqExec" Hint="Программа, если равно"}
+     Obj={Mk=451 Mnemo="BiggerExec" Hint="Программа, если больше"}
+     Obj={Mk=452 Mnemo="SmallerExec" Hint="Программа, если меньше"}
+     Obj={Mk=453 Mnemo="BigerEqExec" Hint="Программа, если больше или равно"}
+     Obj={Mk=454 Mnemo="SmallerEqExec" Hint="Программа, если меньше или равно"}
      Obj={Mk=456 Mnemo="DifferenceOutMk" Hint="Выдать МК с различием старой найденной линии и новой"}
 
      Obj={Mk=470 Mnemo="EqProgSet" Hint="Установить программу, если равно"}
@@ -4399,16 +4410,21 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   }
 
   Obj={Mnemo="Line modification" Hint="Изменение строк списка" Comment
-    Obj={Mk=150 Mnemo="LastLineOut" Hint="Выдать ссылку на последнюю линию списка"}
-    Obj={Mk=151 Mnemo="LastLinePop" Hint="Выдать ссылку на последнюю линию списка и удалить из списка"}
-    Obj={Mk=152 Mnemo="LastLineDel" Hint="Выдать ссылку на последнюю линию списка и удалить из ИК"}
-    Obj={Mk=155 Mnemo="LastLineOutMK" Hint="Выдать ссылку на последнюю линию списка"}
-    Obj={Mk=156 Mnemo="LastLinePopMK" Hint="Выдать ссылку на последнюю линию списка и удалить из списка"}
-    Obj={Mk=157 Mnemo="LastLineDelMk" Hint="Выдать ссылку на последнюю линию списка и удалить ИК"}
+    Obj={Mk=150 Mnemo="LastOut" Hint="Выдать ссылку на последнюю линию списка"}
+    Obj={Mk=151 Mnemo="LastPop" Hint="Выдать ссылку на последнюю линию списка и удалить из списка"}
+    Obj={Mk=152 Mnemo="LastDel" Hint="Выдать ссылку на последнюю линию списка и удалить из ИК"}
+    Obj={Mk=155 Mnemo="LastOutMk" Hint="Выдать ссылку на последнюю линию списка"}
+    Obj={Mk=156 Mnemo="LastPopMk" Hint="Выдать ссылку на последнюю линию списка и удалить из списка"}
+    Obj={Mk=157 Mnemo="LastDelMk" Hint="Выдать ссылку на последнюю линию списка и удалить ИК"}
+    Obj={Mk=153 Mnemo="LastIpOutMk" Hint="Выдать ссылку на последнюю ИП последней линии"}
+    Obj={Mk=154 Mnemo="LastIpCopyOutMk" Hint="Выдать МК со ссылкой на последнюю ИП последней линии"}
     Obj={Mk=160 Mnemo="LineAdd" Hint="Добавить строку"}
     Obj={Mk=161 Mnemo="LineCopyAdd" Hint="Добавить копию строки"}
     Obj={Mk=163 Mnemo="LineCopyAddPrevLoadSet" Hint="Добавить линию в список и поместить ссылку на нее в нагрузку последней ИП последней строки"}
     Obj={Mk=162 Mnemo="LineCopyTreeAdd" Hint="Добавить копию ОА-графа"}
+    Obj={Mk=145 Mnemo="LineIcOutMk" Hint="Выдать ссылку на последнюю ИП текущей линии"}
+    Obj={Mk=146 Mnemo="LineIcCopyOutMk" Hint="Выдать МК со ссылкой на последнюю ИП текущей линии"}
+    Obj={Mk=164 Mnemo="LineLoadOutMk" Hint="Выдать МК с нагрузкой последней ИП текущей линии"}
 
     Obj={Mk=165 Mnemo="LineExcludeMk" Hint="Исключить линию списка"}
     Obj={Mk=166 Mnemo="LineDelMk" Hint="Выдать МК со ссылкой на ИК и удалить ИК"}
@@ -4419,6 +4435,11 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=171 Mnemo="LastCopyAttach" Hint="Конкатенация копии ИК к последней линии списка"}
     Obj={Mk=175 Mnemo="LineAttach" Hint="Конкатенация ИК к текущей линии списка"}
     Obj={Mk=176 Mnemo="LineCopyAttach" Hint="Конкатенация копии ИК к текущей линии списка"}
+    Obj={Mk=180 Mnemo="LineVarTypeSet" Hint="Установить тип 'переменная' в последней ИП текущей линии"}
+    Obj={Mk=182 Mnemo="LastVarTypeSet" Hint="Установить тип 'переменная' в последней ИП последней линии"}
+//    Obj={Mk=181 Mnemo="LastPointConstTypeSet" Hint="Установить тип 'константа' в последней ИП последней линии"}
+//    Obj={Mk=183 Mnemo="LinePointConstTypeSet" Hint=" Установить тип 'константа' в последней ИП текущей линии"}
+
     Obj={Mk=185 Mnemo="LastLoadSet" Hint="Добавить ссылку в указатель последний ИК последней строки"}
     Obj={Mk=195 Mnemo="LineLoadSet" Hint="Добавить ссылку в указатель текущей ИК текущей строки"}
     Obj={Mk=186 Mnemo="LastLoadCopySet" Hint="Добавить ссылку на копию ИК в указатель последний ИК последней строки"}
@@ -4426,13 +4447,41 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=189 Mnemo="LastAtrSet" Hint="Установить атрибут последний ИК последней строки"}
     Obj={Mk=199 Mnemo="LineAtrSet" Hint="Установить атрибут последний ИК текущей строки"}
   }
+  
+  Obj={Mnemo="Line Mark" Hint="Работа с атрибутом линии" Comment
+    Obj={Mk=120 Mnemo="MarkAtrSet" Hint="Установить атрибут текущей строки"}
+    Obj={Mk=121 Mnemo="LastMarkAtrSet" Hint="Установить атрибут последней строки"}
+    Obj={Mk=125 Mnemo="MarkAtrInc" Hint="Инкремент атрибута текущей строки"}
+    Obj={Mk=126 Mnemo="LastMarkAtrInc" Hint="Инкремент атрибута последней строки"}
+    Obj={Mk=127 Mnemo="MarkAtrDec" Hint="Декримент атрибута текущей строки"}
+    Obj={Mk=128 Mnemo="LastMarkAtrDec" Hint="Декримент атрибута последней строки"}
+    Obj={Mk=130 Mnemo="MarkZeroExec" Hint="Запуск программы при нуле атрибута текущей строки"}
+    Obj={Mk=131 Mnemo="LastMarkZeroExec" Hint="Запуск программы при нуле атрибута последней строки"}
+    Obj={Mk=133 Mnemo="MarkAtrNZeroExec" Hint="Запуск программы при не нуле атрибута текущей строки"}
+    Obj={Mk=134 Mnemo="LastMarkAtrNZeroExec" Hint="Запуск программы при не нуле атрибута последней строки"}
+    Obj={Mk=135 Mnemo="MarkAtrBiggerExec" Hint="Запуск программы при атрибуте текущей строки больше 0"}
+    Obj={Mk=136 Mnemo="LastMarkAtrBiggerExec" Hint="Запуск программы при атрибуте последней строки больше 0"}
+    Obj={Mk=137 Mnemo="MarkAtrBiggerZeroExec" Hint="Запуск программы при атрибуте текущей строки больше или райным 0"}
+    Obj={Mk=138 Mnemo="LastMarkAtrBiggerZeroExec" Hint="Запуск программы при атрибуте последней строки больше или равным 0"}
+    Obj={Mk=139 Mnemo="MarkAtrLessExec" Hint="Запуск программы при атрибуте текущей строки меньше 0"}
+    Obj={Mk=140 Mnemo="LastAtrMarkLessExec" Hint="Запуск программы при атрибуте последней строки меньше 0"}
+    Obj={Mk=141 Mnemo="MarkAtrLessZeroExec" Hint="Запуск программы при атрибуте текущей строки меньше или равным 0"}
+    Obj={Mk=142 Mnemo="LastAtrMarkLessZeroExec" Hint="Запуск программы при атрибуте последней строки меньше или равным 0"}
+  }
+
   Obj={Mk=1 Mnemo="Set" Hint="Установить указатель на список"}
   Obj={Mk=2 Mnemo="Out" Hint="Выдать ссылку на список"}
   Obj={Mk=3 Mnemo="OutMk" Hint="Выдать МК со ссылкой на список"}
   Obj={Mk=5 Mnemo="MultiLineModeSet" Hint="Установить режим многострочного поиска"}
   Obj={Mk=7 Mnemo="MkModeSet" Hint="Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0). При пустой нагрузке режим устанавливается"}
-  Obj={Mk=8 Mnemo="EmptyProgExec" Hint="Выполнить программу, если список пуст"}
-  Obj={Mk=9 Mnemo="FullProgExec" Hint="Выполнить программу, если список не пуст"}
+  Obj={Mk=8 Mnemo="EmptyExec" Hint="Выполнить программу, если список пуст"}
+
+  Obj={Mk=500 Mnemo="LineEmptyExec" Hint="Выполнить подпрограмму, если текущая строка пустая"}
+  Obj={Mk=501 Mnemo="LineFullExec" Hint="Выполнить подпрограмму, если текущая строка не пустая"}
+  Obj={Mk=502 Mnemo="LastEmptyExec" Hint="Выполнить подпрограмму, если последняя строка пустая"}
+  Obj={Mk=503 Mnemo="LastFullExec" Hint="Выполнить подпрограмму, если последняя строка не пустая"}
+
+  Obj={Mk=9 Mnemo="FullExec" Hint="Выполнить программу, если список не пуст"}
   Obj={Mk=10 Mnemo="SuccessLineProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиска в линии списка"}
   Obj={Mk=11 Mnemo="SuccessAfterLineProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиска в линии списка после обоработки программ линии"}
   Obj={Mk=12 Mnemo="SuccessProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиске в спике"}
@@ -4441,7 +4490,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=17 Mnemo="FailProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
   Obj={Mk=18 Mnemo="SuccessLineProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
   Obj={Mk=19 Mnemo="SuссessProgSet" Hint=" Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
-  Obj={Mk=23 Mnemo="ProgAtrSet" Hint="Установить атрибут программы"}
+  Obj={Mk=20 Mnemo="ProgAtrSet" Hint="Установить атрибут программы"}
+  Obj={Mk=21 Mnemo="MarkAtrDef" Hint="Установить атрибут марки списка по умолчанию"}
   Obj={Mk=25 Mnemo="BackOut" Hint="Выдать входной объект для поиска"}
   Obj={Mk=30 Mnemo="BackOutMk" Hint="Выдать МК со входным объектом для поиска"}
   Obj={Mk=31 Mnemo="CopyBackOutMk" Hint="Выдать МК с копией входного объекта для поиска"}
@@ -4449,7 +4499,6 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=35 Mnemo="LoadBackOut" Hint="Выдать нагрузку входного объекта для поиска"}
   Obj={Mk=36 Mnemo="LoadBackOutMk" Hint="Выдать МК с нагрузкой входного объекта для поиска"}
 
-  Obj={Mk=90 Mnemo="ProgAtrSet" Hint="Установить атрибут программы"}
   Obj={Mk=100 Mnemo="RezOut" Hint="Выдача результата сравнения"}
   Obj={Mk=101 Mnemo="RezOutMK" Hint="Выдача МК с результатом сравнения"}
   Obj={Mk=105 Mnemo="MkAtrAdd" Hint="Добавить МК"}
@@ -4508,6 +4557,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=23 Mnemo="Out" Hint="Выдать аккумулятор"}
   Obj={Mk=24 Mnemo="OutMk" Hint="Выдать МК аккумулятор"}
 
+  Obj={Mk=130 Mnemo="VarNew" Hint="оздать и инициализировать новую переменную"}
+  Obj={Mk=131 Mnemo="VarOut" Hint="Выдать ссылку на новую переменную"}
+  Obj={Mk=132 Mnemo="VarOutMk" Hint="Выдать MK со ссылкой на новую переменную"}
+
     Obj={Mnemo="Prog" Hint="Управление программой" Comment
     Obj={Mk=1  Mnemo="Prog" Hint="Выполнить подпрограмму"}
     Obj={Mk=2  Mnemo="ProgCycle" Hint="Выполнить подпрограмму с циклом"}
@@ -4562,6 +4615,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=49 Mnemo="Floor" Hint=""}
   	Obj={Mk=50 Mnemo="Round" Hint=""}
   	Obj={Mk=56 Mnemo="DivInt" Hint="Целочисленное деление"}
+  	Obj={Mk=69 Mnemo="Remainder" Hint="Остаток от деления"}
   }
 
   Obj={Mnemo="Comparision" Hint="Триганометрические функции" Comment
@@ -4824,6 +4878,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
    {
       Obj={Mk=1 Mnemo="Start" Hint="Начать моделирование"}
       Obj={Mk=5 Mnemo="WorkSet" Hint="Установить флаг рабочего режима"}
+      Obj={Mk=45 Mnemo="TimeSet" Hint="Установить текущее модельное время"}
       Obj={Mk=50 Mnemo="TimeOut" Hint="Выдать текущее модельное время"}
       Obj={Mk=51 Mnemo="TimeOutMk" Hint="Выдать МК с текущим модельным временем"}
       Obj={Mk=52 Mnemo="TimeOutRefMk" Hint="Выдать МК со ссылкой на переменную текущего модельного времени"}
@@ -4836,6 +4891,30 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
       Obj={Mk=8 Mnemo="NVSet" Hint="Выдать текущее модельное время"}
       Obj={Mk=51 Mnemo="epsXSet" Hint=""}
       Obj={Mk=52 Mnemo="epsYSet" Hint=""}
+      Obj=CommonMkList
+   }
+// BagManager
+	FuTypeIndexes.CellSet=111 FuTypeMkTrees.CellSet=
+   {
+	 Obj={Mk=1 Mnemo="Start" Hint="Начало вычислений (в нагрузке имя файла с исходными данными)"}
+	 Obj={Mk=10 Mnemo="RezOur" Hint="Выдать результат вычислений"}
+	 Obj={Mk=11 Mnemo="ResOutMk" Hint="Выдать МК с результатами вычислений"}
+
+	 Obj={Mk=90 Mnemo="WMaxSet" Hint="Установить максимальный объем рюкзака"}
+	 Obj={Mk=91 Mnemo="WMaxOfItem" Hint="Установить максимальный размер одной вещи"}
+	 Obj={Mk=92 Mnemo="PMaxOfItem" Hint="Установить максимальный размер одной вещи"}
+	 Obj={Mk=93 Mnemo="NItemSet" Hint="становить количество предметов для укладки и начать вычисление"}
+
+	 Obj={Mk=100 Mnemo="CalcTimeSet" Hint="Установить время вычисления результата"}
+	 Obj={Mk=101 Mnemo="SendTimeSet" Hint="Установить время пересылки данных"}
+
+      Obj=CommonMkList
+   }
+
+// GaussManager
+	FuTypeIndexes.CellSet=112 FuTypeMkTrees.CellSet=
+   {
+	 Obj={Mk=1 Mnemo="Start" Hint="Начало вычислений (в нагрузке имя файла с исходными данными)"}
       Obj=CommonMkList
    }
   FuTypeMkTrees.CellSet=nil
@@ -6205,6 +6284,13 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
  	MnemoServiceTable.LineAdd={Mnemo="FUMeanShiftMahager" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
  	FUType=110 FUTypeDef=110 Hint="ФУ контроллер событий"}
 
+     FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
+ 	MnemoServiceTable.LineAdd={Mnemo="FUBag" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=111 FUTypeDef=111 Hint="ФУ Решения задачи о рюкзаке методом динамического программирования"}
+
+     FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
+ 	MnemoServiceTable.LineAdd={Mnemo="FUGauss" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=112 FUTypeDef=112 Hint="ФУ Решения уравнени методом Гаусса"}
 }
 FuTypeMkList.IndexModeSet=1
 FuTypeMkTrees.IndexModeSet=1
