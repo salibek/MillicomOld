@@ -31,12 +31,20 @@ void Console::ProgFU(int MK, LoadPoint Load)
 	case 25: // FileNameSet
 		filename = Load.ToStr();
 		break;
-	case 30: // StdOutFileSet Установить файл для вывода
+	case 30: // OutFileSet Установить файл для вывода
 		if(Load.Point==nullptr)
 			ostream& out = cout;
 		else
 			freopen_s(&streamOut, Load.ToStr().c_str(), "w", stdout);
 		break;
+
+	case 31: // StdOutFileAppend Установить файл для дополнения
+		if (Load.Point == nullptr)
+			ostream& out = cout;
+		else
+			freopen_s(&streamOut, Load.ToStr().c_str(), "a", stdout);
+		break;
+
 	case 35: // StdInFileSet Установить файл для ввода
 		if (Load.Point == nullptr)
 //			std::istream& in == cin;

@@ -452,12 +452,13 @@ Bus={FuTypeIndexes.RowSet=300 FuTypeIndexes.ColSet=1 FuTypeIndexes.Create=10000 
 	FuTypeMkTrees.RowSet=300 FuTypeMkTrees.ColSet=1 FuTypeMkTrees.Create=nil FuTypeMkTrees.IndexModeSet=2
 	FuTypeMkList.RowSet=300 FuTypeMkList.ColSet=1 FuTypeMkList.Create=nil FuTypeMkList.IndexModeSet=2
 }
-
+// Дырки: 958-...
 CommonMkList{
  	Mnemo="Common Mk" Hint="Общие милликоманды для всех типов ФУ" Comment
 
 	Obj={Mnemo="Reset" Mk=0 Hint="Установить указатель на ячейку памяти"}
-	Obj={Mnemo="Sub" Mk=900 Hint="Вызов подпрограммы во время выполнения ProgExec"}
+	Obj={Mnemo="SubProg" Mk=900 Hint="Вызов подпрограммы во время выполнения ProgExec"}
+	Obj={Mnemo="RepeatProg" Mk=901 Hint="Повторение подпрограммы"}
 	Obj={Mnemo="HalfReset" Mk=971 Hint="Установить значение в ячейку памяти"}
 	Obj={Mnemo="ActiveSet" Mk=902 Hint="Выдать знечение из ячейки памяти"}
  
@@ -473,6 +474,8 @@ CommonMkList{
 		Obj={Mnemo="BusSet" Mk=926 Hint="Установить контекст Шины"}
 		Obj={Mnemo="ProgExec" Mk=990 Hint="Выполнить миллипрограмму"}
 		Obj={Mnemo="ProgSet" Mk=991 Hint="Установить указатель на миллипрограмму, выполняемую по милликоманде ProgExec, когда в нарузке nil"}
+		Obj={Mnemo="ElseProgSet" Mk=953 Hint="Установить указатель на альтернативную миллипрограмму"}
+		Obj={Mnemo="ProgSetExec" Mk=954 Hint="Установить указатель на программу и выполнить ее"}
 		Obj={Mnemo="IniProgSet" Mk=904 Hint="Установить подпрограмму инициализации ФУ"}
 		Obj={Mnemo="IniProgExec" Mk=903 Hint="Выполнить подпрограмму инициализации ФУ"}
 	}
@@ -521,7 +524,7 @@ CommonMkList{
 	Obj={Mnemo="FUTypePop" Mk=906 Hint="Выдать тип ФУ"}
 	Obj={Mnemo="FUTypePopMk" Mk=905 Hint="Выдать милликоманду с типом ФУ"}
 
-	Obj={Mnemo="FUNameSet" Mk=995 Hint="Установить имя ФУ"}
+	Obj={Mnemo="FUNameSet" Mk=998 Hint="Установить имя ФУ"}
 	Obj={Mnemo="FUNamePop" Mk=997 Hint="Выдать имя ФУ"}
 	Obj={Mnemo="FUNamePopMk" Mk=996 Hint="Выдать милликоманду с именем ФУ"}
 
@@ -4421,12 +4424,14 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=160 Mnemo="LineAdd" Hint="Добавить строку"}
     Obj={Mk=161 Mnemo="LineCopyAdd" Hint="Добавить копию строки"}
     Obj={Mk=163 Mnemo="LineCopyAddPrevLoadSet" Hint="Добавить линию в список и поместить ссылку на нее в нагрузку последней ИП последней строки"}
+    Obj={Mk=159 Mnemo="LineCopyAddPrevLoadSetLoadMov" Hint="Добавить копию линии перенести нагрузку в на новую строку и добавить в нагрзуку предыдущей строки ссылку на новую строку"}
     Obj={Mk=162 Mnemo="LineCopyTreeAdd" Hint="Добавить копию ОА-графа"}
-    Obj={Mk=145 Mnemo="LineIcOutMk" Hint="Выдать ссылку на последнюю ИП текущей линии"}
-    Obj={Mk=146 Mnemo="LineIcCopyOutMk" Hint="Выдать МК со ссылкой на последнюю ИП текущей линии"}
+    Obj={Mk=145 Mnemo="LineIpOutMk" Hint="Выдать ссылку на последнюю ИП текущей линии"}
+    Obj={Mk=147 Mnemo="LastIpOutMk" Hint="Выдать ссылку на последнюю ИП последней линии"}
+    Obj={Mk=146 Mnemo="LineIpCopyOutMk" Hint="Выдать МК со ссылкой на последнюю ИП текущей линии"}
     Obj={Mk=164 Mnemo="LineLoadOutMk" Hint="Выдать МК с нагрузкой последней ИП текущей линии"}
 
-    Obj={Mk=165 Mnemo="LineExcludeMk" Hint="Исключить линию списка"}
+    Obj={Mk=165 Mnemo="LinePopMk" Hint="Исключить линию списка"}
     Obj={Mk=166 Mnemo="LineDelMk" Hint="Выдать МК со ссылкой на ИК и удалить ИК"}
     Obj={Mk=167 Mnemo="LineIpCut" Hint="Удалить последние ИП из текущей линии (в нагрузке количество удаляемых ИП, по умолчанию 1)"}
     Obj={Mk=168 Mnemo="LineVarIpCut" Hint="Удалить последние ИП вместе с переменными из текущей линии (в нагрузке количество удаляемых ИП, по умолчанию 1)"}
@@ -4451,22 +4456,28 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="Line Mark" Hint="Работа с атрибутом линии" Comment
     Obj={Mk=120 Mnemo="MarkAtrSet" Hint="Установить атрибут текущей строки"}
     Obj={Mk=121 Mnemo="LastMarkAtrSet" Hint="Установить атрибут последней строки"}
+
+    Obj={Mk=122 Mnemo="MarkAtrOut" Hint="Выдать маркер текущей строки"}
+    Obj={Mk=123 Mnemo="MarkAtrOutMk" Hint="Выдать МК с маркером текущей строки"}
+    Obj={Mk=124 Mnemo="LastMarkAtrOut" Hint="Выдать маркер последней строки"}
+    Obj={Mk=129 Mnemo="LastMarkAtrOutMk" Hint="Выдать МК с маркером последней строки"}
+
     Obj={Mk=125 Mnemo="MarkAtrInc" Hint="Инкремент атрибута текущей строки"}
     Obj={Mk=126 Mnemo="LastMarkAtrInc" Hint="Инкремент атрибута последней строки"}
     Obj={Mk=127 Mnemo="MarkAtrDec" Hint="Декримент атрибута текущей строки"}
     Obj={Mk=128 Mnemo="LastMarkAtrDec" Hint="Декримент атрибута последней строки"}
-    Obj={Mk=130 Mnemo="MarkZeroExec" Hint="Запуск программы при нуле атрибута текущей строки"}
-    Obj={Mk=131 Mnemo="LastMarkZeroExec" Hint="Запуск программы при нуле атрибута последней строки"}
-    Obj={Mk=133 Mnemo="MarkAtrNZeroExec" Hint="Запуск программы при не нуле атрибута текущей строки"}
-    Obj={Mk=134 Mnemo="LastMarkAtrNZeroExec" Hint="Запуск программы при не нуле атрибута последней строки"}
+    Obj={Mk=130 Mnemo="MarkAtrEQExec" Hint="Запуск программы при нуле атрибута текущей строки"}
+    Obj={Mk=131 Mnemo="LastMarkAtrEQExec" Hint="Запуск программы при нуле атрибута последней строки"}
+    Obj={Mk=133 Mnemo="MarkAtrNEQExec" Hint="Запуск программы при не нуле атрибута текущей строки"}
+    Obj={Mk=134 Mnemo="LastMarkAtrNEQExec" Hint="Запуск программы при не нуле атрибута последней строки"}
     Obj={Mk=135 Mnemo="MarkAtrBiggerExec" Hint="Запуск программы при атрибуте текущей строки больше 0"}
     Obj={Mk=136 Mnemo="LastMarkAtrBiggerExec" Hint="Запуск программы при атрибуте последней строки больше 0"}
     Obj={Mk=137 Mnemo="MarkAtrBiggerZeroExec" Hint="Запуск программы при атрибуте текущей строки больше или райным 0"}
     Obj={Mk=138 Mnemo="LastMarkAtrBiggerZeroExec" Hint="Запуск программы при атрибуте последней строки больше или равным 0"}
     Obj={Mk=139 Mnemo="MarkAtrLessExec" Hint="Запуск программы при атрибуте текущей строки меньше 0"}
-    Obj={Mk=140 Mnemo="LastAtrMarkLessExec" Hint="Запуск программы при атрибуте последней строки меньше 0"}
+    Obj={Mk=140 Mnemo="LastMarkAtrkLessExec" Hint="Запуск программы при атрибуте последней строки меньше 0"}
     Obj={Mk=141 Mnemo="MarkAtrLessZeroExec" Hint="Запуск программы при атрибуте текущей строки меньше или равным 0"}
-    Obj={Mk=142 Mnemo="LastAtrMarkLessZeroExec" Hint="Запуск программы при атрибуте последней строки меньше или равным 0"}
+    Obj={Mk=142 Mnemo="LastMarkAtrkLessZeroExec" Hint="Запуск программы при атрибуте последней строки меньше или равным 0"}
   }
 
   Obj={Mk=1 Mnemo="Set" Hint="Установить указатель на список"}
@@ -4474,14 +4485,16 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=3 Mnemo="OutMk" Hint="Выдать МК со ссылкой на список"}
   Obj={Mk=5 Mnemo="MultiLineModeSet" Hint="Установить режим многострочного поиска"}
   Obj={Mk=7 Mnemo="MkModeSet" Hint="Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0). При пустой нагрузке режим устанавливается"}
-  Obj={Mk=8 Mnemo="EmptyExec" Hint="Выполнить программу, если список пуст"}
 
   Obj={Mk=500 Mnemo="LineEmptyExec" Hint="Выполнить подпрограмму, если текущая строка пустая"}
   Obj={Mk=501 Mnemo="LineFullExec" Hint="Выполнить подпрограмму, если текущая строка не пустая"}
   Obj={Mk=502 Mnemo="LastEmptyExec" Hint="Выполнить подпрограмму, если последняя строка пустая"}
   Obj={Mk=503 Mnemo="LastFullExec" Hint="Выполнить подпрограмму, если последняя строка не пустая"}
 
+  Obj={Mk=8 Mnemo="EmptyExec" Hint="Выполнить программу, если список пуст"}
   Obj={Mk=9 Mnemo="FullExec" Hint="Выполнить программу, если список не пуст"}
+  Obj={Mk=14 Mnemo="OneLineExec" Hint="Выполнить программу, если в списке только одна линия"}
+  Obj={Mk=13 Mnemo="MoreOneLineExec" Hint="Выполнить программу, если в списке больше одной строки"}
   Obj={Mk=10 Mnemo="SuccessLineProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиска в линии списка"}
   Obj={Mk=11 Mnemo="SuccessAfterLineProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиска в линии списка после обоработки программ линии"}
   Obj={Mk=12 Mnemo="SuccessProgSet" Hint="Установить указатель на программу, выполняемую при удачном поиске в спике"}
@@ -4619,12 +4632,13 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   }
 
   Obj={Mnemo="Comparision" Hint="Триганометрические функции" Comment
-	Obj={Mk=63 Mnemo="EQ" Hint=""}
-	Obj={Mk=64 Mnemo="NotEQ" Hint=""}
-	Obj={Mk=65 Mnemo="Bigger" Hint=""}
-	Obj={Mk=66 Mnemo="BiggerEQ" Hint=""}
-	Obj={Mk=67 Mnemo="Smaller" Hint=""}
-	Obj={Mk=68 Mnemo="SmallerEQ" Hint=""}
+	Obj={Mk=63 Mnemo="EQ" Hint="=="}
+	Obj={Mk=64 Mnemo="NotEQ" Hint="<>"}
+	Obj={Mk=65 Mnemo="Bigger" Hint=">"}
+	Obj={Mk=66 Mnemo="BiggerEQ" Hint=">="}
+	Obj={Mk=67 Mnemo="Smaller" Hint="<"}
+	Obj={Mk=68 Mnemo="SmallerEQ" Hint="<="}
+	Obj={Mk=71 Mnemo="Compar3Way" Hint="Трехстороннее сравнение"}
   }
 
   Obj={Mnemo="Logic" Hint="Логические функции" Comment
@@ -4636,7 +4650,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=59 Mnemo="OrBit" Hint=""}    
   	Obj={Mk=60 Mnemo="AndBit" Hint=""}    
   	Obj={Mk=61 Mnemo="MrBit" Hint=""}    
-  	Obj={Mk=62 Mnemo="MrBit" Hint=""}    
+  	Obj={Mk=62 Mnemo="MlBit" Hint=""}    
+  	Obj={Mk=70 Mnemo="XorBit" Hint=""}    
   }
 
   Obj={Mnemo="Triganometric" Hint="Триганометрические функции" Comment
@@ -4645,8 +4660,6 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   	Obj={Mk=40 Mnemo="Tan" Hint=""}
   	Obj={Mk=42 Mnemo="Acos" Hint=""}
   	Obj={Mk=41 Mnemo="Asin" Hint=""}
-  	Obj={Mk=52 Mnemo="Random" Hint=""}
-  	Obj={Mk=52 Mnemo="Random" Hint=""}
   	Obj={Mk=52 Mnemo="Random" Hint=""}
   }
   Obj=CommonMkList
@@ -5746,6 +5759,12 @@ MnemoTable.Set=
 	>{Mnemo="ConstInt" Atr=-10 Hint="Атрибут целой константы"}
 	>{Mnemo="ConstFloat" Atr=-11 Hint="Атрибут дробной константы"}
 	>{Mnemo="Mk" Atr=-24 Hint="Атрибут милликоманды"}
+	>{Mnemo="ProgStop" Mk=989 Hint="Остановка запущенной на выполнение миллипрограммы для данного ФУ (в нагрузке количество уровней программ для прерывания (по умолчанию 1)"}
+	>{Mnemo="ProgStopAll" Mk=988 Hint="Остановка всех запущенных на выполнение миллипрограммы для данного ФУ"}
+	>{Mnemo="ProgExec" Mk=990 Hint="Выполнить миллипрограмму по указателю из нагрузки"}
+	>{Mnemo="ProgSet" Mk=991 Hint="Установить указатель на миллипрограмму, выполняемую по милликоманде ProgExec, когда в нарузке nil"}
+	>{Mnemo="ElseProgSet" Mk=953 Hint="Установить указатель на альтернативную миллипрограмму"}
+	>{Mnemo="ProgSetExec" Mk=954 Hint="Установить указатель на программу и выполнить ее"}
 	>{Mnemo="MkBegRange" Atr=-20 Hint="Атрибут начала диапазона индексов милликоманд"}
 
 	>{Mnemo="MkList" Atr=-21 Hint="Атрибут ссылки на таблицу мнемоник милликоманд"}
@@ -5802,6 +5821,7 @@ MnemoTable.Set=
 	>{Mnemo="UpProg" Atr=-86 Hint="Атрибут программы при переходе порога вверх"}
 	>{Mnemo="DownProg" Atr=-87 Hint="Атрибут программы при переходе порога вниз"}
 	>{Mnemo="CalcAtr" Atr=-88 Hint="Атрибут ссылки на арифметический граф"}
+	>{Mnemo="RepeatAtr" Atr=-89 Hint="Атрибут повторения (например, части кода)"}
 
 	>{Mnemo="sin"  Func=501  Hint="Функция sin"}
 	>{Mnemo="cos"  Func=502  Hint="Функция cos"}

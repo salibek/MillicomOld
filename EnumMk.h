@@ -75,5 +75,6 @@ enum E_MK
 	Smaller,				// 67
 	SmallerEQ,				// 68
 	Remainder,				// 69
-	XOR_BIT					// 70
+	XOR_BIT,				// 70
+	Compar3Way				// 71
 };

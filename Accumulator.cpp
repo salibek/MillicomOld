@@ -243,6 +243,8 @@ void	Accumulator::calc(int MK, LoadPoint load)
 		break;
 	case E_MK::XOR_BIT:
 		XOR_BIT(load);
+	case E_MK::Compar3Way:
+		Compar3Way(load);
 	default:
 		error_msg(1);
 		break;
@@ -419,6 +421,7 @@ void	Accumulator::div(LoadPoint load)
 	{
 	case Dint:
 	{int* b = (int*)load.Point, * a = (int*)accumulator.Point;
+
 	*a = *a / *b;
 	accumulator.Point = (void*)a;
 	break; }
@@ -448,13 +451,12 @@ void	Accumulator::div_int(LoadPoint load)
 
 	if (((tmp == Tstring || tmp == Cstring || tmp2 == Tstring || tmp2 == Cstring)))
 		error_msg(2);
-	else if ((int)load.Point == 0)
+	else if (load.ToInt() == 0)
 		error_msg(3);
-	double *a = (double *)accumulator.Point;
-	double *b = (double *)load.Point;
-
-	*a = (int )(*a / *b);
-	accumulator.Type = Tint;
+	int* t = new int;
+	int tt = accumulator.ToInt() / load.ToInt();
+	*t = tt;
+	accumulator = {Tint, (void*)t };
 }
 
 LoadPoint Accumulator::get()
@@ -1009,4 +1011,9 @@ void		Accumulator::fu_inv_bit(LoadPoint load)
 
 		*a = ~*a;
 	}
+}
+void		Accumulator::Compar3Way(LoadPoint load){// Трехстороннее сравнение
+	double T1 = accumulator.ToDouble();
+	double T2 = load.ToDouble();
+	accumulator.Write((T1>0)? 1:((T1==T2)?0:-1) );
 }

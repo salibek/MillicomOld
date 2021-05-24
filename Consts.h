@@ -27,7 +27,7 @@ const int FUBus = 0, FUCons = 1, FUStrGen = 2, FULex = 3, FUList = 4, FUFind = 5
 const vector<int> w_type = { 10, 30, 40, 50, 60, 70, 20 };
 
 // Общие атрибуты
-const int ProgAtr = -100, Atr=-60, SubMk=900;
+const int ProgAtr = -100, Atr=-60, SubMk=900, RepeatMk=901;
 
 bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
 
@@ -43,17 +43,18 @@ public:
 	void Write(bool x);
 	void Write(char x);
 	void Write(string x);
+	void Write(LoadPoint x);
 	void Write(void* x) { Point = x; };
-	void Write(LoadPoint* x) { if (Type == TPPoint) Point = x->Point; Type = CPPoint; };
-	void Write(LoadPoint x) { Point = x.Point; Type = x.Type; };
+//	void Write(LoadPoint* x) { if (Type == TPPoint) Point = x->Point; Type = CPPoint; };
+//	void Write(LoadPoint x) { Point = x.Point; Type = x.Type; };
 	void WriteVar(LoadPoint x) { Point = x.Point; Type = x.Type; Type |= 1; Type--; }; //Записать ссылку и сделать ее переменной
 	void WriteConst(LoadPoint x) {Point = x.Point; Type = x.Type; Type |= 1;}; // Записать ссылку и сделать ее константой
 
-	string ToStr(); // Первод в string
+	string ToStr(string define=""); // Первод в string
 	bool ToBool(bool define = false); // Перевод в bool
-	int ToInt(); // Перевод в integer
-	double ToDouble(); // Перевод в double
-	float ToFloat();// Перевод во float
+	int ToInt(int define=0); // Перевод в integer
+	double ToDouble(double define=0); // Перевод в double
+	float ToFloat(float define=0);// Перевод во float
 	char ToChar() { return Point == nullptr ? 0 : *(char*)Point; }; // Перевод в integer
 	void Copy(LoadPoint *LP);
 	void Clear(); // Сброс нагрузки ИП
@@ -76,7 +77,7 @@ public:
 
 };
 
-// struct TAtrMnrmo
+// struct TAtrMnemo
 
 class ip // Информационная пара
 {
@@ -170,8 +171,9 @@ public:
 
 	FU *Bus; // Ссылка на контекст Шины
 	int FUMkRange = 1000; // Диапазон МК для каждого ФУ
-	bool ProgStop = false; // Флаг остановки программы, выполняемой ProgExec
-
+	int ProgStop = 0; // Флаг остановки программы, выполняемой ProgExec
+	bool ProgStopAll = false; // Флаг остановки всех запущенных на выполнение миллипрограммы для данного ФУ
+//	bool RepeatFlag = false; // Флаг повторения программы
 	void CommonMk(int Mk, LoadPoint Uk); // Выполнение общих МК для ФУ
 	IC_type PrefixProg = nullptr, PostfixProg = nullptr, Prog = nullptr, ElseProg = nullptr; // Программы презапуска и послезапуска во время прихода МК, просто программа, альтернативная программа
 private:

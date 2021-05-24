@@ -63,6 +63,8 @@
 		void		SmallerEQ(LoadPoint load);
 		void		Remainder(LoadPoint load);
 		void		XOR_BIT(LoadPoint load);
+		void		Compar3Way(LoadPoint load);// Трехстороннее сравнение
+
 		LoadPoint	getCos();
 		LoadPoint	getSin();
 	};

@@ -37,8 +37,7 @@ ALUG.RangeProgExec=21=1=1={
 	Eventser.TimeSet=0
 	Scheduler.Clear
 	ALUG.OutMk=Console.Out Console.Out=": " ALUG.OutMk=Scheduler.NCoresSet
-	Bag.Start
-//	Bag.ResOutMk=Console.OutLn
+	Bag.Start="Bag5.txt"
 	
 //	Console.Out="Moleling time: "
 	Eventser.TimeOutMk=Console.OutLn
@@ -49,3 +48,5 @@ ALUG.RangeProgExec=21=1=1={
 //	Console.Out="Max Average Mk Queue: "
 //	Scheduler.MaxMkQueueOutMk=Console.OutLn
 }
+Bag.ResOutMk=Console.OutLn
+

@@ -58,11 +58,24 @@ void BagPoint::ProgFU(int MK, LoadPoint Load)
 	}
 	if (SchedulerFlag)
 		((Scheduler*)Modeling->scheduler)->CoreFree();
-
 }
 
 void Bag::ProgFU(int MK, LoadPoint Load)
 {
+	if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
+	{
+		Modeling->SchedulerFlag = false;
+		Modeling->qmk.push_back({ MK, Load });
+		((Scheduler*)(Modeling->scheduler))->Scheduling(this, SendTime);
+		return;
+	}
+	bool SchedulerFlag = false;
+	if (Modeling != nullptr && Modeling->ManualMode && Modeling->SchedulerFlag)
+	{
+		Modeling->SchedulerFlag = false;
+		SchedulerFlag = true;
+	}
+
 	switch (MK)
 	{
 	case 0: // Reset
@@ -128,7 +141,6 @@ void Bag::ProgFU(int MK, LoadPoint Load)
 					Field[i][j].Modeling->scheduler = (void*)Modeling->scheduler;
 					Field[i][j].Modeling->ManualMode = true;
 				}
-
 			}
 
 
@@ -190,4 +202,6 @@ void Bag::ProgFU(int MK, LoadPoint Load)
 		CommonMk(MK, Load);
 		break;
 	}
+	if (SchedulerFlag)
+		((Scheduler*)Modeling->scheduler)->CoreFree();
 }

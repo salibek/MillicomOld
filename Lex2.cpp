@@ -207,8 +207,6 @@
 		case 100: // Lexing
 		{
 //			ProgExec((IC_type)StartProg,Bus);
-			string FigureBuf;
-			string str = *(string*)Load.Point;
 			if (Load.Type >> 1 == Dstring && *((string*)Load.Point) == "")
 			{
 				ib = (ib + 1) % SizeBuf;
@@ -216,13 +214,13 @@
 				LexBuf[ib] = { StrAtr,Tstring , new string("") };
 				LexOut();
 			}
-			str += " "; // Добавление мнимого конечного элемента
+			(*(string*)Load.Point) += " "; // Добавление мнимого конечного элемента
 			Work = true;
-			for (auto i = str.begin(); i != str.end() && Work; i++)
+			string FigureBuf;
+			for (auto i = (*(string*)Load.Point).begin(); i != (*(string*)Load.Point).end() && Work; i++)
 				switch (S)
 				{
 				case 0: // Стартовое состояние
-				{
 					if (*i == ' ') break;
 					if (*i == '"')
 					{
@@ -230,33 +228,41 @@
 						S = 4;
 						break;
 					}
-					auto SepUk = Seps.find(str.substr(distance(str.begin(), i), 1));
-					auto SepUk2 = Seps.find(str.substr(distance(str.begin(), i), 2));
-					auto SepUk3 = Seps.find(str.substr(distance(str.begin(), i), 3));
-					if (SepUk != Seps.end() || SepUk2 != Seps.end() || SepUk3 != Seps.end())
+					if (Seps.count(*i))
 					{
 						ib = (ib + 1) % SizeBuf;
 						LexBuf[ib].Load.Clear();
-						string* tstr=new string;
-						if (SepUk3 != Seps.end() && SepUk3->size()==3)
+						string  *tstr = new string;
+						
+						*tstr = *i;
+						if (i + 1 != (*(string*)Load.Point).end())
 						{
-							*tstr = *SepUk3;
+							*tstr += *(i + 1);
+							if (i + 2 != (*(string*)Load.Point).end())
+								*tstr += *(i + 2);
+						}
+						if (i + 1 != (*(string*)Load.Point).end() && i + 2 != (*(string*)Load.Point).end() && Seps.count(*(i + 1)) && Seps.count(*(i + 2)) && SepsComlex3.count(*tstr) )
+						{
+							LexBuf[ib] = { SeperatAtr,Tstring , tstr };
 							i += 2;
+							LexOut();
+							break;
 						}
-						else if (SepUk2 != Seps.end() && SepUk2->size() == 2)
-						{
-							*tstr = *SepUk2;
-							i += 1;
-						}
-						else if(SepUk != Seps.end())
-							*tstr = *SepUk;
 
+						*tstr = *i;
+						if (i + 1 != (*(string*)Load.Point).end()) *tstr += *(i + 1);
+						if (i + 1 != (*(string*)Load.Point).end() && Seps.count(*(i + 1)) && SepsComlex2.count(*tstr))
+						{
+							LexBuf[ib] = { SeperatAtr,Tstring , tstr };
+							i++;
+							LexOut();
+							break;
+						}
+						*tstr = *i;
 						LexBuf[ib] = { SeperatAtr,Tstring , tstr };
 						LexOut();
 						break;
 					}
-					else
-
 					if (*i >= '0' && *i <= '9')
 					{
 						FigureBuf = *i;
@@ -271,9 +277,8 @@
 						break;
 					}
 					Work = false;
-					if (ErrProg != nullptr) ProgExec(ErrProg, Bus, nullptr);
+					if (ErrProg != nullptr) ProgExec(ErrProg, Bus,nullptr);
 					break;
-				}
 				case 1: // Распознание числа
 					if (*i >= '0' && *i <= '9')
 					{
@@ -286,7 +291,7 @@
 						S = 2;
 						break;
 					}
-					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ')
+					if (Seps.count(*i) || *i == ' ')
 					{
 						int  *tint = new int;
 						*tint = atoi(FigureBuf.c_str());
@@ -308,7 +313,7 @@
 						FigureBuf = FigureBuf + (*i);
 						break;
 					}
-					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ')
+					if (Seps.count(*i) || *i == ' ')
 					{
 						double *ft = new double;
 						*ft = atof(FigureBuf.c_str());
@@ -323,7 +328,7 @@
 					ProgExec(ErrProg, Bus, nullptr);
 					break;
 				case 3: // Мнемоника
-					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ')
+					if (Seps.count(*i) || *i == ' ')
 					{
 						S = 0;
 						i--;

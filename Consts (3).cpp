@@ -408,16 +408,16 @@ void LoadPoint::print(void* AtrMnemo, string offset)
 			break;
 	case TIC:
 	case CIC:
-	{int _i = 0;
-	for (auto i : *(vector<ip>*)Point)
 	{
-		if (i.Load.Type >> 1 == DIP || i.Load.Type >> 1 == DIC) {
-			cout << offset << i.atr << " ->\n";
+	for (auto i=((IC_type)Point)->begin(); i!= ((IC_type)Point)->end();i++)
+	{
+		if (i->Load.Type >> 1 == DIP || i->Load.Type >> 1 == DIC) {
+			cout << offset << i->atr << " ->\n";
 		}
 		else
-			cout << offset << i.atr << " # ";
-		i.Load.print(nullptr, offset + "  ");
-		cout << endl;
+			cout << offset << i->atr << " = ";
+		i->Load.print(nullptr, offset + "  ");
+		if(i!= ((IC_type)Point)->end()-1) cout << endl;
 	}
 	break;
 	}
@@ -425,6 +425,7 @@ void LoadPoint::print(void* AtrMnemo, string offset)
 		cout << "unknown load\n";
 	}
 }
+
 
 void FU::CommonMk(int Mk, LoadPoint Load)
 {

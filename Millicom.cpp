@@ -31,9 +31,9 @@ int main()
 	//MSh.ProgFU(5, LP);
 //	Bus.ProgFU(10, LP);
 
-	string STR = "ALE2.ind";
-//	string STR = "Bag.ind";
-	//	string STR = "NetTemperat2.ind";
+//	string STR = "ALE2.ind";
+	string STR = "Bag.ind";
+//	string STR = "NetTemperat2.ind";
 	Bus.ProgFU(10, {Cstring, &STR});
 
 	string STR5 = "Bag5.txt"; // 5 предметов

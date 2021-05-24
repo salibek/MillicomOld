@@ -29,6 +29,8 @@ Scheduler.SchedulingTimeSet=0.1
 
 Console.LnOut="------"
 Console.LnOut="------"
+Scheduler.ContextOutMk=NetManager.SchedulerSet
+Scheduler.ContextOutMk=NetManager.NetSchedulerSet
 //NetManager.NtaySet=5
 NetManager.XSet=10
 NetManager.YSet=20
@@ -37,23 +39,22 @@ NetManager.hSet=1
 NetManager.taySet=0.2
 NetManager.CalcTimeSet=2
 NetManager.ReadTimeSet=0.2
-//Scheduler.ContextOutMk=NetManager.NetSchedulerSet
-NetManager.NetGen
-NetManager.ConstTSet=0=0=99
+//NetManager.NetGen
+//NetManager.ConstTSet=0=0=99
 //NetManager.FiringProgSet=9=9={NetManager.Start}
 //Console.StdOutFileSet="Out.txt"
 //NetManager.ConstTSet=0=2=99
 //NetManager.ConstTSet=3=3=10
-//Scheduler.ContextOutMk=NetManager.SchedulerSet
+Scheduler.ContextOutMk=NetManager.SchedulerSet
 NetManager.NetGen
 NetManager.Start=1
 //Console.StdOutFileSet
-NetManager.RezOutCons
-\*
+//NetManager.RezOutCons
+
 ALUMain.RangeProgExec=180=0=1={
 	ALUMax.Set=0
 //	ALUMain.OutMk=NetManager.XSet=NetManager.YSet
-	NetManager.XAdd=2
+	NetManager.XAdd=2 // Прибавить к размерности 2
 	NetManager.YAdd=1
 	NetManager.NetGen
 	NetManager.ConstTSet=0=0=99
@@ -66,11 +67,16 @@ ALUMain.RangeProgExec=180=0=1={
 //		Scheduler.MaxMkQueueOutMk=Console.OutLn
 		Scheduler.MaxMkQueueOutMk=ALUMax.Max
 	}
+	
+
 	NetManager.XOutMk=Console.Out Console.Out=" "
 	NetManager.YOutMk=Console.Out Console.Out=" "
-	Console.Out=MaxCore Console.Out=" "
+	ALUMax.OutMk=Console.Out Console.Out=" "
+	Eventser.TimeOutMk=Console.Out Console.OutLn
+
+//	Console.Out=MaxCore Console.Out=" "
 //	Scheduler.MaxMkQueueOutMk=Console.OutLn
-	ALUMax.OutMk=Console.OutLn
+//	ALUMax.OutMk=Console.OutLn
 }
 //Console.StdOutFileSet
 //NetManager.RezOutCons
@@ -83,7 +89,6 @@ Scheduler.ParallelFactorOutMk=Console.OutLn
 Console.Out="Average Mk Queue: "
 Scheduler.AverageMkQueueOutMk=Console.OutLn
 Console.Out="Max Average Mk Queue: "
-Scheduler.MaxAverageMkQueueOutMk=Console.OutLn
+Scheduler.MaxMkQueueOutMk=Console.OutLn
 
 Console.OutLn
-*\

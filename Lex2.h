@@ -14,11 +14,10 @@ class Lex : public FU {
 private:
 	void LexOut(bool Copy=false, int MK = -1);
 	string ABC_templ = "_QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm"; // Алфавит символов
-	set<string> Seps_templ = { "//=", "!!=", "&&=", "||=", "&&=", "^^=",\
-	"^=", "*=", "%=", "/=", "//", "++", "--", "-=","+=","<>", ">=", "<=", "!!", "!=", "||", "|=", "&&", "&=", "^^", "^=",\
-	"<", ">", "~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "+", "=", "-", "{", "}", "[", "]", "?", ";", ":", ",", ".", "\\", "/", "|", "\""};// Алфавит разделителей
-	set<char> ABC, Digit;
-	set<string> Seps;
+	set<char> Seps_templ = {'<', '>', '~', '`', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '+', '=', '-', '{', '}', '[', ']', '?', ';', ':', ',', '.', '\\', '/', '|', '\"'};// Алфавит разделителей
+	set<string> SepsComlex2 = { "^=", "*=", "%=", "/=", "++", "--", "-=","+=","<>", ">=", "<=", "!!", "!=", "||", "|=", "&&", "&=", "^^", "^=" };
+	set<string> SepsComlex3 = { "//=", "!!=", "&&=", "||=", "&&=", "^^=" };
+	set<char> ABC, Seps, Digit;
 	IC_type StartProg = nullptr, StopProg = nullptr, FinProg = nullptr; // Программы, выполняемые при запуске процесса лексического анализа
 public:
 	void ProgFU(int MK, LoadPoint Load);
