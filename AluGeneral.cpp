@@ -110,7 +110,7 @@ void AluGeneral::ProgFU(int MK, LoadPoint Load)
 		ThreadStack.back().AluStack.back().Out(Load);
 		break;
 	case E_MK::OUT_MK:
-		MkExec(*(int*)Load.Point, ThreadStack.back().AluStack.back().get());
+		MkExec(Load, ThreadStack.back().AluStack.back().get());
 		break;
 	case 100: 
 		ThreadStack.back().AluStack.back().set({ 0,nullptr });//

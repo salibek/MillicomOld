@@ -52,8 +52,8 @@ void ConvIndStrOld(string str, ip &IP, vector<ip*> IpUk, map<int, vector<ip>*> &
 				IP.Load.Type = IpUk[DInd >> 2]->Load.Type;
 				break;
 			case 3:// Указатель на указатель из ИП
-				IP.Load.Point = &(IpUk[DInd >> 2]->Load.Point);
-				IP.Load.Type = Tvoid;
+				IP.Load.Point = &(IpUk[DInd >> 2]->Load);
+				IP.Load.Type = TLoad;
 				break;
 			}
 			return;

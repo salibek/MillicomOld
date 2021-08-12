@@ -410,13 +410,24 @@ void	Accumulator::mult(LoadPoint load)
 void	Accumulator::div(LoadPoint load)
 {
 	char		tmp =accumulator.Type;
-	char		tmp2 = w_type[load.Type];
-	char		r_tmp = w_type[tmp] > w_type[tmp2] ? tmp : tmp2;
+//	char		tmp2 = w_type[load.Type];
+//	char		r_tmp = w_type[tmp] > w_type[tmp2] ? tmp : tmp2;
 
-	if (((tmp == Tstring || tmp == Cstring || tmp2 == Tstring || tmp2 == Cstring)))
-		error_msg(2);
-	else if ((int)load.Point == 0)
-		error_msg(3);
+//	if (((tmp == Tstring || tmp == Cstring || tmp2 == Tstring || tmp2 == Cstring)))
+//		error_msg(2);
+//	else if ((int)load.Point == 0)
+//		error_msg(3);
+	if (accumulator.Type >> 1 != Ddouble)
+	{
+		double* t = new double();
+		*t = accumulator.ToDouble(0);
+		accumulator.VarDel();
+		accumulator.Type = Tdouble;
+		accumulator.Point = t;
+	}
+	*(double*)accumulator.Point /= load.ToDouble();
+//	cout << "Accum: "<<accumulator.ToDouble() << endl;;
+	/*
 	switch (r_tmp>>1)
 	{
 	case Dint:
@@ -442,6 +453,7 @@ void	Accumulator::div(LoadPoint load)
 	break; }
 	}
 	accumulator.Type = r_tmp;
+	*/
 }
 
 void	Accumulator::div_int(LoadPoint load)
@@ -462,7 +474,7 @@ void	Accumulator::div_int(LoadPoint load)
 LoadPoint Accumulator::get()
 {
 	return accumulator;
-	accumulator.print();
+//	accumulator.print();
 }
 
 void Accumulator::Out(LoadPoint Load) // �������� ����������� � ����������

@@ -1,10 +1,13 @@
 16 1
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\NetTemperat2.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\NetTemperat3.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALE3.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALE2.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\Gauss.oap 
+C:\Users\User\YandexDisk\MillicomNew\Millicom\Bag.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\NetTemperat3.oap 
+C:\Users\salib\YandexDisk\MillicomNew\Millicom\NetTemperat2.oap 
 C:\Users\User\YandexDisk\MillicomNew\Millicom\ALE2.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALE2.ind 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\Bag.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ALE.oap 
 C:\Users\User\YandexDisk\MillicomNew\Millicom\ListTest.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\ListTest.oap 
@@ -12,6 +15,3 @@ C:\Users\salib\YandexDisk\MillicomNew\Millicom\MeanShift.oap
 C:\Users\salib\YandexDisk\Методическая работа\Проектный семинар (магистры)\ПЗ\LexAnaluser.oap 
 C:\Users\salib\YandexDisk\MillicomNew\Millicom\MeanShift.txt 
 C:\Users\User\YandexDisk\MillicomNew\Millicom\NetTemperat.oap 
-C:\Users\salib\YandexDisk\Millicom\MeanShift.oap 
-C:\Users\salib\YandexDisk\MillicomNew\Millicom\NetTemperat.oap 
-C:\Users\Салибек\YandexDisk\MillicomNew\Millicom\NetTemperat.oap 

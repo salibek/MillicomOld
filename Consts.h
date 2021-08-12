@@ -9,16 +9,27 @@
 #include <string>
 
 using namespace std; 
+/*
+// Типы переменных
+const int Tvoid = 0, Tchar = 2, Tint = 4, Tfloat = 6, Tdouble = 8, Tstring = 10, TIP = 12, Tbool = 14, TIC = 16;
+const int TPPoint = 18, TGraph = 20, TFU = 22, TLoad = 24;
+// Типы констант
+const int Cvoid = 1, Cchar = 3, Cint = 5, Cfloat = 7, Cdouble = 9, Cstring = 11, CIP = 13, Cbool = 15, CIC = 17;
+const int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25;
+// Общие типы данных (остаток от целочисленного деления на 2 типа переменной или константы)
+const int Dvoid = 0, Dchar = 1, Dint = 2, Dfloat = 3, Ddouble = 4, Dstring = 5, DIP = 6, Dbool = 7, DIC = 8;
+const int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12;
+*/
 
 // Типы переменных
 const int Tvoid = 0, Tint = 2, Tfloat = 4, Tdouble = 6, Tchar = 8, Tstring = 10, TIP = 12, Tbool = 14, TIC = 16;
-const int TPPoint = 18, TGraph=20, TFU=22;
+const int TPPoint = 18, TGraph=20, TFU=22, TLoad=24;
 // Типы констант
 const int Cvoid = 1, Cint = 3, Cfloat = 5, Cdouble = 7, Cchar = 9, Cstring = 11, CIP = 13, Cbool = 15, CIC = 17;
-const int CPPoint = 19, CGraph = 21, CFU = 23;
+const int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25;
 // Общие типы данных (остаток от целочисленного деления на 2 типа переменной или константы)
 const int Dvoid=0, Dint = 1, Dfloat = 2, Ddouble = 3, Dchar = 4, Dstring = 5, DIP = 6, Dbool = 7, DIC = 8;
-const int DPPoint = 9, DGraph = 10, DFU = 11;
+const int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12;
 
 // Типы ФУ
 const int FUBus = 0, FUCons = 1, FUStrGen = 2, FULex = 3, FUList = 4, FUFind = 5;

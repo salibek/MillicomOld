@@ -31,8 +31,9 @@ int main()
 	//MSh.ProgFU(5, LP);
 //	Bus.ProgFU(10, LP);
 
-//	string STR = "ALE2.ind";
-	string STR = "Bag.ind";
+//	string STR = "Gauss.ind";
+	string STR = "ALE2.ind";
+//	string STR = "Bag.ind";
 //	string STR = "NetTemperat2.ind";
 	Bus.ProgFU(10, {Cstring, &STR});
 

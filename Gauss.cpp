@@ -1,10 +1,27 @@
 #include "stdafx.h"
 #include "gauss.h"
+#include "SchedulerEventser.h"
+#include < cstdlib >
 
 const int Key = 1, KeyToRight = 3, DownARight = 5, DownA = 7, Cof=9, Zero = 11, SumToLeft = 13, SumToLeftUp=15, Up=17;
 
 void GaussPoint::ProgFU(int MK, LoadPoint Load)
 {
+	if (Modeling != nullptr && Modeling->ManualMode && Modeling->scheduler != nullptr && !Modeling->SchedulerFlag)
+	{
+		Modeling->SchedulerFlag = false;
+		Modeling->qmk.push_back({ MK, Load });
+		double SendAllTime = SendTime;
+		((Scheduler*)(Modeling->scheduler))->Scheduling(this, CalcTime + SendAllTime);
+		return;
+	}
+	bool SchedulerFlag = false;
+	if (Modeling != nullptr && Modeling->ManualMode && Modeling->SchedulerFlag)
+	{
+		Modeling->SchedulerFlag = false;
+		SchedulerFlag = true;
+	}
+
 	switch (MK)
 	{
 	case 1: // Key
@@ -74,6 +91,9 @@ void GaussPoint::ProgFU(int MK, LoadPoint Load)
 		CommonMk(MK, Load);
 		break;
 	}
+
+	if (SchedulerFlag)
+		((Scheduler*)Modeling->scheduler)->CoreFree();
 }
 
 void Gauss::ProgFU(int MK, LoadPoint Load)
@@ -84,31 +104,60 @@ void Gauss::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 1: // ReadAndStart
 	{
-		ifstream f_in(Load.ToStr());
-		int N;
-		f_in >> N;
-		Field.resize(N);
-		for (auto &iu : Field)
+		if (Load.Type >> 1 == Dstring) // Данные из файла
 		{
-			iu.resize(N + 1);
-			//iu[N].FreeF = true;
-		}
-		for (int i = 0; i < N; i++)
-			for (int j = 0; j <= N; j++)
-				f_in>>Field[i][j].a;
-		// Прописать ссылки на соседей
-		for (int i = 0; i < N; i++)
-			for (int j = 0; j <= N; j++)
+			ifstream f_in(Load.ToStr());
+			f_in >> Size;
+			Field.resize(Size);
+			for (auto& iu : Field)
 			{
-				Field[i][j].Neighbours[0] = (j == N) ? nullptr : &Field[i][j + 1];
+				iu.resize(Size + 1);
+				//iu[N].FreeF = true;
+			}
+			for (int i = 0; i < Size; i++)
+				for (int j = 0; j <= Size; j++)
+					f_in >> Field[i][j].a;
+		}
+		else
+		{ // Данные, сгенерированные случайно
+			if (Load.Type >> 1 == Dint)
+				Size = Load.ToInt();
+			Field.resize(Size);
+			for (auto& iu : Field)
+			{
+				iu.resize(Size + 1);
+			}
+			for (int i = 0; i < Size; i++)
+				for (int j = 0; j <= Size; j++)
+					Field[i][j].a=(Max-Min)*((double)rand()/ RAND_MAX) + Min;
+		}
+		// Прописать ссылки на соседей
+		for (int i = 0; i < Size; i++)
+			for (int j = 0; j <= Size; j++)
+			{
+				Field[i][j].Neighbours[0] = (j == Size) ? nullptr : &Field[i][j + 1];
 				Field[i][j].Neighbours[1] = (i == 0) ? nullptr : &Field[i-1][j];
 				Field[i][j].Neighbours[2] = (j == 0) ? nullptr : &Field[i][j - 1];
-				Field[i][j].Neighbours[3] = (i==N-1) ? nullptr : &Field[i+1][j];
+				Field[i][j].Neighbours[3] = (i==Size-1) ? nullptr : &Field[i+1][j];
 				if (i == j)Field[i][j].KeyF = true;
 			}
 		Field[0][0].ProgFU(Key, {0 ,nullptr });
 		break;
+		case 5: // SizeSet Установить размерность матрицы
+			Size = Load.ToInt();
+			break;
+		case 10: //MaxSet Установить максимальную величину коэффициентов для случайной генерации
+			Max = Load.ToInt();
+			break;
+		case 15: //MinSet Установить мининмальную величину коэффициентов для случайной генерации
+			Min = Load.ToInt();
+			break;
+		case 100: // CalcTimeSet Установить время выполнения операции
+			break;
+		case 105: // SendTimeSet Установить время пересылки данных
+			break;
 	}
+
 	default:
 		CommonMk(MK, Load);
 		break;

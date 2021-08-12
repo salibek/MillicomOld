@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Bag.h"
-#include "SchedulerEventser.h"
 #include <fstream>
+#include "SchedulerEventser.h"
 
 void BagPoint::ProgFU(int MK, LoadPoint Load)
 {
@@ -22,7 +22,6 @@ void BagPoint::ProgFU(int MK, LoadPoint Load)
 	switch (MK)
 	{
 	case 1: // Calc Вычислить значение
-
 		// Для элементов первой строки, где пока нет ни p_Diag, ни p_Up
 		if ((p_Diag < 0) && (p_Up < 0))
 		{
@@ -192,6 +191,13 @@ void Bag::ProgFU(int MK, LoadPoint Load)
 	case 93: //NItemSet Установить количество предметов для укладки и начать вычисление
 		NItem = Load.ToInt();
 		break;
+	case 94: //NItemAdd
+		NItem += Load.ToInt();
+		break;
+	case 95: //WMaxAdd
+		WMax += Load.ToInt();
+		break;
+
 	case 100: // CalcTimeSet Установить время вычисления результата
 		CalcTime = Load.ToDouble();
 		break;

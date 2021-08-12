@@ -33,7 +33,7 @@ bool LoadPoint::ToBool(bool define) // Перевод в bool (по умолчания false)
 	case Dfloat: return *(float*)Point; break;
 	case Dint: return *(int*)Point; break;
 	case Dbool: return *(bool*)Point; break;
-	case Dstring: return ((*(string*)Point)=="")?false:true;
+	case Dstring: return ((*(string*)Point) == "") ? false : true;
 	default:
 		return false;
 		break;
@@ -69,22 +69,22 @@ double LoadPoint::ToDouble(double define) {// Перевод в integer
 		break;
 	}
 }
-		
+
 float LoadPoint::ToFloat(float define) {// Перевод в integer
 	if (Point == nullptr)
 		return define;
 	switch (Type >> 1)
-		{
-		case Ddouble: return *(double*)Point; break;
-		case Dfloat: return *(float*)Point; break;
-		case Dint: return *(int*)Point; break;
-		case Dbool: return *(bool*)Point; break;
-		case Dstring: return atof((*(string*)Point).c_str());
-		default:
-			return 0;
-			break;
-		}
-	};
+	{
+	case Ddouble: return *(double*)Point; break;
+	case Dfloat: return *(float*)Point; break;
+	case Dint: return *(int*)Point; break;
+	case Dbool: return *(bool*)Point; break;
+	case Dstring: return atof((*(string*)Point).c_str());
+	default:
+		return 0;
+		break;
+	}
+};
 
 
 void LoadPoint::Write(int x)
@@ -210,32 +210,15 @@ void LoadPoint::Write(LoadPoint x)
 {
 	switch (Type)
 	{
-	case Tdouble:
-		*((double*)Point) = x.ToDouble();
-		break;
-	case Tfloat:
-		*((float*)Point) = x.ToFloat();
-		break;
-	case Tint:
-		*((int*)Point) = x.ToInt();
-		break;
-	case Tbool:
-		*((bool*)Point) = x.ToBool();
-		break;
-	case Tchar:
-		*((char*)Point) = x.ToChar();
-		break;
-	case TIC:
-		if (x.Type = TIC) Point = x.Point;
-	case TIP:
-		if (x.Type = TIP) Point = x.Point;
+	case TLoad:
+		*(LoadPoint*)Point = x;
 		break;
 	}
 }
 
 void ICDel(void* Uk) // Удаление ИК
 {
-	for (auto &&i : *(IC_type)Uk)
+	for (auto&& i : *(IC_type)Uk)
 		i.Load.Clear();
 	delete (IC_type)Uk;
 }
@@ -258,7 +241,7 @@ void* ICCopy(LoadPoint uk) // Копирование ИК
 	return CapsNew;
 }
 
-void* GraphCopy(void* Uk, LocatTable* Table=nullptr) // Копирование ОА-графа
+void* GraphCopy(void* Uk, LocatTable* Table = nullptr) // Копирование ОА-графа
 {
 	return nullptr;
 }
@@ -270,12 +253,12 @@ void GraphDel(void* Uk, LocatTable* Table = nullptr) // Удаление ОА-графа
 
 LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 {
-	switch (Type>>1)		
+	switch (Type >> 1)
 	{
 	case Dstring: return { Type, new string(*(string*)Point) };
 	case Dint: return { Type, new int(*(int*)Point) };
-	case Dfloat: return { Type, new float(*(float*)Point)};
-	case Ddouble: return { Type,new double(*(double*)Point)};
+	case Dfloat: return { Type, new float(*(float*)Point) };
+	case Ddouble: return { Type,new double(*(double*)Point) };
 	case Dchar: return { Type,new char(*(char*)Point) };
 	case Dbool: return { Type,new bool(*(bool*)Point) };
 	case DPPoint: return { Type,new (void*)(*(void**)Point) };
@@ -284,7 +267,7 @@ LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 	{
 		vector<ip>* t = new vector<ip>;
 		t->push_back(*((ip*)Point));
-//		((ip*)Point)->Load.Clone();
+		//		((ip*)Point)->Load.Clone();
 		return { Type, t };
 	}
 	default: return *this;
@@ -293,7 +276,7 @@ LoadPoint LoadPoint::Clone() // Вернуть клонированную нагрузку
 
 void* LoadPoint::VarClone() // Вернуть ссылку на клонированное значение из нагрузки
 {
-	switch (Type<<1)
+	switch (Type >> 1)
 	{
 	case Dstring: return new string(*(string*)Point);
 	case Dint: return new int(*(int*)Point);
@@ -309,22 +292,24 @@ void* LoadPoint::VarClone() // Вернуть ссылку на клонированное значение из нагру
 
 void LoadPoint::VarDel() // Удаление нагрузки ИП
 {
-	switch (Type << 1)
+	if (Point == nullptr)
+		return;
+	switch (Type >> 1)
 	{
-	case Dstring: delete (string*)Point;
-	case Dint: delete (int*)Point;
-	case Dfloat: delete (float*)Point;
-	case Ddouble: delete (double*)Point;
-	case Dchar: delete (char*)Point;
-	case Dbool: delete (bool*)Point;
-	case DPPoint: delete (void**)Point;
+	case Dstring: delete (string*)Point; break;
+//	case Dint: delete (int*)Point; break;
+	case Dfloat: delete (float*)Point; break;
+//	case Ddouble: delete (double*)Point; break;
+	case Dchar: delete (char*)Point; break;
+	case Dbool: delete (bool*)Point; break;
+	case DPPoint: delete (void**)Point; break;
 		//	case DIP: return (*(ip*)Point).сlone();
 		//	case DIC: return Point = ICCopy(*this);
 	}
 	Point = nullptr; Type = 0;
 }
 
-void LoadPoint::Copy(LoadPoint *LP)
+void LoadPoint::Copy(LoadPoint* LP)
 {
 	Type = LP->Type;
 	if (LP->Type % 2 == 0)
@@ -400,31 +385,32 @@ void LoadPoint::print(void* AtrMnemo, string offset)
 	case Cbool:   cout << *(bool*)Point; break;
 	case TIP:
 	case CIP:
-		if(((ip*)Point)->Load.Type >> 1 == DIP || ((ip*)Point)->Load.Type >> 1 == DIC)
+		if (((ip*)Point)->Load.Type >> 1 == DIP || ((ip*)Point)->Load.Type >> 1 == DIC)
 			cout << ((ip*)Point)->atr << " ->\n";
 		else
-			cout << ((ip*)Point)->atr << " # ";
-			((ip*)Point)->Load.print();
-			break;
+			cout << ((ip*)Point)->atr << ((((ip*)Point)->Load.Type%2)? " # ": "=");
+		((ip*)Point)->Load.print();
+		break;
 	case TIC:
 	case CIC:
-	{int _i = 0;
-	for (auto i : *(vector<ip>*)Point)
 	{
-		if (i.Load.Type >> 1 == DIP || i.Load.Type >> 1 == DIC) {
-			cout << offset << i.atr << " ->\n";
+		for (auto i = ((IC_type)Point)->begin(); i != ((IC_type)Point)->end(); i++)
+		{
+			if (i->Load.Type >> 1 == DIP || i->Load.Type >> 1 == DIC) {
+				cout << offset << i->atr << " ->\n";
+			}
+			else
+				cout << offset << i->atr <<  ((i->Load.Type % 2) ? " # " : " = ");
+			i->Load.print(nullptr, offset + "  ");
+			if (i != ((IC_type)Point)->end() - 1) cout << endl;
 		}
-		else
-			cout << offset << i.atr << " # ";
-		i.Load.print(nullptr, offset + "  ");
-		cout << endl;
-	}
-	break;
+		break;
 	}
 	default:
 		cout << "unknown load\n";
 	}
 }
+
 
 void FU::CommonMk(int Mk, LoadPoint Load)
 {
@@ -442,66 +428,66 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 		ProgStopAll = Load.ToBool(true);
 		break;
 	case 916:// ManualModeSet Установить режим ручного управления
-			if (Modeling == nullptr) Modeling = new FUModeling();
-			Modeling->ManualMode = Load.ToBool();
-			break;
-		case 918: // SchedulerSet Установить контекст планировщика вычислений
-			if (Modeling == nullptr) Modeling = new FUModeling();
-			Modeling->scheduler = (FU*)Load.Point;
-			Modeling->ManualMode = true;
-			break;
-		case 924: // PrеfixProgSet
-			PrefixProg =(IC_type) Load.Point;
-			break;
-		case 926: // PostfixProgSet
-			PostfixProg = (IC_type)Load.Point;
-			break;
-		case 990: // ProgExec Выполнить программу (если в нагрузке null, То выполнить из регистра Prog
-			if(Load.Point==nullptr)
-				ProgExec(((vector<ip>*)Prog), Bus, nullptr);
-			else
-				ProgExec(((vector<ip>*)Load.Point), Bus, nullptr);
-			break;
-		case 991: // ProgSet // Установить указатель на программу
-			Prog = (IC_type)Load.Point;
-			break;
-		case 953: // ElseProgSet
-			ElseProg = (IC_type)Load.Point;
-			break;
-		case 954: // ProgSetExec Установить указатель на программу и выполнить ее
-			Prog = (IC_type)Load.Point;
+		if (Modeling == nullptr) Modeling = new FUModeling();
+		Modeling->ManualMode = Load.ToBool();
+		break;
+	case 918: // SchedulerSet Установить контекст планировщика вычислений
+		if (Modeling == nullptr) Modeling = new FUModeling();
+		Modeling->scheduler = (FU*)Load.Point;
+		Modeling->ManualMode = true;
+		break;
+	case 924: // PrеfixProgSet
+		PrefixProg = (IC_type)Load.Point;
+		break;
+	case 926: // PostfixProgSet
+		PostfixProg = (IC_type)Load.Point;
+		break;
+	case 990: // ProgExec Выполнить программу (если в нагрузке null, То выполнить из регистра Prog
+		if (Load.Point == nullptr)
 			ProgExec(((vector<ip>*)Prog), Bus, nullptr);
-			break;
-		case 995: //ContextOut Выдать указатель на контекст ФУ
-			if (Load.Type >> 1 == Dvoid || Load.Type >> 1 == DPPoint || Load.Type >> 1 == DFU)
-				Load.Point = this;
-			break;
-		case 998: //FUNameSet
-			FUName = Load.ToStr();
-			break;
-		case 996: // FUNameOut
-			Load.Write(FUName);
-			break;
-		case 997: // FUNameOutMk
-			if(Load.Point!=nullptr)
+		else
+			ProgExec(((vector<ip>*)Load.Point), Bus, nullptr);
+		break;
+	case 991: // ProgSet // Установить указатель на программу
+		Prog = (IC_type)Load.Point;
+		break;
+	case 953: // ElseProgSet
+		ElseProg = (IC_type)Load.Point;
+		break;
+	case 954: // ProgSetExec Установить указатель на программу и выполнить ее
+		Prog = (IC_type)Load.Point;
+		ProgExec(((vector<ip>*)Prog), Bus, nullptr);
+		break;
+	case 995: //ContextOut Выдать указатель на контекст ФУ
+		if (Load.Type >> 1 == Dvoid || Load.Type >> 1 == DPPoint || Load.Type >> 1 == DFU)
+			Load.Point = this;
+		break;
+	case 998: //FUNameSet
+		FUName = Load.ToStr();
+		break;
+	case 996: // FUNameOut
+		Load.Write(FUName);
+		break;
+	case 997: // FUNameOutMk
+		if (Load.Point != nullptr)
 			MkExec(Load.ToInt(), { Cstring,&FUName });
-			break;
-		case 999: //ContextOutMK Выдать милликоманду с указателем на контекст ФУ
-			if (Load.Type >> 1 == Dint)
-				Bus->ProgFU(*(int*)Load.Point, { TFU, this });
-			break;
+		break;
+	case 999: //ContextOutMK Выдать милликоманду с указателем на контекст ФУ
+		if (Load.Type >> 1 == Dint)
+			Bus->ProgFU(*(int*)Load.Point, { TFU, this });
+		break;
 	}
 }
 
 // Запуск программы
 void FU::ProgExec(void* UK, FU* ProgBus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	if (!UK)return;
+	if (UK==nullptr)return;
 	vector<ip>* Uk = (IC_type)UK;
 	if (ProgBus == nullptr) ProgBus = Bus;
 	bool RepeatF = false;
 	do
-	{		
+	{
 		ProgStop = 0;
 		RepeatF = false;
 		ProgStopAll = false;
@@ -509,7 +495,7 @@ void FU::ProgExec(void* UK, FU* ProgBus, vector<ip>::iterator* Start) // Исполне
 		{
 			if (i->atr < FUMkRange)
 			{
-				if(i->atr!=RepeatMk)
+				if (i->atr != RepeatMk)
 					ProgFU(i->atr, i->Load);
 				else
 				{
@@ -526,13 +512,13 @@ void FU::ProgExec(void* UK, FU* ProgBus, vector<ip>::iterator* Start) // Исполне
 // Запуск программы по указателю из нарузки ИП
 void FU::ProgExec(LoadPoint Uk, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
-	if(Uk.Type>>1==DIC)
+	if (Uk.Type >> 1 == DIC)
 		ProgExec(Uk.Point, Bus, Start);
 }
 
 void FU::MkExec(int MK, LoadPoint Load, FU* BusContext) // Выдача МК с нагрузкой
 {
-	if(MK<FUMkRange) // Если МК адресована сомому ФУ
+	if (MK < FUMkRange) // Если МК адресована сомому ФУ
 		ProgFU(MK, Load);
 	else
 		if (BusContext != nullptr)
@@ -543,7 +529,7 @@ void FU::MkExec(int MK, LoadPoint Load, FU* BusContext) // Выдача МК с нагрузкой
 
 void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext) // Выдача МК с нагрузкой
 {
-	if (Mk.Type >> 1 == Dint && Mk.Point!=nullptr)
+	if (Mk.Type >> 1 == Dint && Mk.Point != nullptr)
 	{
 		int MK = *(int*)Mk.Point;
 		if (MK < FUMkRange) // Если МК адресована сомому ФУ
@@ -560,7 +546,7 @@ void FU::MkExec(LoadPoint Mk, LoadPoint Load, FU* BusContext) // Выдача МК с наг
 void FU::Scheduling()
 {
 	if (Modeling == nullptr) return;
-	if (Modeling->qmk.size()!=0)
+	if (Modeling->qmk.size() != 0)
 	{
 		Modeling->SchedulerFlag = true;
 		if (Modeling->qmk.size() == 0)
@@ -582,7 +568,7 @@ bool LoadCmp(LoadPoint x, LoadPoint y) // Сравнение двух нагрузок ИП
 	if (x.Point == nullptr || y.Point == nullptr)
 		return true;
 	int xt = x.Type >> 1, yt = y.Type >> 1;
-	if( (xt== Dint || xt == Dfloat || xt== Ddouble || xt== Dchar)&&(yt == Dint || yt == Dfloat || yt == Ddouble || yt == Dchar) )
+	if ((xt == Dint || xt == Dfloat || xt == Ddouble || xt == Dchar) && (yt == Dint || yt == Dfloat || yt == Ddouble || yt == Dchar))
 		switch (xt)
 		{
 		case Dint:
@@ -623,7 +609,7 @@ bool LoadCmp(LoadPoint x, LoadPoint y) // Сравнение двух нагрузок ИП
 	if (xt == Dstring && yt == Dstring)
 		return *(string*)x.Point == *(string*)y.Point;
 
-		return false;
+	return false;
 }
 
 bool IPCmp(ip* x, ip* y) // Сравнение двух  ИП
@@ -646,8 +632,8 @@ void AtrProgExec(vector<ip>* Prog, int Atr, FU* Bus, bool AfterContinue)
 	{
 		if (i->Load.Point != nullptr)
 			Bus->ProgExec((vector<ip> *)i->Load.Point, Bus);
-		if((++i)!=Prog->end() && AfterContinue)
-			Bus->ProgExec(Prog, nullptr,&i);
+		if ((++i) != Prog->end() && AfterContinue)
+			Bus->ProgExec(Prog, nullptr, &i);
 	}
 }
 
@@ -656,7 +642,7 @@ ip* AtrFind(void* IC, int Atr) // Поиск в ИК ИП с заданным атру
 	if (IC == nullptr) return nullptr;
 	auto uk = (*(IC_type)IC).begin();
 	for (; uk != ((IC_type)IC)->end(); uk++)
-		if (uk ==( (IC_type)IC)->end())
+		if (uk == ((IC_type)IC)->end())
 			return nullptr;
 		else
 			return uk._Ptr;

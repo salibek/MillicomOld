@@ -308,7 +308,11 @@ void List::ProgFU(int MK, LoadPoint Load)
 		if (MK == 156 || MK == 157) 
 			ListHead->pop_back();
 		break;
-	case 158: // LastLoadOutMK Выдать МК с нагрузкой последней ИП последней линии
+	case 158: // LastLoadOut Выдать нагрузку последней ИП последней линии
+		Load.Write(((IC_type)(ListHead->back().Load.Point))->back().Load);
+//		*(LoadPoint*)Load.Point = ((IC_type)(ListHead->back().Load.Point))->back().Load;
+		break;
+	case 169: // LastLoadOutMk Выдать МК с нагрузкой последней ИП последней линии
 		MkExec(Load, ((IC_type)(ListHead->back().Load.Point))->back().Load);
 		break;
 	case 145: //LineIpOutMk Выдать ссылку на последнюю ИП текущей линии
@@ -321,6 +325,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 147: // LastIpOutMk Выдать ссылку на последнюю ИП текущей линии
 		MkExec(Load, { CIP,&((IC_type)ListHead->back().Load.Point)->back() });
 		break;
+	case 163: // LastCopyAddPrevLoadSet
 	case 159: // LastCopyAddPrevLoadSetLoadMov Добавить копию линии перенести нагрузку в на новую строку и добавить в нагрзуку предыдущей строки ссылку на новую строку 
 	{
 		LoadPoint t = { 0, nullptr };
@@ -333,7 +338,8 @@ void List::ProgFU(int MK, LoadPoint Load)
 			ListHead->push_back({ LineAtr, TIC, ICCopy(Load) });
 		if (ListHead->size() > 1 && ListHead->back().Load.Point!=nullptr && ListHead->back().Load.Type>>1==DIC)
 			((IC_type)ListHead->at(ListHead->size() - 2).Load.Point)->back().Load = ListHead->back().Load;
-		((IC_type)ListHead->back().Load.Point)->back().Load = t;
+		if (MK == 159)
+			((IC_type)ListHead->back().Load.Point)->back().Load = t;
 		break;
 	}
 	case 160: // LineAdd Добавить новую строку всписок
@@ -348,15 +354,15 @@ void List::ProgFU(int MK, LoadPoint Load)
 		if (Load.Point != nullptr)
 			ListHead->push_back({ LineAtr, TIC, ICCopy(Load) });
 		break;
-	case 163: //  LineCopyAddPrevLoadSet Добавить линию в список и поместить ссылку на нее в нагрузку последней ИП последней строки
-	 	if (ListHead == nullptr) ListHead = new vector<ip>;
-		if(Load.Point==nullptr)
-			ListHead->push_back({ LineAtr, TIC, new vector<ip> });
-		else
-			ListHead->push_back({ LineAtr, TIC, ICCopy(Load) });
-		if (ListHead->size() > 1)
-			((IC_type)ListHead->at(ListHead->size() - 2).Load.Point)->back().Load = ListHead->back().Load;
-		break;
+//	case 163: //  LineCopyAddPrevLoadSet Добавить линию в список и поместить ссылку на нее в нагрузку последней ИП последней строки
+//	 	if (ListHead == nullptr) ListHead = new vector<ip>;
+//		if(Load.Point==nullptr)
+//			ListHead->push_back({ LineAtr, TIC, new vector<ip> });
+//		else
+//			ListHead->push_back({ LineAtr, TIC, ICCopy(Load) });
+//		if (ListHead->size() > 1)
+//			((IC_type)ListHead->at(ListHead->size() - 2).Load.Point)->back().Load = ListHead->back().Load;
+//		break;
 	case 162: // LineCopyTreeAdd Добавить копию ОА-графа
 		if (ListHead == nullptr) ListHead = new vector<ip>;
 		// ....
@@ -395,6 +401,8 @@ void List::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 170: // LastAttach Конкатенация ИК к последней линии списка
 	case 171: // LastCopyAttach Конкатенация копии ИК к последней линии списка
+	case 172: // LastCopyAttachLoadMove Добавить ИК и переписать последнюю нагрузку
+	{
 		if (ListHead == nullptr)
 		{
 			ListHead = new vector<ip>;
@@ -415,16 +423,17 @@ void List::ProgFU(int MK, LoadPoint Load)
 					if (MK == 170 && Load.Type == CIP) { delete (ip*)Load.Point; Load.Point = nullptr; Load.Type = 0; }
 				}
 			}
-		else
+			else
 			{
-			if (Load.Type >> 1 == DIC)
-			{
-				copy(((IC_type)Load.Point)->begin(), ((IC_type)Load.Point)->end(), inserter(*((IC_type)ListHead->back().Load.Point), ((IC_type)ListHead->back().Load.Point)->end()));
-				if (MK == 170 && Load.Type==CIP) { ICDel(Load.Point); Load.Point = nullptr; Load.Type = 0; };
+				if (Load.Type >> 1 == DIC)
+				{
+					copy(((IC_type)Load.Point)->begin(), ((IC_type)Load.Point)->end(), inserter(*((IC_type)ListHead->back().Load.Point), ((IC_type)ListHead->back().Load.Point)->end()));
+					if (MK == 170 && Load.Type == CIP) { ICDel(Load.Point); Load.Point = nullptr; Load.Type = 0; };
+				}
 			}
-		}
-		break; 
-	case 172: // LastCopyGrahpAttach
+		break;
+	}
+	case 173: // LastCopyGrahpAttach
 		// ....
 		break;
 	case 175: // LineAttach Конкатенация ИК к текущей линии списка
@@ -444,7 +453,23 @@ void List::ProgFU(int MK, LoadPoint Load)
 				}
 			}
 		break;
-	case 177: // LineCopyGrahpAttach
+	case 178: // LineCopyAttach Конкатенация копии ИК к текущей линии списка
+		if (LineUk != nullptr && Load.Point != nullptr)
+			if (Load.Type >> 1 == DIP)
+			{
+				((IC_type)LineUk->Load.Point)->push_back(*(ip*)Load.Point);
+				if (MK == 175 && Load.Type == CIP) { delete (ip*)Load.Point; Load.Point = nullptr; Load.Type = 0; }
+			}
+			else
+			{
+				if (Load.Type >> 1 == DIC)
+				{
+					copy(((IC_type)Load.Point)->begin(), ((IC_type)Load.Point)->end(), inserter(*((IC_type)LineUk->Load.Point), ((IC_type)LineUk->Load.Point)->end()));
+					if (MK == 175 && Load.Type == CIP) { ICDel(Load.Point); Load.Point = nullptr; Load.Type = 0; };
+				}
+			}
+		break;
+	case 179: // LineCopyGrahpAttach
 			  // ....
 		break;
 	case 185: // LastLoadSet Записать адрес в нагрузку последней ИП последней строки
