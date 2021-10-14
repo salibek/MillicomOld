@@ -4,6 +4,7 @@
 #include <fstream>
 #include <set>
 #include <algorithm>
+#include <stdio.h>
 
 void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового пространства
 {
@@ -11,7 +12,13 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового 
 	{
 	case 1: // Gen
 		// Подбор точек, находящихся в области вокруг данной точки
-		auto ukXL = vx;
+
+		while (1)
+		{
+			//auto Xstart= 
+		}
+
+/*		auto ukXL = vx;
 		auto ukXR = vx;
 		auto ukYL = vy;
 		auto ukYR = vy;
@@ -21,7 +28,8 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового 
 			ukYL -= (NV <= distance(VY->begin(), ukYL)) ? NV / 2 : distance(VY->begin(), ukYL);
 			ukYR += (NV < distance(ukYR, VY->end())) ? NV / 2 : (distance(ukYR, VY->end()) - 1);
 			//copy_if()
-		} while (NN.size() < NV);
+		} while (N.size() < NV);
+		*/
 		// Непосредственно генерация сетки
 
 		break;
@@ -34,9 +42,12 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 	{
 	case 0: // Reset
 		break;
+	case 3: // NDimSet Установить количество измерений фазового пространства
+		NDim = Load.ToInt();
+		break;
 	case 5: // Start
 		//...
-		if((Load.Type>>1)==Dstring)
+		if ((Load.Type >> 1) == Dstring)
 			FileRead(Load);
 		NetGen();
 		break;
@@ -45,20 +56,47 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		break;
 	case 15: // PointsGen Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)
 	case 16: // PointsGenStart Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)
-		switch (ProbFaze)
+		if (ProbFaze == NDim + NDim)
 		{
-		case 0: ProbX1 = Load.ToDouble(); ProbFaze =1; break;
-		case 1: ProbY1 = Load.ToDouble(); ProbFaze =2; break;
-		case 2: ProbX2 = Load.ToDouble(); ProbFaze =3; break;
-		case 3: ProbY2 = Load.ToDouble(); ProbFaze =4; break;
-		case 4: ProbN =  Load.ToInt();    ProbFaze =0; break;
-		}
-		if (ProbFaze == 0) {
+			NProb = Load.ToInt(); ProbFaze = 0; 
 			NetGen(); // Начать генерацию сетки
 			if (MK == 16)
-				;// Start				
+				;// Start
+			break;
+		}
+		if (ProbFaze % 2 == 0)
+			ProbXY[ProbFaze / 2].first = Load.ToDouble();
+		else
+			ProbXY[ProbFaze / 2].second = Load.ToDouble();	
+		break;
+	case 30: //ArcsOutMk Выдать список дуг
+	{
+		set<pair<vector<double>, vector<double>>>ArksOut;// Список координат
+		for (auto& i : VXY[0])
+		{
+			pair<vector<double>, vector<double>> p;
+			for (auto j : i->N) {
+				if (i->Coodinate < j->Coodinate)
+				{
+					p.first = i->Coodinate; p.second = i->Coodinate;
+				}
+				else
+				{
+					p.first = j->Coodinate; p.second = j->Coodinate;
+				}
+				ArksOut.insert(p);
+			}
+		}
+		
+		char cstr[100];
+		for (auto &i : ArksOut)
+		{
+			sprintf_s(cstr,"%f %f\n", i.first, i.second);
+			string str=cstr;
+			MkExec(Load, { Cstring, &str });
 		}
 		break;
+	}
 	case 51: // epsXSet
 		epsX = Load.ToDouble();
 		break;
@@ -70,45 +108,43 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		CommonMk(MK, Load);
 		break;
 	}
-	//string str="sdgdfg.txt";
-	//MeanShiftFU->ProgFU(5,{TString,&str});
 }
 
 void MeanShift::PointsGen()
 {
 	static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
-	vector<pair<double, MeanShiftPoint*>> VXt, VYt;
-	double dX = ProbX2 - ProbX1;
-	double dY = ProbY2 - ProbY1;
-	for (int i = 0; i < ProbN; i++)
+	vector < vector<pair<double, MeanShiftPoint*>>> VXYt;
+	VXY.clear();
+	VXY.resize(NDim);
+	VXYt.resize(NDim);
+	for (int i = 0; i < NProb; i++)
 	{
 		MeanShiftPoint* MP = new MeanShiftPoint();
-		double x = static_cast<int>(rand() * fraction * (ProbX2 - ProbX1 + 1) + ProbX1);
-		double y = static_cast<int>(rand() * fraction * (ProbY2 - ProbY1 + 1) + ProbY1);
-		VXt.push_back({ x, MP });
-		VYt.push_back({ y , MP });
+		//for (auto& k : VXYt)
+		for(int k=0;k<NDim;k++)
+		{
+			double xy = static_cast<double>(rand() * fraction * (ProbXY[k].second - ProbXY[k].first + 1) + ProbXY[k].first);
+			MP->Coodinate.push_back(xy);
+			VXYt[k].push_back({ xy, MP });
+		}
 		MP->epsX = epsX;
 		MP->epsY = epsY;
 		MP->NV = NV;
 		MP->Manager = this;
-		MP->Coodinate.push_back(x);
-		MP->Coodinate.push_back(y);
-		MP->VX = &VX; // Ссылка на список упорядоченных вершин по координате X
-		MP->VY = &VY; // Ссылка на список упорядоченных вершин по координате Y
+		MP->VXY = &VXY; // Ссылка на список упорядоченных вершин по координатам
+		MP->NDim = NDim;
 	}
-	sort(VXt.begin(), VXt.end());
-	sort(VYt.begin(), VYt.end());
-	VX.clear();
-	VX.clear();
-	for (auto uk = VXt.begin(); uk != VXt.end(); uk++)
-		VX.push_back(uk->second);
-	for (auto uk = VYt.begin(); uk != VYt.end(); uk++)
-		VY.push_back(uk->second);
+	auto kVXY = VXY.begin();
+	for (auto& k : VXYt) {
+		sort(k.begin(), k.end());
+		for (auto uk = k.begin(); uk != k.end(); uk++, kVXY++)
+			kVXY->push_back(uk->second);
+	}
 }
 
 void MeanShift::FileRead(LoadPoint Load)
 {
-	ifstream f; // файл для считывания исходных данных
+/*	ifstream f; // файл для считывания исходных данных
 	string FName;
 	ifstream fin;
 	f.open(Load.ToStr());
@@ -138,21 +174,20 @@ void MeanShift::FileRead(LoadPoint Load)
 		VX.push_back(uk->second);
 	for (auto uk = VYt.begin(); uk != VYt.end(); uk++)
 		VY.push_back(uk->second);
+*/
 }
 
 void  MeanShift::NetGen()
 {
 	// Расстановка ссылок в точках на их описание в VX,VY
-	for (auto uk = VX.begin(); uk != VX.end(); uk++)
-	{
-		(*uk)->vx = uk;
+
+	for (auto &k : VXY) {
+		{int i = 0;
+			for (auto uk=k.begin(); uk!=k.end();uk++)
+			{
+			((*uk)->vxy).push_back(k.begin()+i); // Установить указатель на описание точки в VX
+			i++;
+			}
+		}
 	}
-	cout << endl;
-	for (auto uk = VY.begin(); uk != VY.end(); uk++)
-	{
-		(*uk)->vy = uk;
-	}
-	// Генерация сетки
-	for (auto uk = VX.begin(); uk != VX.end(); uk++)
-		(*uk)->ProgFU(1, { 0,nullptr });
 }
