@@ -362,7 +362,7 @@ void LoadPoint::VarClear() // Сброс нагрузки ИП в том числе и с переменной (пере
 	Clear();
 }
 
-void LoadPoint::print(void* AtrMnemo, string offset)
+void LoadPoint::print(void* AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin)
 {
 	if (Point == nullptr)
 	{
@@ -407,6 +407,67 @@ void LoadPoint::print(void* AtrMnemo, string offset)
 		break;
 	}
 	default:
+		if (Type >= 1000) // Печать вектора
+		{
+			switch ((Type % 1000) >> 1)
+			{
+			case Dstring: {
+				cout << ArrayBracketStart;
+				for (auto t = (*((vector<string> *)Point)).begin(); t != (*(vector<string> *)Point).end(); t++)
+					cout << *t << (t == (*((vector<string> *)Point)).begin() - 1 ? Sep : "");
+				cout << ArrayBracketFin;
+				break; }
+			case Dint: {
+				cout << ArrayBracketStart;
+				for (auto t = (*((vector<int> *)Point)).begin(); t != (*(vector<int> *)Point).end(); t++)
+					cout << *t << (t == (*((vector<int> *)Point)).begin() - 1 ? Sep : "");
+				cout << ArrayBracketFin;
+			}break;
+			case Dfloat: {
+				cout << ArrayBracketStart;
+				for (auto t = (*((vector<float> *)Point)).begin(); t != (*(vector<float> *)Point).end(); t++)
+					cout << *t << (t == (*((vector<float> *)Point)).begin() - 1 ? Sep : "");
+				cout << ArrayBracketFin;
+			}break;
+			case Ddouble: {
+				cout << ArrayBracketStart;
+				for (auto t = (*((vector<double>*)Point)).begin(); t != (*(vector<double>*)Point).end(); t++)
+				{
+					cout << *t << ((t != (*((vector<double>*)Point)).end() - 1) ? Sep : "");
+//					cout << *t;
+//					if(t != (*((vector<double>*)Point)).end() - 1)
+//						cout<<Sep;
+				}
+				cout << ArrayBracketFin;
+			}break;
+			case Dchar: {
+				cout << ArrayBracketStart;
+				for (auto t = (*((vector<char> *)Point)).begin(); t != (*(vector<char> *)Point).end(); t++)
+					cout << *t << (t == (*((vector<char> *)Point)).begin() - 1 ? Sep : "");
+				cout << ArrayBracketFin;
+			}break;
+			case Dbool: {
+				cout << ArrayBracketStart;
+				for (auto t = (*((vector<bool> *)Point)).begin(); t != (*(vector<bool> *)Point).end(); t++)
+					cout << *t << (t == (*((vector<bool> *)Point)).begin() - 1 ? Sep : "");
+				cout << ArrayBracketFin;
+			}break;
+			case DIP: {
+				cout << ArrayBracketStart;
+				for (auto t = (*((vector<ip> *)Point)).begin(); t != (*(vector<ip> *)Point).end(); t++)
+					t->Load.print(AtrMnemo, offset, Sep, End);
+				cout << ArrayBracketFin;
+			}break;
+			case DIC: {
+				cout << ArrayBracketStart;
+				for (auto t = (*((vector<ip> *)Point)).begin(); t != (*(vector<ip> *)Point).end(); t++)
+					t->Load.print(AtrMnemo, offset, Sep, End);				
+				cout << ArrayBracketFin;
+			}break;
+			}
+//			cout << End;
+			return;
+		}
 		cout << "unknown load\n";
 	}
 }

@@ -1,38 +1,100 @@
+#define _USE_MATH_DEFINES
 #include "stdafx.h"
 #include "MeanShift.h"
 #include <string>
 #include <fstream>
 #include <set>
 #include <algorithm>
-#include <stdio.h>
+#include <cmath>
+
+double  MeanShiftPoint::dist(vector<double> &a, vector<double> &b) // Вычисление расстояния между двумя точками
+{
+	if (a.size() != b.size()) return -1; // Не совпадают размерности пространств для точек
+	double D = 0;
+	for (vector<double>::iterator ua = a.begin(), ub = b.begin(); ua != a.end(); ua++, ub++)
+		D += (*ua - *ub) * (*ua - *ub);
+}
 
 void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового пространства
 {
 	switch (MK)
 	{
-	case 1: // Gen
+	case 100: // Gen
 		// Подбор точек, находящихся в области вокруг данной точки
-
-		while (1)
+		vector<int>eps_t(eps); // Текущая ширина коридора для выбора точек во множество близлежащих точек
+		N.clear();
+		for (;;) // Пока не набирается нужное количество близлежащих точек
 		{
-			//auto Xstart= 
+			MeanShift* MANAGER = (MeanShift*)Manager;
+		//	for (vector<MeanShiftPoint>::iterator uFU = (eps_t[0] < IdXY[0] ? (&Manager->VXY[IdXY[0]] - eps_t[0])) : &Manager->VXY[IdXY[0]];
+			for (auto uFU = MANAGER->VXY[0].begin() + ((eps_t[0] > Coodinate[0]) ? 0 : Coodinate[0] - eps_t[0]);
+				uFU != MANAGER->VXY[0].end() && distance(MANAGER->VXY[0].begin(), uFU) <= Coodinate[0] + eps_t[0]; uFU++)
+			{
+				if ((*uFU)->ID==ID) continue; // Пропускаем данное ФУ
+				int i_dim;
+				for (i_dim = 0; i_dim < NDim && \
+						(*uFU)->IdXY[i_dim]<=IdXY[i_dim]+eps_t[i_dim] &&\
+						(*uFU)->IdXY[i_dim] >= IdXY[i_dim] - eps_t[i_dim]; i_dim++);
+				if (i_dim == NDim) // Если добрались до конца вектора
+					N.push_back(*uFU); // Формирование множества близлежащих точек N
+			}
+
+			if (N.size() >= NV)
+				break;
+			// Еще одна итерация с расширенными в 2 раза границами
+			for (auto& i : eps_t)
+					i += i;
+			N.clear();
+			//break; // Заглушка!!!!
 		}
+		// Генерация окрестной сетки
+		multimap<double, MeanShiftPoint*> Distance; // Список близлежащих вершин, упорядоченных по расстоянию от точки
+		multimap<double, MeanShiftPoint*> Angle; // Новый список близлежащих вершин, упорядоченных по углу
+		for (auto i : N)
+			Distance.insert({ dist(this->Coodinate,i->Coodinate),i });// Список ФУ по расстояниям
+//		cout << this->Coodinate[0] << " " << this->Coodinate[1] << endl;
+//		for (auto i : Distance)
+//			cout << i.first << " " << i.second->Coodinate[0]<<" "<< i.second->Coodinate[1] << endl;
+//		cout << "-----\n";
 
-/*		auto ukXL = vx;
-		auto ukXR = vx;
-		auto ukYL = vy;
-		auto ukYR = vy;
-		do {
-			ukXL -= (NV <= distance(VX->begin(), ukXL)) ? NV / 2 : distance(VX->begin(), ukXL);
-			ukXR += (NV < distance(ukXR, VX->end())) ? NV / 2 : (distance(ukXR, VX->end()) - 1);
-			ukYL -= (NV <= distance(VY->begin(), ukYL)) ? NV / 2 : distance(VY->begin(), ukYL);
-			ukYR += (NV < distance(ukYR, VY->end())) ? NV / 2 : (distance(ukYR, VY->end()) - 1);
-			//copy_if()
-		} while (N.size() < NV);
-		*/
-		// Непосредственно генерация сетки
-
-		break;
+		for (auto &k:Distance)
+		{		
+			Angle.insert(pair<double, MeanShiftPoint*>
+				(atan2(k.second->Coodinate[0] - Coodinate[0],
+				k.second->Coodinate[1] - Coodinate[1]),k.second)); // Дабавление элементов
+			if (Angle.size() < 3)continue;
+			auto i = Angle.begin();
+			auto st = Angle.begin();
+			auto fin = Angle.begin();
+			for (; i->second != k.second; i++);
+			if (i == Angle.begin()) //Если точка в начале списка по углам
+			{
+				fin = (--Angle.end());
+				st = i; st++;
+			}
+			else if (i == --Angle.end()) // Если точка в конце списка по углам
+			{
+				fin = Angle.begin();
+				st = i; st--;
+			}
+			else
+			{
+				st = fin = i;
+				st--;
+				fin++;
+			}
+			double dSt = (abs(i->first - st->first)) <= M_PI ? abs(i->first - st->first):abs(i->first + st->first);
+			double dFin = (abs(i->first - fin->first)) <= M_PI ? abs(i->first - fin->first) : abs(i->first + fin->first);
+			double dStFin = (abs(st->first - fin->first)) <= M_PI ? abs(st->first - fin->first) : abs(st->first + fin->first);
+			
+			if (dSt + dFin == dStFin && // Если точка находится в остром угле между двумя соседними точками
+				k.first > dist(st->second->Coodinate, fin->second->Coodinate))// Расстояние между соседними точками меньше расстояния от данной точки до текущей точки
+				Angle.erase(i); // Удалить текущую точку из списка близлежащих точек, т.к. она не образует близлажщую сетку
+		}
+		// Запись в контекст ФУ-исполнителя списка на близлежащие вершины списка
+		N.clear();
+		for (auto i : Angle)
+			N.push_back(i.second);
 	}
 }
 
@@ -44,6 +106,11 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		break;
 	case 3: // NDimSet Установить количество измерений фазового пространства
 		NDim = Load.ToInt();
+		EpsFaze = 0; // Сброс фазы считывания eps
+		eps.resize(NDim);
+		ProbMaxMin.resize(NDim);
+		for (auto& i : ProbMaxMin)
+			i.resize(2);
 		break;
 	case 5: // Start
 		//...
@@ -51,95 +118,122 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 			FileRead(Load);
 		NetGen();
 		break;
-	case 8: // NVSet Установить требуемое количество близлежащих точек
+	case 8: // NVSet Установить требуемое количество близлежащих точек для начала построения окрестной сетки вокруг узла
 		NV = Load.ToInt();
 		break;
-	case 15: // PointsGen Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)
+	case 15: // PointsGen Генерация случайных точек (праметр: макс и мин координаты по осям и количество генерируемых точек)
 	case 16: // PointsGenStart Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)
-		if (ProbFaze == NDim + NDim)
-		{
-			NProb = Load.ToInt(); ProbFaze = 0; 
-			NetGen(); // Начать генерацию сетки
-			if (MK == 16)
-				;// Start
-			break;
-		}
-		if (ProbFaze % 2 == 0)
-			ProbXY[ProbFaze / 2].first = Load.ToDouble();
+		if (ProbFaze < NDim + NDim)
+			ProbMaxMin[ProbFaze / 2][ProbFaze % 2] = Load.ToDouble();
 		else
-			ProbXY[ProbFaze / 2].second = Load.ToDouble();	
+		{
+			NProb = Load.ToInt();
+			PointsGen(); // Генерация точек поля
+			NetGen(); // Генерация сетки
+			if (MK == 16)
+				Start(); // Запуск кластеризации
+			ProbFaze = -1; // Сброс фазы МК в нуль через строку ProbFaze++
+		}
+		ProbFaze++;
 		break;
-	case 30: //ArcsOutMk Выдать список дуг
+	case 20: // PointsOutMk Выдать точки фазового пространства
 	{
-		set<pair<vector<double>, vector<double>>>ArksOut;// Список координат
+		
 		for (auto& i : VXY[0])
 		{
-			pair<vector<double>, vector<double>> p;
+			MkExec(Load, { CdoubleArray,&i->Coodinate });
+		}
+		break;
+	}
+	case 30: //ArcsOutMk Выдать список дуг
+	{
+		set<pair< MeanShiftPoint*, MeanShiftPoint*> >ArksOut;// Список координат
+		for (auto& i : VXY[0])
+		{
+			pair<MeanShiftPoint*, MeanShiftPoint*> p;
 			for (auto j : i->N) {
-				if (i->Coodinate < j->Coodinate)
+				if (i->ID < j->ID)
 				{
-					p.first = i->Coodinate; p.second = i->Coodinate;
+					p.first = i; p.second = j;
 				}
 				else
 				{
-					p.first = j->Coodinate; p.second = j->Coodinate;
+					p.first = j; p.second = i;
 				}
 				ArksOut.insert(p);
 			}
 		}
 		
-		char cstr[100];
 		for (auto &i : ArksOut)
 		{
-			sprintf_s(cstr,"%f %f\n", i.first, i.second);
-			string str=cstr;
-			MkExec(Load, { Cstring, &str });
+			MkExec(Load, { CdoubleArray, &i.first->Coodinate });
+			MkExec(Load, { CdoubleArray, &i.second->Coodinate });
 		}
 		break;
 	}
-	case 51: // epsXSet
-		epsX = Load.ToDouble();
+	case 40: // NVPointErrProgSet Установить программу реакции на событие превышения количества требуемых для окрестности точек над количеством точек в системе
+		NVPointErrProg = Load.Point;
 		break;
-	case 52: // epsYSet;
-		epsY = Load.ToDouble();
+	case 51: // epsSet Установить количество анализируемых точек по оси (по умолчанию 20)
+		eps[EpsFaze] = Load.ToInt(20)/2;
+		EpsFaze = (EpsFaze + 1) % NDim;
 		break;
-
+	case 52: // epsAllSet Установить одинаковое количество анализируемых точек для всех осей (по умолчанию 20)
+	{	int t = Load.ToInt(20) / 2;
+		for (auto& i : eps)
+			i = t;
+		break;
+	}
 	default:
 		CommonMk(MK, Load);
 		break;
 	}
 }
 
+void MeanShift::Start() // Запуск кластеризации
+{
+}
+
 void MeanShift::PointsGen()
 {
-	static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
-	vector < vector<pair<double, MeanShiftPoint*>>> VXYt;
+	for (auto& i : VXY) // Очистка предыдувщего поля
+	{
+		for (auto& j : i)
+			delete j;
+	}
 	VXY.clear();
 	VXY.resize(NDim);
-	VXYt.resize(NDim);
 	for (int i = 0; i < NProb; i++)
 	{
-		MeanShiftPoint* MP = new MeanShiftPoint();
-		//for (auto& k : VXYt)
-		for(int k=0;k<NDim;k++)
+		MeanShiftPoint* t = new MeanShiftPoint;
+		t->Coodinate.resize(NDim);
+		t->Manager = this;
+		t->eps = eps;
+		t->NV = NV;
+		t->ID = i; // Установить индетификатор ФУ-исполнителя
+		for (auto& l : t->Coodinate) // Генерация точек
+			l = (double) rand() / RAND_MAX * (ProbMaxMin[l][1] - ProbMaxMin[l][0]) + ProbMaxMin[l][0];
+		for (auto& k : VXY)
+			k.push_back(t); // Запись указателей на исполнительные ФУ в вектора всех изменений
+	}
+	// Упорядочивание точек по каждой из координат
+	int i = 0;
+	for (auto& k : VXY)
+	{
+		sort(k.begin(), k.end(), [i](MeanShiftPoint* a, MeanShiftPoint* b) {return a->Coodinate[i] < b->Coodinate[i]; });
+		i++;
+	}
+	// Расстановка ссылок в точках на их описание в VX,VY
+	for (auto& k : VXY) {// Перебор всех точек
+		for (auto& uFU : k)
 		{
-			double xy = static_cast<double>(rand() * fraction * (ProbXY[k].second - ProbXY[k].first + 1) + ProbXY[k].first);
-			MP->Coodinate.push_back(xy);
-			VXYt[k].push_back({ xy, MP });
+			int i = 0;
+			uFU->refXY.push_back(&uFU);
+			uFU->IdXY.push_back(i); // Запись индекса ФУ по каждому измерению
+			i++;
 		}
-		MP->epsX = epsX;
-		MP->epsY = epsY;
-		MP->NV = NV;
-		MP->Manager = this;
-		MP->VXY = &VXY; // Ссылка на список упорядоченных вершин по координатам
-		MP->NDim = NDim;
 	}
-	auto kVXY = VXY.begin();
-	for (auto& k : VXYt) {
-		sort(k.begin(), k.end());
-		for (auto uk = k.begin(); uk != k.end(); uk++, kVXY++)
-			kVXY->push_back(uk->second);
-	}
+
 }
 
 void MeanShift::FileRead(LoadPoint Load)
@@ -177,17 +271,18 @@ void MeanShift::FileRead(LoadPoint Load)
 */
 }
 
-void  MeanShift::NetGen()
+void  MeanShift::NetGen() // Генерация сетки
 {
-	// Расстановка ссылок в точках на их описание в VX,VY
-
-	for (auto &k : VXY) {
-		{int i = 0;
-			for (auto uk=k.begin(); uk!=k.end();uk++)
-			{
-			((*uk)->vxy).push_back(k.begin()+i); // Установить указатель на описание точки в VX
-			i++;
-			}
-		}
+	// Непосредственно генерация сетки
+	// Определение множества близлежащих точек для построения сетки (множество N)
+	if (NV > VXY[0].size()) // Если количество точек в системе меньше,
+	{						// чем требуемое для окрестности, то построение сетки прерывается
+		ProgExec(NVPointErrProg); // Вызов подрограммы сообщения об ошибке
+		return;
 	}
+	for (auto FUuk : VXY[0])
+	{
+		FUuk->ProgFU(100, {0,nullptr});// Милликоманда генерации близлежащей сетки
+	}
+
 }

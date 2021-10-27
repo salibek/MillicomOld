@@ -32,13 +32,14 @@ int main()
 //	Bus.ProgFU(10, LP);
 
 //	string STR = "Gauss.ind";
-	string STR = "ALE2.ind";
-//	string STR = "Bag.ind";
+//	string STR = "ALE2.ind";
+	string STR = "MeanShift.ind";
+	//	string STR = "Bag.ind";
 //	string STR = "NetTemperat2.ind";
 	Bus.ProgFU(10, {Cstring, &STR});
 
-	string STR5 = "Bag5.txt"; // 5 предметов
-	string STR6 = "Bag6.txt"; // 6 предметов
+//	string STR5 = "Bag5.txt"; // 5 предметов
+//	string STR6 = "Bag6.txt"; // 6 предметов
 //	B.ProgFU(1, { Cstring, &STR5 });
 //	B.ProgFU(10, { Cint, nullptr });
 

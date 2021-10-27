@@ -4272,6 +4272,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="LnOut" Mk=3 Hint="Перевод строки и вывод"}
   Obj={Mnemo="LnOutLn" Mk=4 Hint="Перевод строки, вывод и перевод строки"}
   Obj={Mnemo="Ln" Mk=10 Hint="Перевод строки"}
+  Obj={Mnemo="SepSet" Mk=15 Hint="Установить строку-разделитель"}
+  Obj={Mnemo="EndSet" Mk=16 Hint="Установить строку в конце вывода"}
+  Obj={Mnemo="ArrayBracketStartSet" Mk=17 Hint="Установить строку, обозначающую открывающуюся скобку при вывод вектора"}
+  Obj={Mnemo="ArrayBracketStartSet" Mk=18 Hint="Установить строку, обозначающую закрывающуюся скобку при вывод вектора"}
   Obj={Mnemo="PrefixSet" Mk=20 Hint="Установить файл для вывода"}
   Obj={Mnemo="StdOutFileSet" Mk=30 Hint="Установить файл для ввода"}
   Obj={Mnemo="StdOutFileAppend" Mk=31 Hint="Установить файл для дополнения"}
@@ -4421,10 +4425,12 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=155 Mnemo="LastOutMk" Hint="Выдать ссылку на последнюю линию списка"}
     Obj={Mk=156 Mnemo="LastPopMk" Hint="Выдать ссылку на последнюю линию списка и удалить из списка"}
     Obj={Mk=157 Mnemo="LastDelMk" Hint="Выдать ссылку на последнюю линию списка и удалить ИК"}
+    Obj={Mk=158 Mnemo="LastLoadOut" Hint="Выдать нагрузку последней ИП последней линии"}
+    Obj={Mk=163 Mnemo="LastLoadOutMk" Hint="Выдать МК с нагрузкой последней ИП последней линии"}
+
     Obj={Mk=153 Mnemo="LastIpOutMk" Hint="Выдать ссылку на последнюю ИП последней линии"}
     Obj={Mk=154 Mnemo="LastIpCopyOutMk" Hint="Выдать МК со ссылкой на последнюю ИП последней линии"}
-    Obj={Mk=158 Mnemo="LastLoadOut" Hint="Добавить строку"}
-    Obj={Mk=159 Mnemo="LastLoadOutMk" Hint="Выдать МК с нагрузкой последней ИП последней линии"}
+    
     Obj={Mk=160 Mnemo="LineAdd" Hint="Добавить строку"}
     Obj={Mk=161 Mnemo="LineCopyAdd" Hint="Добавить копию строки"}
     Obj={Mk=163 Mnemo="LineCopyAddPrevLoadSet" Hint="Добавить линию в список и поместить ссылку на нее в нагрузку последней ИП последней строки"}
@@ -4904,10 +4910,18 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 // MeanShiftManager
 	FuTypeIndexes.CellSet=110 FuTypeMkTrees.CellSet=
    {
+      Obj={Mk=3 Mnemo="NDimSet" Hint="Установить количество измерений фазового пространства"}
       Obj={Mk=5 Mnemo="Start" Hint="Считать файл и начать вычисление"}
-      Obj={Mk=8 Mnemo="NVSet" Hint="Выдать текущее модельное время"}
-      Obj={Mk=51 Mnemo="epsXSet" Hint=""}
-      Obj={Mk=52 Mnemo="epsYSet" Hint=""}
+      Obj={Mk=8 Mnemo="NVSet" Hint="Установить требуемое количество близлежащих точек для начала построения окрестной сетки вокруг узла"}
+      Obj={Mk=15 Mnemo="PointsGen" Hint="Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)"}
+      Obj={Mk=16 Mnemo="PointsGenStart" Hint="Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)"}
+      
+      Obj={Mk=20 Mnemo="PointsOutMk" Hint="Выдать список точек фазового пространаства"}
+      Obj={Mk=30 Mnemo="ArcsOutMk" Hint="Выдать список дуг (выдаются координаты точек)"}
+      Obj={Mk=40 Mnemo="NVPointErrProgSet" Hint="Установить программу реакции на событие превышения количества требуемых для окрестности точек над количеством точек в системе"}
+	 Obj={Mk=51 Mnemo="EpsSet" Hint="Установить количество анализируемых точек по оси (по умолчанию 20)"}
+      Obj={Mk=52 Mnemo="EpsAllSet" Hint="Установить одинаковое количество анализируемых точек для всех осей (по умолчанию 20)"}
+
       Obj=CommonMkList
    }
 // BagManager
@@ -4931,7 +4945,12 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 // GaussManager
 	FuTypeIndexes.CellSet=112 FuTypeMkTrees.CellSet=
    {
-	 Obj={Mk=1 Mnemo="Start" Hint="Начало вычислений (в нагрузке имя файла с исходными данными)"}
+	 Obj={Mk=1  Mnemo="Start" Hint="Начало вычислений (в нагрузке имя файла с исходными данными)"}
+	 Obj={Mk=5  Mnemo="SizeSet" Hint="Установить размерность матрицы"}
+	 Obj={Mk=10 Mnemo="MaxSet" Hint="Установить максимальную величину коэффициентов для случайной генерации"}
+	 Obj={Mk=15 Mnemo="MinSet" Hint="Установить мининмальную величину коэффициентов для случайной генерации"}
+	 Obj={Mk=100  Mnemo="CalcTimeSet" Hint="Установить время выполнения операции"}
+	 Obj={Mk=105  Mnemo="SendTimeSet" Hint="Установить время пересылки данных"}
       Obj=CommonMkList
    }
   FuTypeMkTrees.CellSet=nil
@@ -6315,7 +6334,7 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
  	FUType=111 FUTypeDef=111 Hint="ФУ Решения задачи о рюкзаке методом динамического программирования"}
 
      FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
- 	MnemoServiceTable.LineAdd={Mnemo="FUGauss" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	MnemoServiceTable.LineAdd={Mnemo="FUGausNew" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
  	FUType=112 FUTypeDef=112 Hint="ФУ Решения уравнени методом Гаусса"}
 }
 FuTypeMkList.IndexModeSet=1

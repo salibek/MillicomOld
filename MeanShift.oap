@@ -8,12 +8,12 @@
 \\ -------------------------------------- \\
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
+NewFU={Mnemo="Console" FUType=FUConsNew}
 NewFU={Mnemo="MSM" FUType=FUMeanShiftMahager}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-MSM.NVSet=9
-MSM.epsXSet=7
-MSM.epsYSet=7
-MSM.Start="MeanShift.txt"
+MSM.PointsGen=0=10=0=10=20
+//MSM.PointsOutMk=Console.OutLn
+MSM.ArcsOutMk=Console.OutLn

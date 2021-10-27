@@ -9,27 +9,22 @@
 #include <string>
 
 using namespace std; 
-/*
-// Типы переменных
-const int Tvoid = 0, Tchar = 2, Tint = 4, Tfloat = 6, Tdouble = 8, Tstring = 10, TIP = 12, Tbool = 14, TIC = 16;
-const int TPPoint = 18, TGraph = 20, TFU = 22, TLoad = 24;
-// Типы констант
-const int Cvoid = 1, Cchar = 3, Cint = 5, Cfloat = 7, Cdouble = 9, Cstring = 11, CIP = 13, Cbool = 15, CIC = 17;
-const int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25;
-// Общие типы данных (остаток от целочисленного деления на 2 типа переменной или константы)
-const int Dvoid = 0, Dchar = 1, Dint = 2, Dfloat = 3, Ddouble = 4, Dstring = 5, DIP = 6, Dbool = 7, DIC = 8;
-const int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12;
-*/
 
 // Типы переменных
 const int Tvoid = 0, Tint = 2, Tfloat = 4, Tdouble = 6, Tchar = 8, Tstring = 10, TIP = 12, Tbool = 14, TIC = 16;
 const int TPPoint = 18, TGraph=20, TFU=22, TLoad=24;
+const int TcharArray = 1002, TintArray = 1004, TfloatArray = 1006, TdoubleArray = 1008, TstringArray = 1010, TIPArray = 1012;
+const int TboolArray = 1014, TICArray = 1016, TPPointArray = 1018, TGrapgArray = 1020, TFUArray = 1022, TLoadArray = 1024;
 // Типы констант
 const int Cvoid = 1, Cint = 3, Cfloat = 5, Cdouble = 7, Cchar = 9, Cstring = 11, CIP = 13, Cbool = 15, CIC = 17;
 const int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25;
+const int CcharArray = 1001, CintArray = 1003, CfloatArray = 1005, CdoubleArray = 1007, CstringArray = 1009, CIPArray = 1011;
+const int CboolArray = 1013, CICArray = 1015, CPPointArray = 1017, CGrapgArray = 1019, CFUArray = 1021, CLoadArray = 1023;
 // Общие типы данных (остаток от целочисленного деления на 2 типа переменной или константы)
 const int Dvoid=0, Dint = 1, Dfloat = 2, Ddouble = 3, Dchar = 4, Dstring = 5, DIP = 6, Dbool = 7, DIC = 8;
 const int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12;
+const int DcharArray = 501, DintArray = 502, DfloatArray = 503, DdoubleArray = 504, DstringArray = 505, DIPArray = 506;
+const int DboolArray = 507, DICArray = 508, DPPointArray = 509, DGrapgArray = 510, DFUArray = 511, DLoadArray = 512;
 
 // Типы ФУ
 const int FUBus = 0, FUCons = 1, FUStrGen = 2, FULex = 3, FUList = 4, FUFind = 5;
@@ -72,7 +67,7 @@ public:
 	void VarClear(); // Сброс нагрузки ИП в том числе и с переменной (переменная стирается)
 	void* VarClone(); // Копирование значения нагрузки
 	void VarDel();// Удаление нагрузки ИП
-	void print(void* AtrMnemo=nullptr, string offset=""); // Параметр - указатель на табл. мнемоник атрибутов
+	void print(void* AtrMnemo=nullptr, string offset="", string Sep = "", string End = "\n", string ArrayBracketStart = "[", string ArrayBracketFin = "]"); // Параметр - указатель на табл. мнемоник атрибутов
 	LoadPoint Clone(); // Дублировать нагрузку
 	void ConstTypeSet(bool F = true) { if (F)Type |= 1; else VarTypeSet(); }; // Установить тип 'константа'
     // Установить тип 'переменная'
@@ -178,7 +173,7 @@ public:
 	void MkExec(LoadPoint MK, LoadPoint Load, FU* BusContext = nullptr); // Выдача МК с нагрузкой
 	void ProgExec(void* Uk, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
 	void ProgExec(LoadPoint Uk, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
-	int SubAtr; // Атрибут входа в подпрограмму
+	int SubAtr=SubMk; // Атрибут входа в подпрограмму
 
 	FU *Bus; // Ссылка на контекст Шины
 	int FUMkRange = 1000; // Диапазон МК для каждого ФУ

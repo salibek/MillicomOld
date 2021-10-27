@@ -18,13 +18,25 @@ void Console::ProgFU(int MK, LoadPoint Load)
 		cout << prefix;
 		if (MK == 3 || MK == 4) cout << endl;
 		if (Load.Point != nullptr)
-			Load.print();
+			Load.print(nullptr,"",Sep,End,ArrayBracketStart,ArrayBracketFin);
 		if (MK == 2 || MK == 4) cout << endl;
 		break;
 	case 10: // LN Перевод строки
 		cout << endl;
 		break;
-	case 20: // PrefixSet Установить префикс перед строкой
+	case 15: //SepSet Установить строку-разделитель
+		Sep = Load.ToStr();
+		break;
+	case 16: //EndSet Установить строку в конце вывода
+		End = Load.ToStr();
+		break;
+	case 17: // ArrayBracketStartSet Установить строку, обозначающую открывающуюся скобку при вывод вектора
+		ArrayBracketStart = Load.ToStr();
+		break;
+	case 18: // ArrayBracketStartSet Установить строку, обозначающую закрывающуюся скобку при вывод вектора
+		ArrayBracketFin = Load.ToStr();
+		break;
+	case 20: // PrefixSet Установить префикс перед выводом
 		if ((Load.Type) >> 1 == Dstring)
 			prefix = *(string*)Load.Point;
 		break;
