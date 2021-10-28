@@ -4,6 +4,7 @@
 #include <map>
 #include <fstream>
 
+
 class MeanShiftPoint : public FU {
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
@@ -21,6 +22,7 @@ public:
 	vector<MeanShiftPoint**>refXY; // Указатели на описание ссылки на ФУ в векторах упрорядоченных ссылок по осям
 	vector<MeanShiftPoint*> N; // Множество близлежащих точек
 	vector<int> IdXY; // Индексы ФУ-исполнителя по всем осям координат
+	double  dist(vector<double>& a, vector<double>& b); // Вычисление расстояния между двумя точками
 private:
 //	vector < vector<MeanShiftPoint*>>* VXY; // Указатели на точки, упорядоченные по координате X и Y
 //											// Каждое изменение - это отдельная линия в векторе
@@ -29,7 +31,19 @@ private:
 	multimap <double,MeanShiftPoint*> Nd; // Множество близлежащих точек (атрибут - расстояние до точки)
 	multimap <double, MeanShiftPoint*> N_Alph; // Близлежащие точки в сетке, упорядоченные по углу от текущей точки
 	double Lmax = -1;
-	double  dist(vector<double>& a, vector<double>& b); // Вычисление расстояния между двумя точками
+};
+
+class MeanShifRegion : public FU { // Область для поиска максимума концентрации
+public:
+	void ProgFU(int MK, LoadPoint Load) override;
+	void* Manager = nullptr; // Указатель на менеджера
+	vector<double> Center; // Координата центра кластера
+	int ID = 0; // Идентификатор ФУ-региона
+	int NDim = 2; // Количество изменений в фазовом пространстве
+	int CenterPhase = 0; // Фаза записи стартовой точки для региона
+	MeanShiftPoint* CenterFU = nullptr; // ФУ наиболее близкое к центру
+	double R = 1; // Радиус региона
+	void ToStartPoint(MeanShiftPoint* CenterStart); // Метод установки региона в стартовую позицию
 };
 
 class MeanShift : public FU {
@@ -45,13 +59,16 @@ private:
 	vector<int> eps; // Количество анализируемых точек по осям
 	vector<vector<double>> ProbMaxMin; // Максимальные и минимальные координаты по осям просотранства для генерации вычислительной сетки
 	int NProb = 10; // Количество генерируемых случайных точек
-	int ProbFaze = 0, EpsFaze=0; // Фаза считывания параметров для генерации множества случайных точек и фаза считывания необходимого количество точек по осей для построения вычислительной сетки
+	int ProbPhase = 0, EpsFaze=0; // Фаза считывания параметров для генерации множества случайных точек и фаза считывания необходимого количество точек по осей для построения вычислительной сетки
 
 //	vector<vector<MeanShiftPoint*>::iterator> vxy;  //указатели на описание ФУ в векторах VX, VY
 													// Каждое изменение - это отдельная линия в векторе
 
 	void* NVPointErrProg = nullptr;  // Подпрограмма выдачи сообщения об ошибке при превышении количества точек 
 								 //в системе над количеством требуемых точек для построения сетки 
+	vector<MeanShifRegion> Regions; // Список регионов для поиска
+	int RegionPhase = 0; // Фаза записи информации о региона (координаты и радиус)
+	int RegionID = 0; // Индекс текущего региона
 	void  NetGen(); // Генерация сетки
 	void FileRead(LoadPoint Load); // Считывание точек пространства из файла
 	void PointsGen(); // Генеация случайных точек пространства

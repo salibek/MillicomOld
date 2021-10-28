@@ -7,12 +7,56 @@
 #include <algorithm>
 #include <cmath>
 
+void MeanShifRegion::ToStartPoint(MeanShiftPoint* CenterStart) // Метод установки региона в стартовую позицию
+{
+	CenterFU=CenterStart;
+	MeanShiftPoint* MinDistFU = CenterFU;
+	double MinDist = CenterFU->dist(Center, CenterFU->Coodinate);
+	while(1)
+	{
+		for(auto &i: CenterFU->N)
+			if (i->dist(Center, i->Coodinate) < MinDist)
+			{
+				MinDistFU = i;
+				MinDist = i->dist(Center, i->Coodinate);
+			}
+		if (MinDist == CenterFU->dist(Center, CenterFU->Coodinate))
+			break;
+		CenterFU = MinDistFU;
+	}	
+}
+
+void MeanShifRegion::ProgFU(int MK, LoadPoint Load) // Область для поиска максимума концентрации
+{
+	switch (MK)
+	{
+	case 0: // Reset
+		break;
+	case 1: // NDimSet
+		NDim = Load.ToInt();
+		Center.resize(NDim);
+		break;
+	case 5: //CenterSet Установить координаты центра региона
+		Center[CenterPhase] = Load.ToDouble();
+		CenterPhase = (CenterPhase + 1) % NDim;
+		break;
+	case 10: //RSet Установить радиус региона
+		R = Load.ToDouble();
+		break;
+	case 20: // ToStartPoint Переместить регион в стартовую позицию (в нагрузке указатель на ФУ-исполнителя вычислительной сетки)
+		ToStartPoint((MeanShiftPoint*)Load.Point); // Вызов метода установки региона в стартовую позицию
+		break;
+	}
+}
+
 double  MeanShiftPoint::dist(vector<double> &a, vector<double> &b) // Вычисление расстояния между двумя точками
 {
-	if (a.size() != b.size()) return -1; // Не совпадают размерности пространств для точек
+	if (a.size() != b.size()) 
+		return -1; // Не совпадают размерности пространств для точек
 	double D = 0;
 	for (vector<double>::iterator ua = a.begin(), ub = b.begin(); ua != a.end(); ua++, ub++)
 		D += (*ua - *ub) * (*ua - *ub);
+	return D;
 }
 
 void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового пространства
@@ -50,7 +94,7 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового 
 		// Генерация окрестной сетки
 		multimap<double, MeanShiftPoint*> Distance; // Список близлежащих вершин, упорядоченных по расстоянию от точки
 		multimap<double, MeanShiftPoint*> Angle; // Новый список близлежащих вершин, упорядоченных по углу
-		for (auto i : N)
+		for (auto &i : N)
 			Distance.insert({ dist(this->Coodinate,i->Coodinate),i });// Список ФУ по расстояниям
 //		cout << this->Coodinate[0] << " " << this->Coodinate[1] << endl;
 //		for (auto i : Distance)
@@ -70,7 +114,7 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового 
 			if (i == Angle.begin()) //Если точка в начале списка по углам
 			{
 				fin = (--Angle.end());
-				st = i; st++;
+				st = ++Angle.begin();
 			}
 			else if (i == --Angle.end()) // Если точка в конце списка по углам
 			{
@@ -123,8 +167,8 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		break;
 	case 15: // PointsGen Генерация случайных точек (праметр: макс и мин координаты по осям и количество генерируемых точек)
 	case 16: // PointsGenStart Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)
-		if (ProbFaze < NDim + NDim)
-			ProbMaxMin[ProbFaze / 2][ProbFaze % 2] = Load.ToDouble();
+		if (ProbPhase < NDim + NDim)
+			ProbMaxMin[ProbPhase / 2][ProbPhase % 2] = Load.ToDouble();
 		else
 		{
 			NProb = Load.ToInt();
@@ -132,11 +176,56 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 			NetGen(); // Генерация сетки
 			if (MK == 16)
 				Start(); // Запуск кластеризации
-			ProbFaze = -1; // Сброс фазы МК в нуль через строку ProbFaze++
+			ProbPhase = -1; // Сброс фазы МК в нуль через строку ProbPhase++
 		}
-		ProbFaze++;
+		ProbPhase++;
 		break;
-	case 20: // PointsOutMk Выдать точки фазового пространства
+	case 20: // RegionSet Создать и установить параметры региона для поиска
+		if (!RegionPhase)
+		{
+			Regions.push_back({});
+			Regions.back().NDim = NDim;
+			Regions.back().Manager = this;
+			Regions.back().ID = Regions.size() - 1; // Записать идентификатор ФУ-региона
+			Regions.back().Center.push_back(Load.ToDouble());
+		}
+		else if (RegionPhase == NDim)
+		{
+			Regions.back().R = Load.ToDouble();
+			Regions.back().ToStartPoint(VXY[0][0]);
+		}
+		else
+			Regions.back().Center.push_back(Load.ToDouble());
+		RegionPhase = (RegionPhase + 1) % (NDim+1);
+		break;
+	case 21: //RegionsReset Очистить список регионов
+		Regions.clear();
+		break;
+	case 23: // NRigionOut Выдать количество регионов
+		Load.Write(Regions.size());
+		break;
+	case 24: // NRigionOutMk Выдать МК с количеством регионов
+	{
+		int t = Regions.size();
+		MkExec(Load, { Cint,&t });
+		break;
+	}
+	case 25: // RegionIDSet Установить номер текущего региона
+		break;
+	case 26: // RegionCenterOut Выдать координаты региона
+		Load.Write(Regions[RegionID].Center);
+		break;
+	case 27: // RegionCenterOutMk Выдать МК с координатами региона
+		MkExec(Load, {CdoubleArray, &Regions[RegionID].Center});
+		break;
+	case 28: // RegionNearestPointOut Выдать координаты точки, ближайшей к центру региона
+		Load.Write(Regions[RegionID].CenterFU->Coodinate);
+		break;
+	case 29: // RegionNearestPointOutMk Выдать МК с координатами точки, ближайшей к центру региона
+		if(Regions.size() > RegionID && Regions[RegionID].CenterFU!=nullptr)
+			MkExec(Load, { CdoubleArray, &Regions[RegionID].CenterFU->Coodinate });
+		break;
+	case 40: // PointsOutMk Выдать точки фазового пространства
 	{
 		
 		for (auto& i : VXY[0])
@@ -145,7 +234,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		}
 		break;
 	}
-	case 30: //ArcsOutMk Выдать список дуг
+	case 50: //ArcsOutMk Выдать список дуг
 	{
 		set<pair< MeanShiftPoint*, MeanShiftPoint*> >ArksOut;// Список координат
 		for (auto& i : VXY[0])
@@ -171,14 +260,14 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		}
 		break;
 	}
-	case 40: // NVPointErrProgSet Установить программу реакции на событие превышения количества требуемых для окрестности точек над количеством точек в системе
+	case 60: // NVPointErrProgSet Установить программу реакции на событие превышения количества требуемых для окрестности точек над количеством точек в системе
 		NVPointErrProg = Load.Point;
 		break;
-	case 51: // epsSet Установить количество анализируемых точек по оси (по умолчанию 20)
+	case 71: // epsSet Установить количество анализируемых точек по оси (по умолчанию 20)
 		eps[EpsFaze] = Load.ToInt(20)/2;
 		EpsFaze = (EpsFaze + 1) % NDim;
 		break;
-	case 52: // epsAllSet Установить одинаковое количество анализируемых точек для всех осей (по умолчанию 20)
+	case 72: // epsAllSet Установить одинаковое количество анализируемых точек для всех осей (по умолчанию 20)
 	{	int t = Load.ToInt(20) / 2;
 		for (auto& i : eps)
 			i = t;
@@ -284,5 +373,4 @@ void  MeanShift::NetGen() // Генерация сетки
 	{
 		FUuk->ProgFU(100, {0,nullptr});// Милликоманда генерации близлежащей сетки
 	}
-
 }

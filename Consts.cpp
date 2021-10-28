@@ -85,7 +85,55 @@ float LoadPoint::ToFloat(float define) {// Перевод в integer
 		break;
 	}
 };
+// Копирование векторов
+void LoadPoint::Write(vector<double> x) // Копирование вектора
+{
+	if (Type == CdoubleArray)
+		*(vector<double>*)Point = x;
+}
+void LoadPoint::Write(vector<float> x) // Копирование вектора
+{
+	if (Type == CdoubleArray)
+		*(vector<float>*)Point = x;
+}
+void LoadPoint::Write(vector<bool> x) // Копирование вектора
+{
+	if (Type == CdoubleArray)
+		*(vector<bool>*)Point = x;
+}
+void LoadPoint::Write(vector<char> x) // Копирование вектора
+{
+	if (Type == CdoubleArray)
+		*(vector<char>*)Point = x;
+}
+void LoadPoint::Write(vector<int> x) // Копирование вектора
+{
+	if (Type == CdoubleArray)
+		*(vector<int>*)Point = x;
+}
+// -----
 
+void LoadPoint::Write(size_t x)
+{
+	switch (Type)
+	{
+	case Tdouble:
+		*((double*)Point) = x;
+		break;
+	case Tfloat:
+		*((float*)Point) = x;
+		break;
+	case Tint:
+		*((int*)Point) = x;
+		break;
+	case Tbool:
+		*((bool*)Point) = x;
+		break;
+	case Tchar:
+		*((char*)Point) = x;
+		break;
+	}
+}
 
 void LoadPoint::Write(int x)
 {

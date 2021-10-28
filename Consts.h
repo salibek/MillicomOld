@@ -44,15 +44,20 @@ public:
 	void *Point;
 	bool IsConvert(unsigned int T) {}; // “ест на возможность конвертации значени€ из Point в определенный тип
 	void Write(int x);
+	void Write(size_t x);
 	void Write(double x);
 	void Write(float x);
 	void Write(bool x);
 	void Write(char x);
 	void Write(string x);
 	void Write(LoadPoint x);
+	void Write(vector<double> x);
+	void Write(vector<float> x);
+	void Write(vector<bool> x);
+	void Write(vector<char> x);
+	void Write(vector<int> x);
+
 	void Write(void* x) { Point = x; };
-//	void Write(LoadPoint* x) { if (Type == TPPoint) Point = x->Point; Type = CPPoint; };
-//	void Write(LoadPoint x) { Point = x.Point; Type = x.Type; };
 	void WriteVar(LoadPoint x) { Point = x.Point; Type = x.Type; Type |= 1; Type--; }; //«аписать ссылку и сделать ее переменной
 	void WriteConst(LoadPoint x) {Point = x.Point; Type = x.Type; Type |= 1;}; // «аписать ссылку и сделать ее константой
 
