@@ -15,16 +15,22 @@ const int Tvoid = 0, Tint = 2, Tfloat = 4, Tdouble = 6, Tchar = 8, Tstring = 10,
 const int TPPoint = 18, TGraph=20, TFU=22, TLoad=24;
 const int TcharArray = 1002, TintArray = 1004, TfloatArray = 1006, TdoubleArray = 1008, TstringArray = 1010, TIPArray = 1012;
 const int TboolArray = 1014, TICArray = 1016, TPPointArray = 1018, TGrapgArray = 1020, TFUArray = 1022, TLoadArray = 1024;
+const int TcharArray2 = 2002, TintArray2 = 2004, TfloatArray2 = 2006, TdoubleArray2 = 2008, TstringArray2 = 2010, TIPArray2 = 2012;
+const int TboolArray2 = 2014, TICArray2 = 2016, TPPointArray2 = 2018, TGrapgArray2 = 2020, TFUArray2 = 2022, TLoadArray2 = 2024;
 // Типы констант
 const int Cvoid = 1, Cint = 3, Cfloat = 5, Cdouble = 7, Cchar = 9, Cstring = 11, CIP = 13, Cbool = 15, CIC = 17;
 const int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25;
 const int CcharArray = 1001, CintArray = 1003, CfloatArray = 1005, CdoubleArray = 1007, CstringArray = 1009, CIPArray = 1011;
 const int CboolArray = 1013, CICArray = 1015, CPPointArray = 1017, CGrapgArray = 1019, CFUArray = 1021, CLoadArray = 1023;
+const int CcharArray2 = 2001, CintArray2 = 2003, CfloatArray2 = 2005, CdoubleArray2 = 2007, CstringArray2 = 2009, CIPArray2 = 2011;
+const int CboolArray2 = 2013, CICArray2 = 2015, CPPointArray2 = 2017, CGrapgArray2 = 2019, CFUArray2 = 2021, CLoadArray2 = 2023;
 // Общие типы данных (остаток от целочисленного деления на 2 типа переменной или константы)
 const int Dvoid=0, Dint = 1, Dfloat = 2, Ddouble = 3, Dchar = 4, Dstring = 5, DIP = 6, Dbool = 7, DIC = 8;
 const int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12;
 const int DcharArray = 501, DintArray = 502, DfloatArray = 503, DdoubleArray = 504, DstringArray = 505, DIPArray = 506;
 const int DboolArray = 507, DICArray = 508, DPPointArray = 509, DGrapgArray = 510, DFUArray = 511, DLoadArray = 512;
+const int DcharArray2 = 1001, DintArray2 = 1002, DfloatArray2 = 1003, DdoubleArray2 = 1004, DstringArray2 = 1005, DIPArray2 = 1006;
+const int DboolArray2 = 1007, DICArray2 = 1008, DPPointArray2 = 1009, DGrapgArray2 = 1010, DFUArray2 = 1011, DLoadArray2 = 1012;
 
 // Типы ФУ
 const int FUBus = 0, FUCons = 1, FUStrGen = 2, FULex = 3, FUList = 4, FUFind = 5;
@@ -39,6 +45,8 @@ bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
 
 class LoadPoint
 {
+	void VectorPrint(unsigned int Type, void* P, void* AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Печать вектора
+	void MatrixPrint(unsigned int Type, void* P, void* AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin); // Пачать матрицы
 public:
 	unsigned int Type = 0; // Неизвестный тип
 	void *Point;

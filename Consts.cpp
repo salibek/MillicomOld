@@ -402,13 +402,130 @@ void LoadPoint::Clear() // Сбросить нагрузку
 	}
 	Type = 0; Point = nullptr;
 }
-
-void LoadPoint::VarClear() // Сброс нагрузки ИП в том числе и с переменной (переменная стирается)
+// Печать вектора
+void LoadPoint::LoadPoint::VarClear() // Сброс нагрузки ИП в том числе и с переменной (переменная стирается)
 {
 	Type -= Type % 2;
 	Type += 1;
 	Clear();
 }
+
+void LoadPoint::VectorPrint(unsigned int Type, void* P, void* AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin)
+{
+	switch ((Type % 1000) >> 1)
+	{
+	case Dstring: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector<string>*)P)).begin(); t != (*(vector<string>*)P).end(); t++)
+			cout << *t << (t == (*((vector<string>*)P)).begin() - 1 ? Sep : "");
+		cout << ArrayBracketFin;
+		break; }
+	case Dint: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector<int>*)P)).begin(); t != (*(vector<int>*)P).end(); t++)
+			cout << *t << (t == (*((vector<int>*)P)).begin() - 1 ? Sep : "");
+		cout << ArrayBracketFin;
+	}break;
+	case Dfloat: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector<float>*)P)).begin(); t != (*(vector<float>*)P).end(); t++)
+			cout << *t << (t == (*((vector<float>*)P)).begin() - 1 ? Sep : "");
+		cout << ArrayBracketFin;
+	}break;
+	case Ddouble: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector<double>*)P)).begin(); t != (*(vector<double>*)P).end(); t++)
+		{
+			cout << *t << ((t != (*((vector<double>*)P)).end() - 1) ? Sep : "");
+		}
+		cout << ArrayBracketFin;
+	}break;
+	case Dchar: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector<char>*)P)).begin(); t != (*(vector<char>*)P).end(); t++)
+			cout << *t << (t == (*((vector<char>*)P)).begin() - 1 ? Sep : "");
+		cout << ArrayBracketFin;
+	}break;
+	case Dbool: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector<bool>*)P)).begin(); t != (*(vector<bool>*)P).end(); t++)
+			cout << *t << (t == (*((vector<bool>*)P)).begin() - 1 ? Sep : "");
+		cout << ArrayBracketFin;
+	}break;
+	case DIP: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector<ip>*)P)).begin(); t != (*(vector<ip>*)P).end(); t++)
+			t->Load.print(AtrMnemo, offset, Sep, End);
+		cout << ArrayBracketFin;
+	}break;
+	case DIC: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector<ip>*)P)).begin(); t != (*(vector<ip>*)P).end(); t++)
+			t->Load.print(AtrMnemo, offset, Sep, End);
+		cout << ArrayBracketFin;
+	}break;
+	default:
+		cout << "unknown load\n";
+	}
+}
+// Печать матрицы
+void LoadPoint::MatrixPrint(unsigned int Type, void* P, void* AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin)
+{
+	switch ((Type % 1000) >> 1)
+	{
+	case Dstring: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector< vector<string>>*)P)).begin(); t != (*(vector < vector<string>>*)P).end(); t++)
+			VectorPrint(Type-1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
+		cout << ArrayBracketFin;
+		break; }
+	case Dint: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector < vector<int>>*)P)).begin(); t != (*(vector < vector<int>>*)P).end(); t++)
+			VectorPrint(Type - 1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
+		cout << ArrayBracketFin;
+	}break;
+	case Dfloat: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector < vector<float>>*)P)).begin(); t != (*(vector < vector<float>>*)P).end(); t++)
+			VectorPrint(Type - 1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
+		cout << ArrayBracketFin;
+	}break;
+	case Ddouble: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector < vector<double>>*)P)).begin(); t != (*(vector < vector<double>>*)P).end(); t++)
+			VectorPrint(Type - 1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
+		cout << ArrayBracketFin;
+	}break;
+	case Dchar: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector < vector<char>>*)P)).begin(); t != (*(vector < vector<char>>*)P).end(); t++)
+			VectorPrint(Type - 1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
+		cout << ArrayBracketFin;
+	}break;
+	case Dbool: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector < vector<bool>>*)P)).begin(); t != (*(vector < vector<bool>>*)P).end(); t++)
+			VectorPrint(Type - 1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
+		cout << ArrayBracketFin;
+	}break;
+	case DIP: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector < vector<ip>>*)P)).begin(); t != (*(vector < vector<ip>>*)P).end(); t++)
+			VectorPrint(Type - 1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
+		cout << ArrayBracketFin;
+	}break;
+	case DIC: {
+		cout << ArrayBracketStart;
+		for (auto t = (*((vector < vector<ip>>*)P)).begin(); t != (*(vector < vector<ip>>*)P).end(); t++)
+			VectorPrint(Type - 1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
+		cout << ArrayBracketFin;
+	}break;
+	default:
+		cout << "unknown load\n";
+	}
+}
+
 
 void LoadPoint::print(void* AtrMnemo, string offset, string Sep, string End, string ArrayBracketStart, string ArrayBracketFin)
 {
@@ -450,73 +567,18 @@ void LoadPoint::print(void* AtrMnemo, string offset, string Sep, string End, str
 			else
 				cout << offset << i->atr <<  ((i->Load.Type % 2) ? " # " : " = ");
 			i->Load.print(nullptr, offset + "  ");
-			if (i != ((IC_type)Point)->end() - 1) cout << endl;
+			if (i != ((IC_type)Point)->end() - 1) 
+				cout << endl;
 		}
 		break;
 	}
 	default:
-		if (Type >= 1000) // Печать вектора
+		if (Type >= 2000) // Печать матрица и вектора
 		{
-			switch ((Type % 1000) >> 1)
-			{
-			case Dstring: {
-				cout << ArrayBracketStart;
-				for (auto t = (*((vector<string> *)Point)).begin(); t != (*(vector<string> *)Point).end(); t++)
-					cout << *t << (t == (*((vector<string> *)Point)).begin() - 1 ? Sep : "");
-				cout << ArrayBracketFin;
-				break; }
-			case Dint: {
-				cout << ArrayBracketStart;
-				for (auto t = (*((vector<int> *)Point)).begin(); t != (*(vector<int> *)Point).end(); t++)
-					cout << *t << (t == (*((vector<int> *)Point)).begin() - 1 ? Sep : "");
-				cout << ArrayBracketFin;
-			}break;
-			case Dfloat: {
-				cout << ArrayBracketStart;
-				for (auto t = (*((vector<float> *)Point)).begin(); t != (*(vector<float> *)Point).end(); t++)
-					cout << *t << (t == (*((vector<float> *)Point)).begin() - 1 ? Sep : "");
-				cout << ArrayBracketFin;
-			}break;
-			case Ddouble: {
-				cout << ArrayBracketStart;
-				for (auto t = (*((vector<double>*)Point)).begin(); t != (*(vector<double>*)Point).end(); t++)
-				{
-					cout << *t << ((t != (*((vector<double>*)Point)).end() - 1) ? Sep : "");
-//					cout << *t;
-//					if(t != (*((vector<double>*)Point)).end() - 1)
-//						cout<<Sep;
-				}
-				cout << ArrayBracketFin;
-			}break;
-			case Dchar: {
-				cout << ArrayBracketStart;
-				for (auto t = (*((vector<char> *)Point)).begin(); t != (*(vector<char> *)Point).end(); t++)
-					cout << *t << (t == (*((vector<char> *)Point)).begin() - 1 ? Sep : "");
-				cout << ArrayBracketFin;
-			}break;
-			case Dbool: {
-				cout << ArrayBracketStart;
-				for (auto t = (*((vector<bool> *)Point)).begin(); t != (*(vector<bool> *)Point).end(); t++)
-					cout << *t << (t == (*((vector<bool> *)Point)).begin() - 1 ? Sep : "");
-				cout << ArrayBracketFin;
-			}break;
-			case DIP: {
-				cout << ArrayBracketStart;
-				for (auto t = (*((vector<ip> *)Point)).begin(); t != (*(vector<ip> *)Point).end(); t++)
-					t->Load.print(AtrMnemo, offset, Sep, End);
-				cout << ArrayBracketFin;
-			}break;
-			case DIC: {
-				cout << ArrayBracketStart;
-				for (auto t = (*((vector<ip> *)Point)).begin(); t != (*(vector<ip> *)Point).end(); t++)
-					t->Load.print(AtrMnemo, offset, Sep, End);				
-				cout << ArrayBracketFin;
-			}break;
-			}
-//			cout << End;
-			return;
+			MatrixPrint(Type, Point, AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
 		}
-		cout << "unknown load\n";
+		else if(Type >= 1000)
+			VectorPrint(Type, Point, AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
 	}
 }
 

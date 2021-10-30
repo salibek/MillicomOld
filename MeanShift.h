@@ -2,8 +2,8 @@
 #include "Consts.h"
 #include <vector>
 #include <map>
+#include <set>
 #include <fstream>
-
 
 class MeanShiftPoint : public FU {
 public:
@@ -36,6 +36,7 @@ private:
 class MeanShifRegion : public FU { // Область для поиска максимума концентрации
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
+	void Migration(); // Поиск концентрации точек
 	void* Manager = nullptr; // Указатель на менеджера
 	vector<double> Center; // Координата центра кластера
 	int ID = 0; // Идентификатор ФУ-региона
@@ -43,7 +44,10 @@ public:
 	int CenterPhase = 0; // Фаза записи стартовой точки для региона
 	MeanShiftPoint* CenterFU = nullptr; // ФУ наиболее близкое к центру
 	double R = 1; // Радиус региона
-	void ToStartPoint(MeanShiftPoint* CenterStart); // Метод установки региона в стартовую позицию
+	void MoveToPoint(MeanShiftPoint* CenterStart); // Метод установки региона в стартовую позицию
+	int MassCenter(vector<double>& CenterNew, MeanShiftPoint* Point, set<MeanShiftPoint*>& Pass); // Вычисление центра масс области (Возвращается количество точек)
+	// на входе ссылка на ФУ для вычисления и вектор пройденных вершин
+	vector<vector<double>> MigrationHistory; // История перемещения центра области (в историю попадают центры области на каждом шаге)
 };
 
 class MeanShift : public FU {

@@ -4275,7 +4275,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="SepSet" Mk=15 Hint="Установить строку-разделитель"}
   Obj={Mnemo="EndSet" Mk=16 Hint="Установить строку в конце вывода"}
   Obj={Mnemo="ArrayBracketStartSet" Mk=17 Hint="Установить строку, обозначающую открывающуюся скобку при вывод вектора"}
-  Obj={Mnemo="ArrayBracketStartSet" Mk=18 Hint="Установить строку, обозначающую закрывающуюся скобку при вывод вектора"}
+  Obj={Mnemo="ArrayBracketFinSet" Mk=18 Hint="Установить строку, обозначающую закрывающуюся скобку при вывод вектора"}
   Obj={Mnemo="PrefixSet" Mk=20 Hint="Установить файл для вывода"}
   Obj={Mnemo="StdOutFileSet" Mk=30 Hint="Установить файл для ввода"}
   Obj={Mnemo="StdOutFileAppend" Mk=31 Hint="Установить файл для дополнения"}
@@ -4915,12 +4915,22 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
       Obj={Mk=8 Mnemo="NVSet" Hint="Установить требуемое количество близлежащих точек для начала построения окрестной сетки вокруг узла"}
       Obj={Mk=15 Mnemo="PointsGen" Hint="Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)"}
       Obj={Mk=16 Mnemo="PointsGenStart" Hint="Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)"}
+      Obj={Mk=20 Mnemo="RegionSet" Hint="Создать и установить параметры региона для поиска"}
+      Obj={Mk=21 Mnemo="RegionsReset" Hint="Очистить список регионов"}
+      Obj={Mk=23 Mnemo="NRigionOut" Hint="Выдать количество регионов"}
+      Obj={Mk=24 Mnemo="NRigionOutMK" Hint="Выдать МК с количеством регионов"}
+      Obj={Mk=25 Mnemo="RegionIDSet" Hint="Установить номер текущего региона"}
+      Obj={Mk=26 Mnemo="RegionCenterOut" Hint="Выдать координаты региона"}
+      Obj={Mk=27 Mnemo="RegionCenterOutMk" Hint="Выдать МК с координатами региона"}
+      Obj={Mk=28 Mnemo="RegionNearestPointOut" Hint="Выдать координаты точки, ближайшей к центру региона"}
+      Obj={Mk=29 Mnemo="RegionNearestPointOutMk" Hint="Выдать МК с координатами точки, ближайшей к центру региона"}
+      Obj={Mk=35 Mnemo="MigrationHistoryOutMk" Hint="Выдать МК с историей перемещения области"}
       
-      Obj={Mk=20 Mnemo="PointsOutMk" Hint="Выдать список точек фазового пространаства"}
-      Obj={Mk=30 Mnemo="ArcsOutMk" Hint="Выдать список дуг (выдаются координаты точек)"}
-      Obj={Mk=40 Mnemo="NVPointErrProgSet" Hint="Установить программу реакции на событие превышения количества требуемых для окрестности точек над количеством точек в системе"}
-	 Obj={Mk=51 Mnemo="EpsSet" Hint="Установить количество анализируемых точек по оси (по умолчанию 20)"}
-      Obj={Mk=52 Mnemo="EpsAllSet" Hint="Установить одинаковое количество анализируемых точек для всех осей (по умолчанию 20)"}
+      Obj={Mk=40 Mnemo="PointsOutMk" Hint="Выдать список точек фазового пространаства"}
+      Obj={Mk=50 Mnemo="ArcsOutMk" Hint="Выдать список дуг (выдаются координаты точек)"}
+      Obj={Mk=60 Mnemo="NVPointErrProgSet" Hint="Установить программу реакции на событие превышения количества требуемых для окрестности точек над количеством точек в системе"}
+      Obj={Mk=71 Mnemo="EpsSet" Hint="Установить количество анализируемых точек по оси (по умолчанию 20)"}
+      Obj={Mk=72 Mnemo="EpsAllSet" Hint="Установить одинаковое количество анализируемых точек для всех осей (по умолчанию 20)"}
 
       Obj=CommonMkList
    }

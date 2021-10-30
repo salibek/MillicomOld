@@ -14,12 +14,19 @@ NewFU={Mnemo="MSM" FUType=FUMeanShiftMahager}
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-MSM.PointsGen=0=10=0=10=20
+MSM.PointsGen=0=10=0=10=40
 //MSM.PointsOutMk=Console.OutLn
 Console.ArrayBracketStartSet=""
 Console.ArrayBracketFinSet=""
 //Console.StdOutFileSet="MeanShiftOut.txt"
-//MSM.ArcsOutMk=Console.OutLn
-MSM.RegionSet=5=5=2
+MSM.ArcsOutMk=Console.LnOut
+MSM.RegionSet=1=1=4
+MSM.Start
 MSM.RegionIDSet=0
-MSM.RegionNearestPointOutMk=Console.LnOut
+Console.OutLn
+Console.OutLn
+MSM.RegionNearestPointOutMk=Console.OutLn
+MSM.RegionCenterOutMk=Console.OutLn
+
+Console.OutLn="Region history"
+MSM.MigrationHistoryOutMk=Console.OutLn

@@ -3,11 +3,42 @@
 #include "MeanShift.h"
 #include <string>
 #include <fstream>
-#include <set>
 #include <algorithm>
 #include <cmath>
 
-void MeanShifRegion::ToStartPoint(MeanShiftPoint* CenterStart) // Метод установки региона в стартовую позицию
+int MeanShifRegion::MassCenter(vector<double>&CenterNew, MeanShiftPoint* Point, set<MeanShiftPoint*> &Pass) // Вычисление центра масс области (Возвращается количество точек)
+// на входе ссылка на ФУ для вычисления и вектор пройденных вершин
+{
+	if (Pass.count(Point)) return 0; // Если точка уже была пройдена
+	if (Point->dist(Point->Coodinate, Center) > R)return 0;
+	Pass.insert(Point); // Включаем вершину в список посмотренных
+	for (int i = 0; i < NDim; i++)
+		CenterNew[i]+= Point->Coodinate[i];
+	int NS = 0;
+	for (auto &i : Point->N)
+		NS += MassCenter(CenterNew,i,Pass);
+	return NS + 1;
+}
+
+void MeanShifRegion::Migration() // Поиск концентрации точек
+{
+	vector<double> CenterOld; // Старый центр области
+	vector<double> CenterNew=Center;
+	do
+	{
+		Center = CenterNew;
+		MigrationHistory.push_back(Center);//Записать историю перемещений
+		MoveToPoint(CenterFU);
+		// Вычисление центра масс области (заглушка)
+		set<MeanShiftPoint*> Pass;
+		int NRegion = MassCenter(CenterNew, CenterFU, Pass);
+		if (!NRegion) return;
+		for (auto& i : CenterNew)
+			i /= NRegion;
+	} while (CenterNew != Center);
+}
+
+void MeanShifRegion::MoveToPoint(MeanShiftPoint* CenterStart) // Метод установки региона в стартовую позицию
 {
 	CenterFU=CenterStart;
 	MeanShiftPoint* MinDistFU = CenterFU;
@@ -44,7 +75,22 @@ void MeanShifRegion::ProgFU(int MK, LoadPoint Load) // Область для поиска максим
 		R = Load.ToDouble();
 		break;
 	case 20: // ToStartPoint Переместить регион в стартовую позицию (в нагрузке указатель на ФУ-исполнителя вычислительной сетки)
-		ToStartPoint((MeanShiftPoint*)Load.Point); // Вызов метода установки региона в стартовую позицию
+		MoveToPoint((MeanShiftPoint*)Load.Point); // Вызов метода установки региона в стартовую позицию
+		break;
+	case 30:// Migration Перемещение области для поиска концентрации точек
+		Migration();
+		break;
+	case 50: // CenterOut Выдать координаты центра области
+		Load.Write(Center);
+		break;
+	case 51: // CenterOutMk Выдать МК с координатами центра области
+		MkExec(Load, { CdoubleArray,&Center });
+		break;
+	case 60: // HistoryOut Выдать историю перемещения области
+	//	Load.Write(MigrationHistory);
+		break;
+	case 61: // HistoryOutMk Выдать МК с историей перемещения области
+		MkExec(Load, {CintArray2,&MigrationHistory});
 		break;
 	}
 }
@@ -96,10 +142,6 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового 
 		multimap<double, MeanShiftPoint*> Angle; // Новый список близлежащих вершин, упорядоченных по углу
 		for (auto &i : N)
 			Distance.insert({ dist(this->Coodinate,i->Coodinate),i });// Список ФУ по расстояниям
-//		cout << this->Coodinate[0] << " " << this->Coodinate[1] << endl;
-//		for (auto i : Distance)
-//			cout << i.first << " " << i.second->Coodinate[0]<<" "<< i.second->Coodinate[1] << endl;
-//		cout << "-----\n";
 
 		for (auto &k:Distance)
 		{		
@@ -160,7 +202,9 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		//...
 		if ((Load.Type >> 1) == Dstring)
 			FileRead(Load);
-		NetGen();
+		//NetGen();
+		for (auto& R : Regions) // Вызов программ миграции регионов
+			R.Migration();
 		break;
 	case 8: // NVSet Установить требуемое количество близлежащих точек для начала построения окрестной сетки вокруг узла
 		NV = Load.ToInt();
@@ -192,7 +236,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		else if (RegionPhase == NDim)
 		{
 			Regions.back().R = Load.ToDouble();
-			Regions.back().ToStartPoint(VXY[0][0]);
+			Regions.back().MoveToPoint(VXY[0][0]);
 		}
 		else
 			Regions.back().Center.push_back(Load.ToDouble());
@@ -224,6 +268,9 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 	case 29: // RegionNearestPointOutMk Выдать МК с координатами точки, ближайшей к центру региона
 		if(Regions.size() > RegionID && Regions[RegionID].CenterFU!=nullptr)
 			MkExec(Load, { CdoubleArray, &Regions[RegionID].CenterFU->Coodinate });
+		break;
+	case 35: // MigrationHistoryOutMk Выдать МК с историей перемещения области
+		MkExec(Load, { CdoubleArray2,&Regions[RegionID].MigrationHistory });
 		break;
 	case 40: // PointsOutMk Выдать точки фазового пространства
 	{
@@ -370,7 +417,5 @@ void  MeanShift::NetGen() // Генерация сетки
 		return;
 	}
 	for (auto FUuk : VXY[0])
-	{
 		FUuk->ProgFU(100, {0,nullptr});// Милликоманда генерации близлежащей сетки
-	}
 }
