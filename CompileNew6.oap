@@ -225,7 +225,7 @@ AOperationAnalysis.BusModeSet=1
 >{1 2 Obj={AOperationAnalysis.InObjAtrPopMk=ACmp.Cmp
   ACmp.PopMk=SyntaxStack.MarkLastAtrSet //!!!!!!!
   Lexica.ReceiverMkSet=AWait.FindIp}}
->{Obj={Lexica.Stop LogCon.VarOut="Wrong expression !!! 4"} 0}
+>{Obj={Lexica.Stop LogCon.VarOut="Wrong expression !!!"} 0}
 
 BiggerCheck.BusModeSet=2
 BiggerCheck.Set=
@@ -4921,10 +4921,11 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
       Obj={Mk=24 Mnemo="NRigionOutMK" Hint="Выдать МК с количеством регионов"}
       Obj={Mk=25 Mnemo="RegionIDSet" Hint="Установить номер текущего региона"}
       Obj={Mk=26 Mnemo="RegionCenterOut" Hint="Выдать координаты региона"}
-      Obj={Mk=27 Mnemo="RegionCenterOutMk" Hint="Выдать МК с координатами региона"}
+      Obj={Mk=27 Mnemo="RegionCenterOutMk" Hint="Выдать МК с координатами региона (Если индекс <0, то выдаются координаты всех областей)"}
       Obj={Mk=28 Mnemo="RegionNearestPointOut" Hint="Выдать координаты точки, ближайшей к центру региона"}
       Obj={Mk=29 Mnemo="RegionNearestPointOutMk" Hint="Выдать МК с координатами точки, ближайшей к центру региона"}
-      Obj={Mk=35 Mnemo="MigrationHistoryOutMk" Hint="Выдать МК с историей перемещения области"}
+      Obj={Mk=35 Mnemo="MigrationHistoryOutMk" Hint="Выдать МК с историей перемещения области (Если идентификатор региона < 0, то выводится история перемещений всех областей)"}
+      Obj={Mk=37 Mnemo="RegionNetSet" Hint="Установить сетку регионов. Параметры: мин и макс координаты области по кадой из осей, шаг сетки по каждому измерению, в конце радиус областей"}
       
       Obj={Mk=40 Mnemo="PointsOutMk" Hint="Выдать список точек фазового пространаства"}
       Obj={Mk=50 Mnemo="ArcsOutMk" Hint="Выдать список дуг (выдаются координаты точек)"}

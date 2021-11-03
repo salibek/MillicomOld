@@ -11,10 +11,10 @@ void Console::ProgFU(int MK, LoadPoint Load)
 	switch (MK)
 	{
 	case 0: break;// Reset
-	case 1: // Out
-	case 2: // OutLn
-	case 3: // LnOut
-	case 4: // LnOutLn
+	case 1: // Out Вывод
+	case 2: // OutLn Вывод и перевод строки
+	case 3: // LnOut Перевод строки и вывод
+	case 4: // LnOutLn Перевод строки, вывод и снова перевод строки
 		cout << prefix;
 		if (MK == 3 || MK == 4) cout << endl;
 		if (Load.Point != nullptr)

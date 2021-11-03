@@ -32,7 +32,7 @@ class Scheduler : FU
 	double PrevTime = 0, PrevCoreCount=0; // Модельное время предыдущего события и счетчик занятых ядер
 	double ParallelFactor = 0; // коэффициент параллелизма
 	double AverageMkQueue = 0; // Средняя и максимальная длины очереди МК
-	int  MaxMkQueue = 0;
+	int  MaxMkQueue = 0; // Максимальная длина очереди МК ко всем ФУ, подключенным к данному планировщику
 public:
 	void* SchedulingProg = nullptr;
 	void ProgFU(int MK, LoadPoint Load) override;

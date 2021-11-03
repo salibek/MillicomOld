@@ -489,12 +489,15 @@ void LoadPoint::MatrixPrint(unsigned int Type, void* P, void* AtrMnemo, string o
 		cout << ArrayBracketStart;
 		for (auto t = (*((vector < vector<float>>*)P)).begin(); t != (*(vector < vector<float>>*)P).end(); t++)
 			VectorPrint(Type - 1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
-		cout << ArrayBracketFin;
+		cout << ArrayBracketFin ;
 	}break;
 	case Ddouble: {
 		cout << ArrayBracketStart;
 		for (auto t = (*((vector < vector<double>>*)P)).begin(); t != (*(vector < vector<double>>*)P).end(); t++)
+		{
 			VectorPrint(Type - 1000, (void*)&(*t), AtrMnemo, offset, Sep, End, ArrayBracketStart, ArrayBracketFin);
+			cout << End;
+		}
 		cout << ArrayBracketFin;
 	}break;
 	case Dchar: {

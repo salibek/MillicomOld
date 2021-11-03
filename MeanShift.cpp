@@ -10,7 +10,7 @@ int MeanShifRegion::MassCenter(vector<double>&CenterNew, MeanShiftPoint* Point, 
 // на входе ссылка на ФУ для вычисления и вектор пройденных вершин
 {
 	if (Pass.count(Point)) return 0; // Если точка уже была пройдена
-	if (Point->dist(Point->Coodinate, Center) > R)return 0;
+	if (Point->dist(Point->Coodinate, Center) > R*R)return 0;
 	Pass.insert(Point); // Включаем вершину в список посмотренных
 	for (int i = 0; i < NDim; i++)
 		CenterNew[i]+= Point->Coodinate[i];
@@ -35,7 +35,7 @@ void MeanShifRegion::Migration() // Поиск концентрации точек
 		if (!NRegion) return;
 		for (auto& i : CenterNew)
 			i /= NRegion;
-	} while (CenterNew != Center);
+	} while (CenterFU->dist(CenterNew, Center)>Eps);
 }
 
 void MeanShifRegion::MoveToPoint(MeanShiftPoint* CenterStart) // Метод установки региона в стартовую позицию
@@ -110,44 +110,45 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового 
 	switch (MK)
 	{
 	case 100: // Gen
+	{
 		// Подбор точек, находящихся в области вокруг данной точки
 		vector<int>eps_t(eps); // Текущая ширина коридора для выбора точек во множество близлежащих точек
 		N.clear();
 		for (;;) // Пока не набирается нужное количество близлежащих точек
 		{
 			MeanShift* MANAGER = (MeanShift*)Manager;
-		//	for (vector<MeanShiftPoint>::iterator uFU = (eps_t[0] < IdXY[0] ? (&Manager->VXY[IdXY[0]] - eps_t[0])) : &Manager->VXY[IdXY[0]];
-			for (auto uFU = MANAGER->VXY[0].begin() + ((eps_t[0] > Coodinate[0]) ? 0 : Coodinate[0] - eps_t[0]);
-				uFU != MANAGER->VXY[0].end() && distance(MANAGER->VXY[0].begin(), uFU) <= Coodinate[0] + eps_t[0]; uFU++)
+			for (auto uFU = MANAGER->VXY[0].begin() + ((eps_t[0] > IdXY[0]) ? 0 : IdXY[0] - eps_t[0]);
+				uFU != MANAGER->VXY[0].end() && distance(MANAGER->VXY[0].begin(), uFU) <= IdXY[0] + eps_t[0]; uFU++)
 			{
-				if ((*uFU)->ID==ID) continue; // Пропускаем данное ФУ
+				if ((*uFU)->ID == ID) 
+					continue; // Пропускаем данное ФУ
 				int i_dim;
-				for (i_dim = 0; i_dim < NDim && \
-						(*uFU)->IdXY[i_dim]<=IdXY[i_dim]+eps_t[i_dim] &&\
-						(*uFU)->IdXY[i_dim] >= IdXY[i_dim] - eps_t[i_dim]; i_dim++);
+				for (i_dim = 1; i_dim < NDim &&
+					(*uFU)->IdXY[i_dim] <= IdXY[i_dim] + eps_t[i_dim] &&
+					(*uFU)->IdXY[i_dim] >= IdXY[i_dim] - eps_t[i_dim]; i_dim++);
 				if (i_dim == NDim) // Если добрались до конца вектора
-					N.push_back(*uFU); // Формирование множества близлежащих точек N
+					N.insert(*uFU); // Формирование множества близлежащих точек N
 			}
 
 			if (N.size() >= NV)
 				break;
 			// Еще одна итерация с расширенными в 2 раза границами
 			for (auto& i : eps_t)
-					i += i;
+				i += i;
 			N.clear();
 			//break; // Заглушка!!!!
 		}
 		// Генерация окрестной сетки
 		multimap<double, MeanShiftPoint*> Distance; // Список близлежащих вершин, упорядоченных по расстоянию от точки
 		multimap<double, MeanShiftPoint*> Angle; // Новый список близлежащих вершин, упорядоченных по углу
-		for (auto &i : N)
+		for (auto& i : N)
 			Distance.insert({ dist(this->Coodinate,i->Coodinate),i });// Список ФУ по расстояниям
 
-		for (auto &k:Distance)
-		{		
+		for (auto& k : Distance)
+		{
 			Angle.insert(pair<double, MeanShiftPoint*>
 				(atan2(k.second->Coodinate[0] - Coodinate[0],
-				k.second->Coodinate[1] - Coodinate[1]),k.second)); // Дабавление элементов
+					k.second->Coodinate[1] - Coodinate[1]), k.second)); // Дабавление элементов
 			if (Angle.size() < 3)continue;
 			auto i = Angle.begin();
 			auto st = Angle.begin();
@@ -169,18 +170,59 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового 
 				st--;
 				fin++;
 			}
-			double dSt = (abs(i->first - st->first)) <= M_PI ? abs(i->first - st->first):abs(i->first + st->first);
+			double dSt = (abs(i->first - st->first)) <= M_PI ? abs(i->first - st->first) : abs(i->first + st->first);
 			double dFin = (abs(i->first - fin->first)) <= M_PI ? abs(i->first - fin->first) : abs(i->first + fin->first);
 			double dStFin = (abs(st->first - fin->first)) <= M_PI ? abs(st->first - fin->first) : abs(st->first + fin->first);
-			
+
+			//			if (dSt + dFin != dStFin)
+			//				cout << i->first << " " << st->first << " " << fin->first << endl;
+
 			if (dSt + dFin == dStFin && // Если точка находится в остром угле между двумя соседними точками
 				k.first > dist(st->second->Coodinate, fin->second->Coodinate))// Расстояние между соседними точками меньше расстояния от данной точки до текущей точки
+			{
 				Angle.erase(i); // Удалить текущую точку из списка близлежащих точек, т.к. она не образует близлажщую сетку
+//				cout << k.first << " " << dist(st->second->Coodinate, fin->second->Coodinate) << endl;
+			}
+			else
+			{
+				//		cout << i->first << " " << st->first << " " << fin->first << endl;
+					//	cout<< k.first<<" " <<dist(st->second->Coodinate, fin->second->Coodinate) << endl;
+			}
+
 		}
 		// Запись в контекст ФУ-исполнителя списка на близлежащие вершины списка
 		N.clear();
+		//		cout << Angle.size() << endl;
+		//		cout<<this->Coodinate[0]<<" " << this->Coodinate[1] << endl;
 		for (auto i : Angle)
-			N.push_back(i.second);
+		{
+			N.insert(i.second);
+			//			cout << i.second->Coodinate[0]<<" " << i.second->Coodinate[1]<<endl;
+		}
+		break;
+	}
+	case 101: // Addition Добавление своего описания к соседям
+		for (auto i : N)
+			i->N.insert(this);
+		break;
+	case 102: // ArcsCorrect Корректировка пересекающихся ребер
+	{	
+		set <MeanShiftPoint*> ToDel; // Множество ребер для удаления
+		do
+		{
+		for (auto i : ToDel)
+			N.erase(i);
+		ToDel.clear();
+		for(auto &k: N)
+			for (auto &i : k->N)
+				for (auto &j : k->N)
+					if (i!=j && i->N.count(this) && j->N.count(this) && k!=this &&
+						k->dist(this->Coodinate,k->Coodinate)>k->dist(i->Coodinate,j->Coodinate))
+						ToDel.insert(k);
+		}
+		while (ToDel.size()!=0);
+		break;
+	}
 	}
 }
 
@@ -232,6 +274,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 			Regions.back().Manager = this;
 			Regions.back().ID = Regions.size() - 1; // Записать идентификатор ФУ-региона
 			Regions.back().Center.push_back(Load.ToDouble());
+			Regions.back().Eps = ClasterEps;
 		}
 		else if (RegionPhase == NDim)
 		{
@@ -257,10 +300,16 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 	case 25: // RegionIDSet Установить номер текущего региона
 		break;
 	case 26: // RegionCenterOut Выдать координаты региона
-		Load.Write(Regions[RegionID].Center);
+		if(Regions.size() && RegionID>=0 && RegionID<Regions.size())
+				Load.Write(Regions[RegionID].Center);
 		break;
-	case 27: // RegionCenterOutMk Выдать МК с координатами региона
-		MkExec(Load, {CdoubleArray, &Regions[RegionID].Center});
+	case 27: // RegionCenterOutMk Выдать МК с координатами региона (Если индекс <0, то выдаются координаты всех областей)
+		if (Regions.size())
+			if(RegionID >= 0 && RegionID < Regions.size())
+				MkExec(Load, {CdoubleArray, &Regions[RegionID].Center});
+			else // Печать координат центров всех регионов
+				for(auto &i:Regions)
+					MkExec(Load, { CdoubleArray, &i.Center });
 		break;
 	case 28: // RegionNearestPointOut Выдать координаты точки, ближайшей к центру региона
 		Load.Write(Regions[RegionID].CenterFU->Coodinate);
@@ -269,8 +318,42 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		if(Regions.size() > RegionID && Regions[RegionID].CenterFU!=nullptr)
 			MkExec(Load, { CdoubleArray, &Regions[RegionID].CenterFU->Coodinate });
 		break;
-	case 35: // MigrationHistoryOutMk Выдать МК с историей перемещения области
-		MkExec(Load, { CdoubleArray2,&Regions[RegionID].MigrationHistory });
+	case 35: // MigrationHistoryOutMk Выдать МК с историей перемещения области (Если идентификатор региона < 0, то выводится история перемещений всех областей)
+		if(Regions.size())
+			if(RegionID>=0 && RegionID<=Regions.size())
+				MkExec(Load, { CdoubleArray2,&Regions[RegionID].MigrationHistory });
+			else
+				for(auto &i:Regions)
+					MkExec(Load, { CdoubleArray2,&i.MigrationHistory });
+		break;
+	case 37: // RegionNetSet  Установить сетку регионов. Параметры: мин и макс координаты области по кадой из осей, шаг сетки по каждому измерению, в конце радиус областей
+	{
+		if (!RegionNetPhaze)
+			RegionNetParameters.clear();
+		if (RegionNetPhaze < 3 * NDim)
+			RegionNetParameters.push_back(Load.ToDouble());
+		else // Построение сетки регионов
+		{
+			Regions.clear();
+			int NPoints = 1;
+			for (int i = 2; i < NDim * 3; i+=3)
+				NPoints *= round(RegionNetParameters[i]); // Подсчет количества точек в сетке регионов
+			Regions.resize(RegionNetParameters[NPoints]);
+			// Заглушка для 2-мерного случая
+			for (int i = 0; i < round(RegionNetParameters[2]); i ++) // Первое измерение
+				for (int j = 0; j < round(RegionNetParameters[5]); j ++) // Второе измерение
+				{
+					MeanShifRegion* Reg = &Regions[i * RegionNetParameters[5] + j];
+					Reg->Eps=ClasterEps;
+					Reg->ID = i * RegionNetParameters[5] + j;
+					Reg->Center.clear();
+					Reg->Center = { RegionNetParameters[0] + (RegionNetParameters[1] - RegionNetParameters[0]) / RegionNetParameters[2] * i,
+									RegionNetParameters[3] + (RegionNetParameters[4] - RegionNetParameters[3]) / RegionNetParameters[5] * j };
+					Reg->MoveToPoint(VXY[0][0]);
+				}
+		}
+		RegionNetPhaze = (RegionNetPhaze + 1) % (3 * NDim + 1);
+	}
 		break;
 	case 40: // PointsOutMk Выдать точки фазового пространства
 	{
@@ -320,6 +403,9 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 			i = t;
 		break;
 	}
+	case 75: //ClasterEps Утановить погрешность для прекращения миграции кластера
+		ClasterEps = Load.ToDouble();
+		break;
 	default:
 		CommonMk(MK, Load);
 		break;
@@ -361,12 +447,14 @@ void MeanShift::PointsGen()
 	}
 	// Расстановка ссылок в точках на их описание в VX,VY
 	for (auto& k : VXY) {// Перебор всех точек
-		for (auto& uFU : k)
 		{
 			int i = 0;
-			uFU->refXY.push_back(&uFU);
-			uFU->IdXY.push_back(i); // Запись индекса ФУ по каждому измерению
-			i++;
+			for (auto& uFU : k)
+			{
+				uFU->refXY.push_back(&uFU);
+				uFU->IdXY.push_back(i); // Запись индекса ФУ по каждому измерению
+				i++;
+			}
 		}
 	}
 
@@ -417,5 +505,9 @@ void  MeanShift::NetGen() // Генерация сетки
 		return;
 	}
 	for (auto FUuk : VXY[0])
-		FUuk->ProgFU(100, {0,nullptr});// Милликоманда генерации близлежащей сетки
+		FUuk->ProgFU(100, { 0,nullptr });// Милликоманда генерации близлежащей сетки
+	for (auto FUuk : VXY[0])
+		FUuk->ProgFU(101, { 0,nullptr });// Милликоманда дополнения связей
+//	for (auto FUuk : VXY[0])
+//		FUuk->ProgFU(102, { 0,nullptr });// Милликоманда коррекции связей сетки
 }
