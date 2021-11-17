@@ -50,6 +50,9 @@ class LoadPoint
 public:
 	unsigned int Type = 0; // Неизвестный тип
 	void *Point;
+	bool isDigit() { return Type >> 1 == Dint || Type >> 1 == Dchar || Type >> 1 == Dfloat || Type >> 1 == Ddouble; }; // 
+	bool isDigitBool() { return Type >> 1 == Dint || Type >> 1 == Dchar || Type >> 1 == Dfloat || Type >> 1 == Ddouble; Type >> 1 == Dbool; }; // Число или булеан?
+	bool IpTest() { return (Type >> 1 == DIP || Type >> 1 == DIC); } // Является ли нагрузка ИП?
 	bool IsConvert(unsigned int T) {}; // Тест на возможность конвертации значения из Point в определенный тип
 	void Write(int x);
 	void Write(size_t x);
@@ -92,7 +95,6 @@ public:
 //		if (Type >> 1 == DIC) return { DIP,((IC_type)Point)->begin()._Ptr};
 //		return { 0,nullptr };
 	};
-	bool IpTest() { return (Type >> 1 == DIP || Type >> 1 == DIC); } // Является ли нагрузка ИП?
 
 };
 

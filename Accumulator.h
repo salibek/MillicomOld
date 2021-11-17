@@ -14,7 +14,10 @@
 //		void		*Parent; // Ссылка на родительсний ФУ АЛУ
 	public:
 //		Accumulator(void* parent) { Parent = parent; };
-		LoadPoint	accumulator;
+		LoadPoint	accumulatorOld;
+		unsigned int Type = 0; // Тип данных
+		double		accumulator;
+		string		accumulatorStr;
 		void* Parent = nullptr;
 
 		void		add(LoadPoint load);

@@ -32,7 +32,7 @@ void AluGeneral::ProgFU(int MK, LoadPoint Load)
 		//		if(Load.Type>>2!=DIC) // �������� ��� ������ �� ��
 	{/* ��������� �� ������ ���� */
 	//	ThreadStack.push_back({ {}, (ip*)Load.Point,nullptr });
-		ThreadStack.back().AluStack.push_back({ Tint ,(void*) new int(0), this });
+		ThreadStack.back().AluStack.push_back({ Tint ,(void*) new int(0), 0, 0,"",this});
 		ThreadStack.back().CycleFlag = (MK - 2) % 4 == 0 || (MK - 3) % 4 == 0; // Установить флаг цикла
 		ThreadStack.back().PostFlag = (MK - 3) % 4 == 0; // Установика флаг цикла с постусловием
 
@@ -70,8 +70,8 @@ void AluGeneral::ProgFU(int MK, LoadPoint Load)
 		else
 		{
 			ThreadStack.back().AluStack.back().Clear();
-			ThreadStack.back().AluStack.back().accumulator.Type = Cbool;
-			ThreadStack.back().AluStack.back().accumulator.Point = new bool(true);
+			ThreadStack.back().AluStack.back().accumulatorOld.Type = Cbool;
+			ThreadStack.back().AluStack.back().accumulatorOld.Point = new bool(true);
 			ThreadStack.back().PostFlag = false;
 		}
 		for (auto i : ThreadStack.back().Out)
@@ -133,14 +133,14 @@ void AluGeneral::ProgFU(int MK, LoadPoint Load)
 			ThreadStack.back().AluStack.push_back({});
 			ThreadStack.back().AluStack.back().Parent = this;
 		}
-		if ((Load.Type >> 1) != DIC)
+		if ((Load.Type >> 1) != DIC) // Выполнение операции
 			ThreadStack.back().AluStack.back().calc(MK, Load);
-		else
+		else // АЛВ более высокого уровня 
 		{
-			ThreadStack.back().AluStack.push_back({ Tint ,(void*) new int,this });
+			ThreadStack.back().AluStack.push_back({ Tint ,(void*) new int, Load.Type, 0, "",this});
 			ProgExec(Load.Point);
 			ThreadStack.back().AluStack[ThreadStack.back()
-				.AluStack.size()-2].calc(MK, ThreadStack.back().AluStack.back().accumulator);
+				.AluStack.size()-2].calc(MK, ThreadStack.back().AluStack.back().accumulatorOld);
 			ThreadStack.back().AluStack.pop_back();
 		}
 		break;
@@ -184,11 +184,11 @@ void AluGeneral::ProgFU(int MK, LoadPoint Load)
 				if (ThreadStack.back().CycleLimit != 0 && i > ThreadStack.back().CycleLimit) break;
 				if (ThreadStack.back().RangeStep > 0)
 				{
-					if (ThreadStack.back().AluStack.back().accumulator.ToInt() >= ThreadStack.back().RangeStop)
+					if (ThreadStack.back().AluStack.back().accumulatorOld.ToInt() >= ThreadStack.back().RangeStop)
 						break;
 				}
 				else
-					if (ThreadStack.back().AluStack.back().accumulator.ToInt() <= ThreadStack.back().RangeStop)
+					if (ThreadStack.back().AluStack.back().accumulatorOld.ToInt() <= ThreadStack.back().RangeStop)
 						break;
 
 				ProgExec(Load.Point);

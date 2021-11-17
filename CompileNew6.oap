@@ -225,7 +225,7 @@ AOperationAnalysis.BusModeSet=1
 >{1 2 Obj={AOperationAnalysis.InObjAtrPopMk=ACmp.Cmp
   ACmp.PopMk=SyntaxStack.MarkLastAtrSet //!!!!!!!
   Lexica.ReceiverMkSet=AWait.FindIp}}
->{Obj={Lexica.Stop LogCon.VarOut="Wrong expression !!!"} 0}
+>{Obj={Lexica.Stop LogCon.VarOut="Wrong expression !!! 4"} 0}
 
 BiggerCheck.BusModeSet=2
 BiggerCheck.Set=
@@ -4915,23 +4915,38 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
       Obj={Mk=8 Mnemo="NVSet" Hint="Установить требуемое количество близлежащих точек для начала построения окрестной сетки вокруг узла"}
       Obj={Mk=15 Mnemo="PointsGen" Hint="Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)"}
       Obj={Mk=16 Mnemo="PointsGenStart" Hint="Генерация случайных точек (праметры: верхний левый угол поля, правый нижний угол поля, количество точек)"}
-      Obj={Mk=20 Mnemo="RegionSet" Hint="Создать и установить параметры региона для поиска"}
-      Obj={Mk=21 Mnemo="RegionsReset" Hint="Очистить список регионов"}
+      Obj={Mk=20 Mnemo="ClusterSet" Hint="Создать и установить параметры региона для поиска"}
+      Obj={Mk=21 Mnemo="ClustersReset" Hint="Очистить список регионов"}
       Obj={Mk=23 Mnemo="NRigionOut" Hint="Выдать количество регионов"}
       Obj={Mk=24 Mnemo="NRigionOutMK" Hint="Выдать МК с количеством регионов"}
-      Obj={Mk=25 Mnemo="RegionIDSet" Hint="Установить номер текущего региона"}
-      Obj={Mk=26 Mnemo="RegionCenterOut" Hint="Выдать координаты региона"}
-      Obj={Mk=27 Mnemo="RegionCenterOutMk" Hint="Выдать МК с координатами региона (Если индекс <0, то выдаются координаты всех областей)"}
-      Obj={Mk=28 Mnemo="RegionNearestPointOut" Hint="Выдать координаты точки, ближайшей к центру региона"}
-      Obj={Mk=29 Mnemo="RegionNearestPointOutMk" Hint="Выдать МК с координатами точки, ближайшей к центру региона"}
+      Obj={Mk=25 Mnemo="ClusterIDSet" Hint="Установить номер текущего региона"}
+      Obj={Mk=26 Mnemo="ClusterCenterOut" Hint="Выдать координаты региона"}
+      Obj={Mk=27 Mnemo="ClusterCenterOutMk" Hint="Выдать МК с координатами региона (Если индекс <0, то выдаются координаты всех областей)"}
+      Obj={Mk=28 Mnemo="ClusterNearestPointOut" Hint="Выдать координаты точки, ближайшей к центру региона"}
+      Obj={Mk=29 Mnemo="ClusterNearestPointOutMk" Hint="Выдать МК с координатами точки, ближайшей к центру региона"}
       Obj={Mk=35 Mnemo="MigrationHistoryOutMk" Hint="Выдать МК с историей перемещения области (Если идентификатор региона < 0, то выводится история перемещений всех областей)"}
-      Obj={Mk=37 Mnemo="RegionNetSet" Hint="Установить сетку регионов. Параметры: мин и макс координаты области по кадой из осей, шаг сетки по каждому измерению, в конце радиус областей"}
+      Obj={Mk=37 Mnemo="ClusterNetSet" Hint="Установить сетку регионов. Параметры: мин и макс координаты области по кадой из осей, шаг сетки по каждому измерению, в конце радиус областей"}
       
       Obj={Mk=40 Mnemo="PointsOutMk" Hint="Выдать список точек фазового пространаства"}
       Obj={Mk=50 Mnemo="ArcsOutMk" Hint="Выдать список дуг (выдаются координаты точек)"}
       Obj={Mk=60 Mnemo="NVPointErrProgSet" Hint="Установить программу реакции на событие превышения количества требуемых для окрестности точек над количеством точек в системе"}
       Obj={Mk=71 Mnemo="EpsSet" Hint="Установить количество анализируемых точек по оси (по умолчанию 20)"}
       Obj={Mk=72 Mnemo="EpsAllSet" Hint="Установить одинаковое количество анализируемых точек для всех осей (по умолчанию 20)"}
+      Obj={Mk=75 Mnemo="ClasterEpsSet" Hint="Утановить погрешность для прекращения миграции кластера"}
+
+      Obj={Mk=80 Mnemo="NExUFCallOut" Hint="Выдать количество используемых во вермя миграции исполнительных устройств для одного кластера во время миграции"}
+      Obj={Mk=81 Mnemo="NExUFCallOutMk" Hint="Выдать МК с количеством используемых во вермя миграции исполнительных устройств для одного кластера во время миграции"}
+      Obj={Mk=85 Mnemo="NExUFAllCallOut" Hint="Выдать общее количество используемых всеми кластерами во вермя миграции исполнительных устройств во время миграции"}
+      Obj={Mk=86 Mnemo="NExUFAllCallOutMk" Hint="Выдать МК с общим количеством используемых во вермя миграции исполнительных устройств во время миграции"}
+      Obj={Mk=90 Mnemo="NClasterMovesOut" Hint="Выдать количетство итераций миграции кластера с индексом ClusterID во время миграции"}
+      Obj={Mk=91 Mnemo="NClasterMovesOutMk" Hint="Выдать МК с количетством итераций миграции кластера с индексом ClusterID во время миграции"}
+      Obj={Mk=95 Mnemo="NClasterAllMovesOut" Hint="Выдать количетство итераций миграций миграции всех кластеров"}
+      Obj={Mk=96 Mnemo="NClasterAllMovesOutMk" Hint="Выдать МК с количетством итераций миграции всех кластеров"}
+      Obj={Mk=100 Mnemo="NClusterPointsOut" Hint="Выдать количество точек в кластере"}
+      Obj={Mk=101 Mnemo="NClusterPointsOut" Hint="Выдать МК с количеством точек в кластере"}
+      Obj={Mk=105 Mnemo="NClusterPointsOut" Hint="Выдать общую массу точек в кластере"}
+      Obj={Mk=106 Mnemo="NClusterPointsOut" Hint="Выдать МК общей массой точек кластере"}
+
 
       Obj=CommonMkList
    }

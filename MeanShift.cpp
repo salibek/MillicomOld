@@ -2,28 +2,30 @@
 #include "stdafx.h"
 #include "MeanShift.h"
 #include <string>
-#include <fstream>
+#include <fstream>NExUFCall
 #include <algorithm>
 #include <cmath>
 
-int MeanShifRegion::MassCenter(vector<double>&CenterNew, MeanShiftPoint* Point, set<MeanShiftPoint*> &Pass) // Вычисление центра масс области (Возвращается количество точек)
+int MeanShiftCluster::MassCenter(vector<double>&CenterNew, MeanShiftPoint* Point, set<MeanShiftPoint*> &Pass) // Вычисление центра масс области (Возвращается количество точек)
 // на входе ссылка на ФУ для вычисления и вектор пройденных вершин
+// Вовращается количество пройденных исполнительных вершин
 {
 	if (Pass.count(Point)) return 0; // Если точка уже была пройдена
 	if (Point->dist(Point->Coodinate, Center) > R*R)return 0;
 	Pass.insert(Point); // Включаем вершину в список посмотренных
 	for (int i = 0; i < NDim; i++)
 		CenterNew[i]+= Point->Coodinate[i];
-	int NS = 0;
+	int NS = 1;
 	for (auto &i : Point->N)
 		NS += MassCenter(CenterNew,i,Pass);
-	return NS + 1;
+	return NS;
 }
 
-void MeanShifRegion::Migration() // Поиск концентрации точек
+void MeanShiftCluster::Migration() // Поиск концентрации точек
 {
-	vector<double> CenterOld; // Старый центр области
+	//	vector<double> CenterOld; // Старый центр области
 	vector<double> CenterNew=Center;
+	//NExUFCall = 0;
 	do
 	{
 		Center = CenterNew;
@@ -31,14 +33,16 @@ void MeanShifRegion::Migration() // Поиск концентрации точек
 		MoveToPoint(CenterFU);
 		// Вычисление центра масс области (заглушка)
 		set<MeanShiftPoint*> Pass;
-		int NRegion = MassCenter(CenterNew, CenterFU, Pass);
-		if (!NRegion) return;
+		NPoints = MassCenter(CenterNew, CenterFU, Pass);
+		if (!NPoints) return;
+		NExUFCall+= NPoints; // Подсчитываем количество вызванных ФУ
 		for (auto& i : CenterNew)
-			i /= NRegion;
+			i /= NPoints;
 	} while (CenterFU->dist(CenterNew, Center)>Eps);
+	Mass = NPoints; // Заглушка
 }
 
-void MeanShifRegion::MoveToPoint(MeanShiftPoint* CenterStart) // Метод установки региона в стартовую позицию
+void MeanShiftCluster::MoveToPoint(MeanShiftPoint* CenterStart) // Метод установки региона в стартовую позицию
 {
 	CenterFU=CenterStart;
 	MeanShiftPoint* MinDistFU = CenterFU;
@@ -57,7 +61,7 @@ void MeanShifRegion::MoveToPoint(MeanShiftPoint* CenterStart) // Метод установки
 	}	
 }
 
-void MeanShifRegion::ProgFU(int MK, LoadPoint Load) // Область для поиска максимума концентрации
+void MeanShiftCluster::ProgFU(int MK, LoadPoint Load) // Область для поиска максимума концентрации
 {
 	switch (MK)
 	{
@@ -205,6 +209,7 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового 
 		for (auto i : N)
 			i->N.insert(this);
 		break;
+/*
 	case 102: // ArcsCorrect Корректировка пересекающихся ребер
 	{	
 		set <MeanShiftPoint*> ToDel; // Множество ребер для удаления
@@ -223,7 +228,9 @@ void MeanShiftPoint::ProgFU(int MK, LoadPoint Load) // Поведение точки фазового 
 		while (ToDel.size()!=0);
 		break;
 	}
+	*/
 	}
+
 }
 
 void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
@@ -245,7 +252,7 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		if ((Load.Type >> 1) == Dstring)
 			FileRead(Load);
 		//NetGen();
-		for (auto& R : Regions) // Вызов программ миграции регионов
+		for (auto& R : Clusters) // Вызов программ миграции регионов
 			R.Migration();
 		break;
 	case 8: // NVSet Установить требуемое количество близлежащих точек для начала построения окрестной сетки вокруг узла
@@ -266,93 +273,97 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 		}
 		ProbPhase++;
 		break;
-	case 20: // RegionSet Создать и установить параметры региона для поиска
-		if (!RegionPhase)
+	case 20: // ClusterSet Создать и установить параметры региона для поиска
+		if (!ClusterPhase)
 		{
-			Regions.push_back({});
-			Regions.back().NDim = NDim;
-			Regions.back().Manager = this;
-			Regions.back().ID = Regions.size() - 1; // Записать идентификатор ФУ-региона
-			Regions.back().Center.push_back(Load.ToDouble());
-			Regions.back().Eps = ClasterEps;
+			Clusters.push_back({});
+			Clusters.back().NDim = NDim;
+			Clusters.back().Manager = this;
+			Clusters.back().ID = Clusters.size() - 1; // Записать идентификатор ФУ-региона
+			Clusters.back().Center.push_back(Load.ToDouble());
+			Clusters.back().Eps = ClusterEps;
 		}
-		else if (RegionPhase == NDim)
+		else if (ClusterPhase == NDim)
 		{
-			Regions.back().R = Load.ToDouble();
-			Regions.back().MoveToPoint(VXY[0][0]);
+			Clusters.back().R = Load.ToDouble();
+			Clusters.back().MoveToPoint(VXY[0][0]);
 		}
 		else
-			Regions.back().Center.push_back(Load.ToDouble());
-		RegionPhase = (RegionPhase + 1) % (NDim+1);
+			Clusters.back().Center.push_back(Load.ToDouble());
+		ClusterPhase = (ClusterPhase + 1) % (NDim+1);
 		break;
-	case 21: //RegionsReset Очистить список регионов
-		Regions.clear();
+	case 21: //ClustersReset Очистить список регионов
+		Clusters.clear();
 		break;
 	case 23: // NRigionOut Выдать количество регионов
-		Load.Write(Regions.size());
+		Load.Write(Clusters.size());
 		break;
 	case 24: // NRigionOutMk Выдать МК с количеством регионов
 	{
-		int t = Regions.size();
+		int t = Clusters.size();
 		MkExec(Load, { Cint,&t });
 		break;
 	}
-	case 25: // RegionIDSet Установить номер текущего региона
+	case 25: // ClusterIDSet Установить номер текущего региона
+		ClusterID = Load.ToInt();
 		break;
-	case 26: // RegionCenterOut Выдать координаты региона
-		if(Regions.size() && RegionID>=0 && RegionID<Regions.size())
-				Load.Write(Regions[RegionID].Center);
+	case 26: // ClusterCenterOut Выдать координаты региона
+		if(Clusters.size() && ClusterID>=0 && ClusterID<Clusters.size())
+				Load.Write(Clusters[ClusterID].Center);
 		break;
-	case 27: // RegionCenterOutMk Выдать МК с координатами региона (Если индекс <0, то выдаются координаты всех областей)
-		if (Regions.size())
-			if(RegionID >= 0 && RegionID < Regions.size())
-				MkExec(Load, {CdoubleArray, &Regions[RegionID].Center});
+	case 27: // ClusterCenterOutMk Выдать МК с координатами региона (Если индекс <0, то выдаются координаты всех областей)
+		if (Clusters.size())
+			if(ClusterID >= 0 && ClusterID < Clusters.size())
+				MkExec(Load, {CdoubleArray, &Clusters[ClusterID].Center});
 			else // Печать координат центров всех регионов
-				for(auto &i:Regions)
+				for(auto &i:Clusters)
 					MkExec(Load, { CdoubleArray, &i.Center });
 		break;
-	case 28: // RegionNearestPointOut Выдать координаты точки, ближайшей к центру региона
-		Load.Write(Regions[RegionID].CenterFU->Coodinate);
+	case 28: // ClusterNearestPointOut Выдать координаты точки, ближайшей к центру региона
+		Load.Write(Clusters[ClusterID].CenterFU->Coodinate);
 		break;
-	case 29: // RegionNearestPointOutMk Выдать МК с координатами точки, ближайшей к центру региона
-		if(Regions.size() > RegionID && Regions[RegionID].CenterFU!=nullptr)
-			MkExec(Load, { CdoubleArray, &Regions[RegionID].CenterFU->Coodinate });
+	case 29: // ClusterNearestPointOutMk Выдать МК с координатами точки, ближайшей к центру региона
+		if(Clusters.size() > ClusterID && Clusters[ClusterID].CenterFU!=nullptr)
+			MkExec(Load, { CdoubleArray, &Clusters[ClusterID].CenterFU->Coodinate });
 		break;
 	case 35: // MigrationHistoryOutMk Выдать МК с историей перемещения области (Если идентификатор региона < 0, то выводится история перемещений всех областей)
-		if(Regions.size())
-			if(RegionID>=0 && RegionID<=Regions.size())
-				MkExec(Load, { CdoubleArray2,&Regions[RegionID].MigrationHistory });
+		if(Clusters.size())
+			if(ClusterID>=0 && ClusterID<=Clusters.size())
+				MkExec(Load, { CdoubleArray2,&Clusters[ClusterID].MigrationHistory });
 			else
-				for(auto &i:Regions)
+				for(auto &i:Clusters)
 					MkExec(Load, { CdoubleArray2,&i.MigrationHistory });
 		break;
-	case 37: // RegionNetSet  Установить сетку регионов. Параметры: мин и макс координаты области по кадой из осей, шаг сетки по каждому измерению, в конце радиус областей
+	case 37: // ClusterNetSet  Установить сетку регионов. Параметры: мин и макс координаты области по кадой из осей, количество  кластеров по каждому измерению, в конце радиус областей
 	{
-		if (!RegionNetPhaze)
-			RegionNetParameters.clear();
-		if (RegionNetPhaze < 3 * NDim)
-			RegionNetParameters.push_back(Load.ToDouble());
+		if (!ClusterNetPhaze)
+			ClusterNetParameters.clear();
+		if (ClusterNetPhaze < 3 * NDim)
+			ClusterNetParameters.push_back(Load.ToDouble());
 		else // Построение сетки регионов
 		{
-			Regions.clear();
+			Clusters.clear();
 			int NPoints = 1;
 			for (int i = 2; i < NDim * 3; i+=3)
-				NPoints *= round(RegionNetParameters[i]); // Подсчет количества точек в сетке регионов
-			Regions.resize(RegionNetParameters[NPoints]);
+				NPoints *= round(ClusterNetParameters[i]); // Подсчет количества точек в сетке регионов
+			Clusters.resize(NPoints);
 			// Заглушка для 2-мерного случая
-			for (int i = 0; i < round(RegionNetParameters[2]); i ++) // Первое измерение
-				for (int j = 0; j < round(RegionNetParameters[5]); j ++) // Второе измерение
+			for (int i = 0; i < round(ClusterNetParameters[2]); i ++) // Первое измерение
+				for (int j = 0; j < round(ClusterNetParameters[5]); j ++) // Второе измерение
 				{
-					MeanShifRegion* Reg = &Regions[i * RegionNetParameters[5] + j];
-					Reg->Eps=ClasterEps;
-					Reg->ID = i * RegionNetParameters[5] + j;
+					MeanShiftCluster* Reg = &Clusters[i * round(ClusterNetParameters[5]) + j];
+					Reg->Eps=ClusterEps;
+					Reg->NDim = NDim;
+					Reg->R = Load.ToDouble();
+					Reg->ID = i * ClusterNetParameters[5] + j;
 					Reg->Center.clear();
-					Reg->Center = { RegionNetParameters[0] + (RegionNetParameters[1] - RegionNetParameters[0]) / RegionNetParameters[2] * i,
-									RegionNetParameters[3] + (RegionNetParameters[4] - RegionNetParameters[3]) / RegionNetParameters[5] * j };
+					Reg->Center = { ClusterNetParameters[0] + (ClusterNetParameters[1] - ClusterNetParameters[0]) / (ClusterNetParameters[2]-1) * i,
+									ClusterNetParameters[3] + (ClusterNetParameters[4] - ClusterNetParameters[3]) / (ClusterNetParameters[5]-1) * j };
+					Reg->Manager = this;
 					Reg->MoveToPoint(VXY[0][0]);
 				}
 		}
-		RegionNetPhaze = (RegionNetPhaze + 1) % (3 * NDim + 1);
+		ClusterNetPhaze = (ClusterNetPhaze + 1) % (3 * NDim + 1);
 	}
 		break;
 	case 40: // PointsOutMk Выдать точки фазового пространства
@@ -403,8 +414,88 @@ void MeanShift::ProgFU(int MK, LoadPoint Load) // Поведение ФУ MeanShift
 			i = t;
 		break;
 	}
-	case 75: //ClasterEps Утановить погрешность для прекращения миграции кластера
-		ClasterEps = Load.ToDouble();
+	case 75: //ClusterEpsSet Утановить погрешность для прекращения миграции кластера
+		ClusterEps = Load.ToDouble();
+		break;
+	case 80://NClusterPointCallOut Выдать количество используемых во вермя миграции исполнительных устройств для одного кластера во время миграции
+		if (ClusterID >= 0 && ClusterID <= Clusters.size())
+			Load.Write(Clusters[ClusterID].NExUFCall);
+		break;
+	case 81://NClusterPointCallOut Выдать МК с количеством используемых во вермя миграции исполнительных устройств для одного кластера во время миграции
+		if (ClusterID >= 0 && ClusterID <= Clusters.size())
+			MkExec(Load, { Cint,&Clusters[ClusterID].NExUFCall });
+		break;
+	case 85: // NAllClusterPointCallOut Выдать среднее количетство опрошенных точек пространства для всех кластеров
+	case 86: // NAllClusterPointCallOutMk Выдать МК с количетством итераций миграции всех кластеров
+	case 87: // NAveragePointCallOut  Выдать среднее количество миграций на один кластер
+	case 88: // NAveragePointCallOutMk Выдать МК со средним количеством миграций на один кластер
+	{
+		int t = 0;
+		for (auto & i : Clusters)
+			t += i.NExUFCall;
+		if(MK==85)
+			Load.Write(Clusters[ClusterID].NExUFCall);
+		else if(MK==86)
+			MkExec(Load, { Cint,&Clusters[ClusterID].NExUFCall });
+		else
+		{
+			double tt = (double)t / Clusters.size();
+			if (MK == 87)
+				Load.Write(&tt);
+			else
+				MkExec(Load, { Cdouble,&tt });
+		}
+		break;
+	}
+		
+	case 90: // NClusterMovesOut Выдать количетство итераций миграции кластера с индексом ClusterID во время миграции
+		if (ClusterID >= 0 && ClusterID <= Clusters.size())
+			Load.Write(Clusters[ClusterID].MigrationHistory.size());
+		break;
+	case 91: // NClusterMovesOutMk Выдать МК с количетством итераций миграции кластера с индексом ClusterID во время миграции
+		if (ClusterID >= 0 && ClusterID <= Clusters.size())
+		{
+			int t = Clusters[ClusterID].MigrationHistory.size();
+			MkExec(Load, { Cint,&t });
+		}
+		break;
+	case 92: // NAllClusterMovesOut Выдать общее количетство итераций миграции кластеров
+	case 93: // NAllClusterMovesOutMk Выдать МК с общими количетством итераций миграции кластеров 
+	case 94: // NAverageClusterMovesOut Выдать среднее количетство итераций миграции кластера
+	case 95: // NAverageClusterMovesOutMk Выдать МК со средним количетством итераций миграции кластера
+	{
+		int t = 0;
+		for (auto i : Clusters)
+			t += i.MigrationHistory.size();
+		if(MK==92)
+			Load.Write(t);
+		else if(MK==93)
+			MkExec(Load, { Cint,&t });
+		else
+		{
+			double tt = (double)t / Clusters.size();
+			if (MK == 94)
+				Load.Write(tt);
+			else
+				MkExec(Load, { Cdouble,&tt });
+		}
+		break;
+	}
+	case 120: // NClusterPointsOut Выдать количество точек в кластере
+		if (ClusterID >= 0 && ClusterID <= Clusters.size())
+			Load.Write(Clusters[ClusterID].NPoints);
+		break;
+	case 121: // NClusterPointsOut Выдать МК с количеством точек в кластере
+		if (ClusterID >= 0 && ClusterID <= Clusters.size())
+			MkExec(Load, { Cint,&Clusters[ClusterID].NPoints});
+		break;
+	case 125: // ClusterMassOut Выдать общую массу точек в кластере
+		if (ClusterID >= 0 && ClusterID <= Clusters.size())
+			Load.Write(Clusters[ClusterID].Mass);
+		break;
+	case 126: // ClusterMassOut Выдать МК общей массой точек кластере
+		if (ClusterID >= 0 && ClusterID <= Clusters.size())
+			MkExec(Load, { Cdouble,&Clusters[ClusterID].Mass });
 		break;
 	default:
 		CommonMk(MK, Load);
@@ -462,7 +553,7 @@ void MeanShift::PointsGen()
 
 void MeanShift::FileRead(LoadPoint Load)
 {
-/*	ifstream f; // файл для считывания исходных данных
+	ifstream f; // файл для считывания исходных данных
 	string FName;
 	ifstream fin;
 	f.open(Load.ToStr());
@@ -475,24 +566,24 @@ void MeanShift::FileRead(LoadPoint Load)
 		MeanShiftPoint* MP = new MeanShiftPoint();
 		VXt.push_back({ x, MP });
 		VYt.push_back({ y, MP });
-		MP->epsX = epsX;
-		MP->epsY = epsY;
+	//	MP->epsX[0] = epsX;
+	//	MP->epsY[0] = epsY;
 		MP->NV = NV;
 		MP->Manager = this;
 		MP->Coodinate.push_back(x);
 		MP->Coodinate.push_back(y);
-		MP->VX = &VX; // Ссылка на список упорядоченных вершин по координате X
-		MP->VY = &VY; // Ссылка на список упорядоченных вершин по координате Y
+	//	MP->VX = &VX; // Ссылка на список упорядоченных вершин по координате X
+	//	MP->VY = &VY; // Ссылка на список упорядоченных вершин по координате Y
 	}
 	// Упорядочивание векторов VXt, VYt
 	sort(VXt.begin(), VXt.end());
 	sort(VYt.begin(), VYt.end());
 	// Формирование векторов VX, VY
 	for (auto uk = VXt.begin(); uk != VXt.end(); uk++)
-		VX.push_back(uk->second);
+		VXY[0].push_back(uk->second);
 	for (auto uk = VYt.begin(); uk != VYt.end(); uk++)
-		VY.push_back(uk->second);
-*/
+		VXY[1].push_back(uk->second);
+
 }
 
 void  MeanShift::NetGen() // Генерация сетки

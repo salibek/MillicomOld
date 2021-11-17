@@ -9,25 +9,30 @@
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
 NewFU={Mnemo="Console" FUType=FUConsNew}
-NewFU={Mnemo="MSM" FUType=FUMeanShiftMahager}
+NewFU={Mnemo="MSM" FUType=FUMeanShiftManager}
 
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 
-MSM.PointsGen=0=10=0=10=200
-MSM.EpsAllSet=8
+MSM.PointsGen=0=10=0=10=100
+MSM.EpsAllSet=15
 //MSM.PointsOutMk=Console.OutLn
 Console.ArrayBracketStartSet=""
 Console.ArrayBracketFinSet=""
 Console.StdOutFileSet="MeanShiftOut.txt"
 MSM.ArcsOutMk=Console.LnOut
-MSM.RegionSet=5=5=3
+MSM.ClusterNetSet=0=10=4=0=10=4=4
+//MSM.ClusterSet=10=10=3
+MSM.NVSet=10
 MSM.Start
-MSM.RegionIDSet=0
-Console.OutLn
-Console.OutLn
-//MSM.RegionNearestPointOutMk=Console.OutLn
-//MSM.RegionCenterOutMk=Console.OutLn
+MSM.ClusterIDSet=-1
+//Console.OutLn
+//Console.OutLn
+//MSM.ClusterNearestPointOutMk=Console.OutLn
+//MSM.ClusterCenterOutMk=Console.OutLn
 
-Console.OutLn="Region history"
+Console.Ln
+Console.LnOutLn="Cluster history"
 MSM.MigrationHistoryOutMk=Console.OutLn
+//MSM.NAveragePointCallOutMk=Console.OutLn
+//MSM.NAverageClusterMovesOutMk=Console.OutLn

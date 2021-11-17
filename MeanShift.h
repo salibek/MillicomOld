@@ -10,6 +10,7 @@ public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	int ID = 0; // Идентификатор ФУ-исполнителя
 	int NDim = 2; // Количество изменений в фазовом пространстве
+	double Mass = 1; // Вес точки
 	MeanShiftPoint(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; };
 	MeanShiftPoint() : FU() { Bus = nullptr; };
 	vector<double> Coodinate; // координата точки в фазовом прострастве
@@ -34,7 +35,7 @@ private:
 	double Lmax = -1;
 };
 
-class MeanShifRegion : public FU { // Область для поиска максимума концентрации
+class MeanShiftCluster : public FU { // Область для поиска максимума концентрации
 public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	void Migration(); // Поиск концентрации точек
@@ -50,6 +51,9 @@ public:
 	// на входе ссылка на ФУ для вычисления и вектор пройденных вершин
 	vector<vector<double>> MigrationHistory; // История перемещения центра области (в историю попадают центры области на каждом шаге)
 	double Eps = 0.0001; // Погрешность в вычислениях при миграции
+	int NExUFCall = 0; // Количество вызовов ФУ при перемещении во время поиска
+	double Mass = 0; // Вычисленная масса кластера
+	int NPoints = 0; // Количество точек у кластере
 };
 
 class MeanShift : public FU {
@@ -69,12 +73,12 @@ private:
 
 	void* NVPointErrProg = nullptr;  // Подпрограмма выдачи сообщения об ошибке при превышении количества точек 
 								 //в системе над количеством требуемых точек для построения сетки 
-	vector<MeanShifRegion> Regions; // Список регионов для поиска
-	int RegionPhase = 0; // Фаза записи информации о региона (координаты и радиус)
-	int RegionNetPhaze = 0; // Фаза записи информации о регионе
-	vector<double> RegionNetParameters; // Параметры сетки регионов
-	int RegionID = 0; // Индекс текущего региона
-	double ClasterEps = 0.0001; // Погрешность в вычислениях при миграции
+	vector<MeanShiftCluster> Clusters; // Список регионов для поиска
+	int ClusterPhase = 0; // Фаза записи информации о региона (координаты и радиус)
+	int ClusterNetPhaze = 0; // Фаза записи информации о регионе
+	vector<double> ClusterNetParameters; // Параметры сетки регионов
+	int ClusterID = 0; // Индекс текущего региона
+	double ClusterEps = 0.0001; // Погрешность в вычислениях при миграции
 	void  NetGen(); // Генерация сетки
 	void FileRead(LoadPoint Load); // Считывание точек пространства из файла
 	void PointsGen(); // Генеация случайных точек пространства
