@@ -413,6 +413,7 @@ void	Accumulator::div(LoadPoint load)
 	{
 		// Сообщение об ошибке...
 		return;
+
 	}
 	char		tmp = accumulatorOld.Type;
 //	char		tmp2 = w_type[load.Type];

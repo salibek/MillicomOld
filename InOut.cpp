@@ -369,7 +369,7 @@ void AutomatManager::ProgFU(int MK, LoadPoint Load)
 	case 4: // TemplAutoClearSet Установить флаг автоматического сброса шаблона поиска при установке МК для получателя нового сигнала
 		TemplAutoClear = Load.ToBool();
 		break;
-	case 5: // StageProgInAdd Добавить водную программу для состояния
+	case 5: // StageProgInAdd Добавить входную программу для состояния
 	case 6: // StageProgOutAdd Добавить выходную программу для состояния
 		if (StageProgMk < 0){
 			if (Load.Type >> 1 == Dint)
@@ -407,7 +407,7 @@ void AutomatManager::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 16: // TemplOutMK
 		if (Load.Point != nullptr || Load.Type >> 1 == DIC)
-			MkExec(*(int*)Load.Point, { DIC,&Template });
+			MkExec(Load, { DIC,&Template });
 		break;
 	case 17: // TemplClear
 		Template = nullptr;
@@ -425,7 +425,7 @@ void AutomatManager::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 22: // VarOutMK
 		if (Load.Point != nullptr || Load.Type >> 1 == DIC)
-			MkExec(*(int*)Load.Point, { DIC,&Var });
+			MkExec(Load, { DIC,&Var });
 		break;
 	case 30: // SignalOut
 		if (Load.Point != nullptr)
@@ -434,7 +434,7 @@ void AutomatManager::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 31: // SignalOutMK
 		if (Load.Point != nullptr || Load.Type >> 1 == Dint)
-			MkExec(*(int*)Load.Point, { CIP,&IPout });
+			MkExec(Load, { CIP,&IPout });
 		break;
 	case 33: // SignalAtrOut
 		if (Load.Point != nullptr)
@@ -457,7 +457,7 @@ void AutomatManager::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 37: // SignalAtrSet
 		if (Load.Point != nullptr || Load.Type >> 1 == Dint)
-			IPout.atr = *(int*)Load.Point;
+			IPout.atr = Load.ToInt(0);
 		break;
 	case 38: // SignalLoadSet
 		if (Load.Point != nullptr)
