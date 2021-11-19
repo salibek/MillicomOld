@@ -22,7 +22,7 @@ int main()
 
 	ALUGeneral ALU;
 	int t = 10;
-//	ALU.ProgFU(26, {Cint,&t});
+	ALU.ProgFU(26, {Cint,&t});
 
 
 //	string STR = "NetTemperat.ind";
@@ -41,10 +41,10 @@ int main()
 
 //	string STR = "Gauss.ind";
 //	string STR = "ALE2.ind";
-	string STR = "MeanShift.ind";
+//	string STR = "MeanShift.ind";
 	//	string STR = "Bag.ind";
 //	string STR = "NetTemperat2.ind";
-	Bus.ProgFU(10, {Cstring, &STR});
+//	Bus.ProgFU(10, {Cstring, &STR});
 
 //	string STR5 = "Bag5.txt"; // 5 предметов
 //	string STR6 = "Bag6.txt"; // 6 предметов
