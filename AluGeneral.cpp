@@ -3,7 +3,7 @@
 #include "AluGeneral.h"
 #include <cmath>
 
-void AluGeneral::ProgFU(int MK, LoadPoint Load)
+void ALUGeneral::ProgFU(int MK, LoadPoint Load)
 {
 	switch (MK)
 	{
@@ -128,6 +128,8 @@ void AluGeneral::ProgFU(int MK, LoadPoint Load)
 	case E_MK::EQ: case E_MK::NotEQ: case E_MK::Bigger: case E_MK::BiggerEQ:
 	case E_MK::Smaller: case E_MK::SmallerEQ: case E_MK::Remainder: case E_MK::XOR_BIT:
 	case E_MK::Compar3Way:
+		if (!ThreadStack.size())
+			ThreadStack.push_back({});
 		if (ThreadStack.back().AluStack.size() == 0)
 		{
 			ThreadStack.back().AluStack.push_back({});

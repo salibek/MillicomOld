@@ -8,29 +8,29 @@
 #include <map>
 #include <string>
 
-using namespace std; 
+using namespace std;
 
 // Типы переменных
-const int Tvoid = 0, Tint = 2, Tfloat = 4, Tdouble = 6, Tchar = 8, Tstring = 10, TIP = 12, Tbool = 14, TIC = 16;
+const int Tvoid = 0, Tbool = 2, Tchar = 4, Tint = 6, Tfloat = 8, Tdouble = 10,  Tstring = 12, TIP = 14, TIC = 16;
 const int TPPoint = 18, TGraph=20, TFU=22, TLoad=24;
-const int TcharArray = 1002, TintArray = 1004, TfloatArray = 1006, TdoubleArray = 1008, TstringArray = 1010, TIPArray = 1012;
-const int TboolArray = 1014, TICArray = 1016, TPPointArray = 1018, TGrapgArray = 1020, TFUArray = 1022, TLoadArray = 1024;
-const int TcharArray2 = 2002, TintArray2 = 2004, TfloatArray2 = 2006, TdoubleArray2 = 2008, TstringArray2 = 2010, TIPArray2 = 2012;
-const int TboolArray2 = 2014, TICArray2 = 2016, TPPointArray2 = 2018, TGrapgArray2 = 2020, TFUArray2 = 2022, TLoadArray2 = 2024;
+const int TvoidArray = 1000, TboolArray = 1002, TCharArray=1004, TintArray = 1006, TfloatArray = 1008, TdoubleArray = 1010, TstringArray = 1012;
+const int TIPArray = 1014, TICArray = 1016, TPPointArray = 1018, TGrapgArray = 1020, TFUArray = 1022, TLoadArray = 1024;
+const int TboolArray2 = 2002, TcharArray2 = 2004, TintArray2 = 2006, TfloatArray2 = 2008, TdoubleArray2 = 2010, TstringArray2 = 2012;
+const int TIPArray2 = 2014, TICArray2 = 2016, TPPointArray2 = 2018, TGrapgArray2 = 2020, TFUArray2 = 2022, TLoadArray2 = 2024;
 // Типы констант
-const int Cvoid = 1, Cint = 3, Cfloat = 5, Cdouble = 7, Cchar = 9, Cstring = 11, CIP = 13, Cbool = 15, CIC = 17;
+const int Cvoid = 1, Cbool = 3, Cchar = 5, Cint = 7, Cfloat = 9, Cdouble = 11, Cstring = 13, CIP = 15, CIC = 17;
 const int CPPoint = 19, CGraph = 21, CFU = 23, CLoad = 25;
-const int CcharArray = 1001, CintArray = 1003, CfloatArray = 1005, CdoubleArray = 1007, CstringArray = 1009, CIPArray = 1011;
-const int CboolArray = 1013, CICArray = 1015, CPPointArray = 1017, CGrapgArray = 1019, CFUArray = 1021, CLoadArray = 1023;
-const int CcharArray2 = 2001, CintArray2 = 2003, CfloatArray2 = 2005, CdoubleArray2 = 2007, CstringArray2 = 2009, CIPArray2 = 2011;
-const int CboolArray2 = 2013, CICArray2 = 2015, CPPointArray2 = 2017, CGrapgArray2 = 2019, CFUArray2 = 2021, CLoadArray2 = 2023;
+const int CvoidArray = 1001, CboolArray=1003, CcharArray = 1005, CintArray = 1007, CfloatArray = 1009, CdoubleArray = 1011, CstringArray = 1013;
+const int CIPArray = 1015, CICArray = 1017, CPPointArray = 1019, CGrapgArray = 1021, CFUArray = 1023, CLoadArray = 1025;
+const int CvoidArray2 = 2001, CboolArray2 = 2003, CcharArray2 = 2005, CintArray2 = 2007, CfloatArray2 = 2009, CdoubleArray2 = 2011, CstringArray2 = 2013;
+const int CIPArray2 = 2015, CICArray2 = 2017, CPPointArray2 = 2019, CGrapgArray2 = 2021, CFUArray2 = 2023, CLoadArray2 = 2025;
 // Общие типы данных (остаток от целочисленного деления на 2 типа переменной или константы)
-const int Dvoid=0, Dint = 1, Dfloat = 2, Ddouble = 3, Dchar = 4, Dstring = 5, DIP = 6, Dbool = 7, DIC = 8;
+const int Dvoid=0, Dbool = 1, Dchar = 2, Dint = 3, Dfloat = 4, Ddouble = 5, Dstring = 6, DIP = 7,  DIC = 8;
 const int DPPoint = 9, DGraph = 10, DFU = 11, DLoad = 12;
-const int DcharArray = 501, DintArray = 502, DfloatArray = 503, DdoubleArray = 504, DstringArray = 505, DIPArray = 506;
-const int DboolArray = 507, DICArray = 508, DPPointArray = 509, DGrapgArray = 510, DFUArray = 511, DLoadArray = 512;
-const int DcharArray2 = 1001, DintArray2 = 1002, DfloatArray2 = 1003, DdoubleArray2 = 1004, DstringArray2 = 1005, DIPArray2 = 1006;
-const int DboolArray2 = 1007, DICArray2 = 1008, DPPointArray2 = 1009, DGrapgArray2 = 1010, DFUArray2 = 1011, DLoadArray2 = 1012;
+const int DVoidArray = 500, DboolArray = 501, DcharArray = 502, DintArray = 503, DfloatArray = 504, DdoubleArray = 505, DstringArray = 506;
+const int DIPArray = 507, DICArray = 508, DPPointArray = 509, DGrapgArray = 510, DFUArray = 511, DLoadArray = 512;
+const int DvoidArray2 = 1000, DboolArray2 = 1001, DcharArray2 = 1002, DintArray2 = 1003, DfloatArray2 = 1004, DdoubleArray2 = 1005, DstringArray2 = 1006;
+const int DIPArray2 = 1007, DICArray2 = 1008, DPPointArray2 = 1009, DGrapgArray2 = 1010, DFUArray2 = 1011, DLoadArray2 = 1012;
 
 // Типы ФУ
 const int FUBus = 0, FUCons = 1, FUStrGen = 2, FULex = 3, FUList = 4, FUFind = 5;
@@ -50,8 +50,8 @@ class LoadPoint
 public:
 	unsigned int Type = 0; // Неизвестный тип
 	void *Point;
-	bool isDigit() { return Type >> 1 == Dint || Type >> 1 == Dchar || Type >> 1 == Dfloat || Type >> 1 == Ddouble; }; // 
-	bool isDigitBool() { return Type >> 1 == Dint || Type >> 1 == Dchar || Type >> 1 == Dfloat || Type >> 1 == Ddouble; Type >> 1 == Dbool; }; // Число или булеан?
+	bool isDigit(int type = -1) { int t = type < 0 ? Type : type;  return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; }; // 
+	bool isDigitBool(int type=-1) { int t = type < 0 ? Type : type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; t >> 1 == Dbool; }; // Число или булеан?
 	bool IpTest() { return (Type >> 1 == DIP || Type >> 1 == DIC); } // Является ли нагрузка ИП?
 	bool IsConvert(unsigned int T) {}; // Тест на возможность конвертации значения из Point в определенный тип
 	void Write(int x);

@@ -25,7 +25,7 @@ public:
 
 };
 
-class AluGeneral : public FU
+class ALUGeneral : public FU
 {
 private:
 	int breakCounter = 0;
@@ -35,11 +35,11 @@ public:
 	ip* DivisinByZeroProg = nullptr; // Программа, вызываемая при делении на 0
 
 	void ProgFU(int MK, LoadPoint Load) override;
-	AluGeneral(FU* BusContext, FU* Templ) : FU(BusContext) {
+	ALUGeneral(FU* BusContext, FU* Templ) : FU(BusContext) {
 		Bus = BusContext;
 		ProgFU(0, { 0,nullptr });
 	};
-	AluGeneral() : FU() {
+	ALUGeneral() : FU() {
 		Bus = nullptr;
 	};
 };

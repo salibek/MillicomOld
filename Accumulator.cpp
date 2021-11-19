@@ -4,6 +4,7 @@
 #include "EnumMk.h"
 #include <string>
 #include <cmath>
+#include <algorithm>
 
 bool		Accumulator::getSign() // 0 - положительное число, 1 - отрицательное
 {
@@ -24,47 +25,47 @@ bool		Accumulator::getSign() // 0 - положительное число, 1 - �
 	}
 }
 
-void		Accumulator::EQ(LoadPoint load)
+void		Accumulator::EQ(LoadPoint Load)
 {
-	sub(load);
+	sub(Load);
 	bool* t = new bool(!getLogic());
 	set({Cbool,t});
 };
-void		Accumulator::NotEQ(LoadPoint load)
+void		Accumulator::NotEQ(LoadPoint Load)
 {
-	sub(load);
+	sub(Load);
 	bool* t = new bool(getLogic());
 	set({ Cbool,t });
 };
-void		Accumulator::Bigger(LoadPoint load)
+void		Accumulator::Bigger(LoadPoint Load)
 {
-	sub(load);
+	sub(Load);
 	bool* t = new bool(!getSign() && getLogic());
 
 	set({ Cbool,t });
 };
-void		Accumulator::BiggerEQ(LoadPoint load)
+void		Accumulator::BiggerEQ(LoadPoint Load)
 {
-	sub	(load);
+	sub	(Load);
 	bool* t = new bool(!getSign());
 	set({ Cbool,t });
 };
-void		Accumulator::Smaller(LoadPoint load)
+void		Accumulator::Smaller(LoadPoint Load)
 {
-	sub(load);
+	sub(Load);
 	bool* t = new bool(getSign());
 	set({ Cbool,t });
 };
-void		Accumulator::SmallerEQ(LoadPoint load)
+void		Accumulator::SmallerEQ(LoadPoint Load)
 {
-	sub(load);
+	sub(Load);
 	bool* t = new bool(getSign() || !getLogic());
 	set({ Cbool,t });
 };
 
-void		Accumulator::Remainder(LoadPoint load)
+void		Accumulator::Remainder(LoadPoint Load)
 {
-	sub(load);
+	sub(Load);
 	bool* t = new bool(getSign() || !getLogic());
 	set({ Cbool,t });
 };
@@ -107,7 +108,7 @@ void	Accumulator::error_msg(int error_code)
 	}
 }
 
-void	Accumulator::calc(int MK, LoadPoint load)
+void	Accumulator::calc(int MK, LoadPoint Load)
 {
 	switch (MK)
 	{
@@ -117,33 +118,33 @@ void	Accumulator::calc(int MK, LoadPoint load)
 		accumulatorOld.Point = new int(0);
 		break;
 	case E_MK::SET: // Set
-		set(load);
+		set(Load);
 		break;
 	case E_MK::INC: // inc
-		inc(load);
-		set(load);
+		inc(Load);
+		set(Load);
 		break;
 	case E_MK::DEC: // dec
-		dec(load);
-		set(load);
+		dec(Load);
+		set(Load);
 		break;
 	case E_MK::SUM:
-		add(load);
+		add(Load);
 		break;
 	case E_MK::SUB:
-		sub(load);
+		sub(Load);
 		break;
 	case E_MK::MULT:
-		mult(load);
+		mult(Load);
 		break;
 	case E_MK::DIV:
-		div(load);
+		div(Load);
 		break;
 	case E_MK::MIN:
-		fu_min(load);
+		fu_min(Load);
 		break;
 	case E_MK::MAX:
-		fu_max(load);
+		fu_max(Load);
 		break;
 	case E_MK::COS:
 		fu_cos();
@@ -164,13 +165,13 @@ void	Accumulator::calc(int MK, LoadPoint load)
 		fu_atan();
 		break;
 	case E_MK::MOD:
-		fu_mod(load);
+		fu_mod(Load);
 		break;
 	case E_MK::SQRT:
 		fu_sqrt();
 		break;
 	case E_MK::POW:
-		fu_pow(load);
+		fu_pow(Load);
 		break;
 	case E_MK::ABS:
 		fu_abs();
@@ -191,121 +192,136 @@ void	Accumulator::calc(int MK, LoadPoint load)
 		fu_random();
 		break;
 	case E_MK::AND:
-		fu_and(load);
+		fu_and(Load);
 		break;
 	case E_MK::OR:
-		fu_or(load);
+		fu_or(Load);
 		break;
 	case E_MK::INV:
-		fu_inverse(load);
+		fu_inverse(Load);
 		break;
 	case E_MK::DIV_INT:
-		div_int(load);
+		div_int(Load);
 		break;
 	case E_MK::XOR:
-		fu_xor(load);
+		fu_xor(Load);
 		break;
 	case E_MK::INV_BIT:
-		fu_inv_bit(load);
+		fu_inv_bit(Load);
 		break;
 	case E_MK::OR_BIT:
-		fu_or_bit(load);
+		fu_or_bit(Load);
 		break;
 	case E_MK::AND_BIT:
-		fu_and_bit(load);
+		fu_and_bit(Load);
 		break;
 	case E_MK::MR_BIT:
-		fu_mr_bit(load);
+		fu_mr_bit(Load);
 		break;
 	case E_MK::ML_BIT:
-		fu_ml_bit(load);
+		fu_ml_bit(Load);
 		break;
 	case E_MK::EQ:
-		EQ(load);
+		EQ(Load);
 		break;
 	case E_MK::NotEQ:
-		NotEQ(load);
+		NotEQ(Load);
 		break;
 	case E_MK::Bigger:
-		Bigger(load);
+		Bigger(Load);
 		break;
 	case E_MK::BiggerEQ:
-		BiggerEQ(load);
+		BiggerEQ(Load);
 		break;
 	case E_MK::Smaller:
-		Smaller(load);
+		Smaller(Load);
 		break;
 	case E_MK::SmallerEQ:
-		SmallerEQ(load);
+		SmallerEQ(Load);
 		break;
 	case E_MK::Remainder:
-		Remainder(load);
+		Remainder(Load);
 		break;
 	case E_MK::XOR_BIT:
-		XOR_BIT(load);
+		XOR_BIT(Load);
 	case E_MK::Compar3Way:
-		Compar3Way(load);
+		Compar3Way(Load);
 	default:
 		error_msg(1);
 		break;
 	}
 }
 
-void Accumulator::XOR_BIT(LoadPoint load)
+void Accumulator::XOR_BIT(LoadPoint Load)
 {
 	switch (accumulatorOld.Type >> 1)
 	{
 	case Dint :
-		*(int*)accumulatorOld.Point^=load.ToInt();
+		*(int*)accumulatorOld.Point^=Load.ToInt();
 		break;
 	case Dchar:
-		*(char*)accumulatorOld.Point ^= load.ToChar();
+		*(char*)accumulatorOld.Point ^= Load.ToChar();
 		break;
 	}
 }
 
-void Accumulator::inc(LoadPoint load)
+void Accumulator::inc(LoadPoint Load)
 {
-	switch (load.Type >> 1)
+	switch (Load.Type >> 1)
 	{
 	case Dint:
-		(*(int*)load.Point)++;
+		(*(int*)Load.Point)++;
 		break;
 	case Dchar:
-		(*(char*)load.Point)++;
+		(*(char*)Load.Point)++;
 		break;
 	case Dfloat:
-		(*(float*)load.Point)++;
+		(*(float*)Load.Point)++;
 		break;
 	case Ddouble:
-		(*(double*)load.Point)++;
+		(*(double*)Load.Point)++;
 		break;
 	}
 }
 
-void Accumulator::dec(LoadPoint load)
+void Accumulator::dec(LoadPoint Load) // Декреминт если нагрузки нет, то декремируется аккумулятор
 {
-	switch (load.Type >> 1)
+	switch (Load.Type >> 1)
 	{
 	case Dint:
-		(*(int*)load.Point)--;
+		(*(int*)Load.Point)--;
 		break;
 	case Dchar:
-		(*(char*)load.Point)--;
+		(*(char*)Load.Point)--;
 		break;
 	case Dfloat:
-		(*(float*)load.Point)--;
+		(*(float*)Load.Point)--;
 		break;
 	case Ddouble:
-		(*(double*)load.Point)--;
+		(*(double*)Load.Point)--;
 		break;
 	}
 }
 
-void	Accumulator::add(LoadPoint load)
+void	Accumulator::add(LoadPoint Load) // Сложение
 {
+	if (Load.Point == nullptr) {
+		((ALUGeneral*)Parent)->ProgExec(NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
+		return;
+	}
+	if (Load.isDigitBool() && Load.isDigitBool(accumType))
+	{
+		accumulator += Load.ToDouble();
+		if (accumType >> 1 == Dbool && Load.Type >> 1 == Dbool)
+			accumType = Cint;
+		else
+			accumType = max(accumType,Load.Type);
+	}
+	else if (Load.Type >> 1 == Dstring)
+		accumulatorStr += Load.ToStr();
+	/*
 	char		tmp = accumulatorOld.Type;
-	char		tmp2 = load.Type;
+	char		tmp2 = Load.Type;
 	char		r_tmp = w_type[tmp] > w_type[tmp2] ? tmp : tmp2;
 
 	if (((tmp == Tstring || tmp == Cstring) && (tmp2 != Tstring || tmp2 != Cstring)))
@@ -315,34 +331,35 @@ void	Accumulator::add(LoadPoint load)
 	case Dint:
 	{int *a=new int(accumulatorOld.ToInt());
 //	*a = accumulator.ToInt();
-	*a += load.ToInt();
+	*a += Load.ToInt();
 	accumulatorOld.Clear();
 	unsigned int t = accumulatorOld.Type;
 	accumulatorOld = { t, (void*)a };
 	break; }
 	case Dchar:
-	{char* a = (char*)load.Point, * b = (char*)accumulatorOld.Point;
+	{char* a = (char*)Load.Point, * b = (char*)accumulatorOld.Point;
 	*a = *a + *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Dfloat:
-	{float* a = (float*)load.Point, * b = (float*)accumulatorOld.Point;
+	{float* a = (float*)Load.Point, * b = (float*)accumulatorOld.Point;
 	*a = *a + *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Ddouble:
-	{double* a = (double*)load.Point, * b = (double*)accumulatorOld.Point;
+	{double* a = (double*)Load.Point, * b = (double*)accumulatorOld.Point;
 	*a = *a + *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	}
 	accumulatorOld.Type = r_tmp;
+	*/
 }
 
-void	Accumulator::sub(LoadPoint load)
+void	Accumulator::sub(LoadPoint Load)
 {
 	char		tmp = accumulatorOld.Type;
-	char		tmp2 = load.Type;
+	char		tmp2 = Load.Type;
 	char		r_tmp = tmp > tmp2 ? tmp : tmp2;
 
 	if (((tmp == Tstring || tmp == Cstring || tmp2 == Tstring || tmp2 == Cstring)))
@@ -350,22 +367,22 @@ void	Accumulator::sub(LoadPoint load)
 	switch (r_tmp>>1)
 	{
 	case Dint:
-	{int* b = (int*)load.Point, * a = (int*)accumulatorOld.Point;
+	{int* b = (int*)Load.Point, * a = (int*)accumulatorOld.Point;
 	*a = *a - *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Dchar:
-	{char* a = (char*)load.Point, * b = (char*)accumulatorOld.Point;
+	{char* a = (char*)Load.Point, * b = (char*)accumulatorOld.Point;
 	*a = *a - *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Dfloat:
-	{float* a = (float*)load.Point, * b = (float*)accumulatorOld.Point;
+	{float* a = (float*)Load.Point, * b = (float*)accumulatorOld.Point;
 	*a = *a - *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Ddouble:
-	{double* a = (double*)load.Point, * b = (double*)accumulatorOld.Point;
+	{double* a = (double*)Load.Point, * b = (double*)accumulatorOld.Point;
 	*a = *a - *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
@@ -373,10 +390,10 @@ void	Accumulator::sub(LoadPoint load)
 	accumulatorOld.Type = r_tmp;
 }
 
-void	Accumulator::mult(LoadPoint load)
+void	Accumulator::mult(LoadPoint Load)
 {
 	char		tmp = accumulatorOld.Type;
-	char		tmp2 = load.Type;
+	char		tmp2 = Load.Type;
 	char		r_tmp = w_type[tmp] > w_type[tmp2] ? tmp : tmp2;
 
 	if (((tmp == Tstring || tmp == Cstring || tmp2 == Tstring || tmp2 == Cstring)))
@@ -384,22 +401,22 @@ void	Accumulator::mult(LoadPoint load)
 	switch (r_tmp>>1)
 	{
 	case Dint:
-	{int* b = (int*)load.Point, * a = (int*)accumulatorOld.Point;
+	{int* b = (int*)Load.Point, * a = (int*)accumulatorOld.Point;
 	*a = *a * *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Dchar:
-	{char* a = (char*)load.Point, * b = (char*)accumulatorOld.Point;
+	{char* a = (char*)Load.Point, * b = (char*)accumulatorOld.Point;
 	*a = *a * *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Dfloat:
-	{float* a = (float*)load.Point, * b = (float*)accumulatorOld.Point;
+	{float* a = (float*)Load.Point, * b = (float*)accumulatorOld.Point;
 	*a = *a * *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Ddouble:
-	{double* a = (double*)load.Point, * b = (double*)accumulatorOld.Point;
+	{double* a = (double*)Load.Point, * b = (double*)accumulatorOld.Point;
 	*a = *a * *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
@@ -407,21 +424,21 @@ void	Accumulator::mult(LoadPoint load)
 	accumulatorOld.Type = r_tmp;
 }
 
-void	Accumulator::div(LoadPoint load)
+void	Accumulator::div(LoadPoint Load)
 {
-	if (!load.isDigit())
+	if (!Load.isDigit())
 	{
 		// Сообщение об ошибке...
 		return;
 
 	}
 	char		tmp = accumulatorOld.Type;
-//	char		tmp2 = w_type[load.Type];
+//	char		tmp2 = w_type[Load.Type];
 //	char		r_tmp = w_type[tmp] > w_type[tmp2] ? tmp : tmp2;
 
 //	if (((tmp == Tstring || tmp == Cstring || tmp2 == Tstring || tmp2 == Cstring)))
 //		error_msg(2);
-//	else if ((int)load.Point == 0)
+//	else if ((int)Load.Point == 0)
 //		error_msg(3);
 	if (accumulatorOld.Type >> 1 != Ddouble)
 	{
@@ -431,29 +448,29 @@ void	Accumulator::div(LoadPoint load)
 		accumulatorOld.Type = Tdouble;
 		accumulatorOld.Point = t;
 	}
-	*(double*)accumulatorOld.Point /= load.ToDouble();
+	*(double*)accumulatorOld.Point /= Load.ToDouble();
 //	cout << "Accum: "<<accumulator.ToDouble() << endl;;
 	/*
 	switch (r_tmp>>1)
 	{
 	case Dint:
-	{int* b = (int*)load.Point, * a = (int*)accumulator.Point;
+	{int* b = (int*)Load.Point, * a = (int*)accumulator.Point;
 
 	*a = *a / *b;
 	accumulator.Point = (void*)a;
 	break; }
 	case Dchar:
-	{char* a = (char*)load.Point, * b = (char*)accumulator.Point;
+	{char* a = (char*)Load.Point, * b = (char*)accumulator.Point;
 	*a = *a / *b;
 	accumulator.Point = (void*)a;
 	break; }
 	case Dfloat:
-	{float* a = (float*)load.Point, * b = (float*)accumulator.Point;
+	{float* a = (float*)Load.Point, * b = (float*)accumulator.Point;
 	*a = *a / *b;
 	accumulator.Point = (void*)a;
 	break; }
 	case Ddouble:
-	{double* a = (double*)load.Point, * b = (double*)accumulator.Point;
+	{double* a = (double*)Load.Point, * b = (double*)accumulator.Point;
 	*a = *a / *b;
 	accumulator.Point = (void*)a;
 	break; }
@@ -462,17 +479,17 @@ void	Accumulator::div(LoadPoint load)
 	*/
 }
 
-void	Accumulator::div_int(LoadPoint load)
+void	Accumulator::div_int(LoadPoint Load)
 {
 	char		tmp = accumulatorOld.Type;
-	char		tmp2 = w_type[load.Type];
+	char		tmp2 = w_type[Load.Type];
 
 	if (((tmp == Tstring || tmp == Cstring || tmp2 == Tstring || tmp2 == Cstring)))
 		error_msg(2);
-	else if (load.ToInt() == 0)
+	else if (Load.ToInt() == 0)
 		error_msg(3);
 	int* t = new int;
-	int tt = accumulatorOld.ToInt() / load.ToInt();
+	int tt = accumulatorOld.ToInt() / Load.ToInt();
 	*t = tt;
 	accumulatorOld = {Tint, (void*)t };
 }
@@ -495,32 +512,39 @@ void Accumulator::Out(LoadPoint Load) // �������� �����
 	}
 }
 
-void* Accumulator::VarNew(LoadPoint load)
+void* Accumulator::VarNew(LoadPoint Load)
 {
-	switch (load.Type>>1)
+	switch (Load.Type>>1)
 	{
 	case Dint:
-		return new int(*(int*)load.Point);
+		return new int(*(int*)Load.Point);
 	case Dfloat:
-		return new float(*(float*)load.Point);
+		return new float(*(float*)Load.Point);
 	case Ddouble:
-		return new double(*(double*)load.Point);
+		return new double(*(double*)Load.Point);
 	case Dchar:
-		return new char(*(char*)load.Point);
+		return new char(*(char*)Load.Point);
 	case Dbool:
-		return new bool(*(bool*)load.Point);
+		return new bool(*(bool*)Load.Point);
 	case Dstring:
-		return new string(*(string*)load.Point);
+		return new string(*(string*)Load.Point);
 	}
 }
 
-void		Accumulator::set(LoadPoint load)
+void		Accumulator::set(LoadPoint Load) // Установить значение в аккумулятор
 {
-	if (load.Point==nullptr)
-		{accumulatorOld = { Tbool, new int(0) }; return;}
-	accumulatorOld.Clear();
-	accumulatorOld.Type = load.Type;
-	accumulatorOld.Point = VarNew(load);
+	if (Load.isDigitBool())
+		accumulator = Load.ToDouble();
+	else if (Load.Type >> 1 == Dstring)
+		accumulatorStr = Load.ToStr();
+	else // Работа с вектором и матрицами
+		;
+
+//	if (Load.Point==nullptr)
+//		{accumulatorOld = { Tbool, new int(0) }; return;}
+//	accumulatorOld.Clear();
+//	accumulatorOld.Type = Load.Type;
+//	accumulatorOld.Point = VarNew(Load);
 }
 
 bool		Accumulator::getLogic() // ����������� ����������� ����
@@ -544,9 +568,9 @@ bool		Accumulator::getLogic() // ����������� �����
 	}
 }
 
-bool		Accumulator::getLogic(LoadPoint load) // ����������� ����������� ����
+bool		Accumulator::getLogic(LoadPoint Load) // ����������� ����������� ����
 {
-	int		type = load.Type;
+	int		type = Load.Type;
 
 	switch (type >> 1)
 	{
@@ -565,10 +589,10 @@ bool		Accumulator::getLogic(LoadPoint load) // �����������
 	}
 }
 
-void	Accumulator::fu_max(LoadPoint load)
+void	Accumulator::fu_max(LoadPoint Load)
 {
 	char		tmp1 = accumulatorOld.Type;
-	char		tmp2 = load.Type;
+	char		tmp2 = Load.Type;
 	char		r_tmp = 0;
 	if (tmp2 >> 1 == Ddouble || tmp1 >> 1 == Ddouble)
 		r_tmp = Cdouble;
@@ -580,24 +604,24 @@ void	Accumulator::fu_max(LoadPoint load)
 		r_tmp = Dstring;
 	else
 		error_msg(2);
-//	else if ((int)load.Point == 0)
+//	else if ((int)Load.Point == 0)
 //		error_msg(3);
 
-//	char		tmp2 = w_type[load.Type];
+//	char		tmp2 = w_type[Load.Type];
 	//	char		r_tmp = w_type[tmp] > w_type[tmp2] ? tmp : tmp2;
 
 	double a_old = accumulatorOld.ToDouble(); // Старое значение аккумулятора
 
 //	if (((tmp == Tstring || tmp == Cstring || tmp2 == Tstring || tmp2 == Cstring)))
 //		error_msg(2);
-//	else if ((int)load.Point == 0)
+//	else if ((int)Load.Point == 0)
 //		error_msg(3);
 
 	switch (r_tmp >> 1)
 	{
 	case Dint:
-	{//int b = load.ToInt(), a = accumulator.Point;
-	int b = load.ToInt();
+	{//int b = Load.ToInt(), a = accumulator.Point;
+	int b = Load.ToInt();
 	if (b > accumulatorOld.ToInt())
 	{
 		accumulatorOld.Clear();
@@ -606,74 +630,74 @@ void	Accumulator::fu_max(LoadPoint load)
 	}
 	break; }
 	case Dchar:
-	{char* a = (char*)load.Point, * b = (char*)accumulatorOld.Point;
+	{char* a = (char*)Load.Point, * b = (char*)accumulatorOld.Point;
 	*a = *a > * b ? *a : *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Dfloat:
-	{float* a = (float*)load.Point, * b = (float*)accumulatorOld.Point;
+	{float* a = (float*)Load.Point, * b = (float*)accumulatorOld.Point;
 	*a = *a > * b ? *a : *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Ddouble:
-	{double* a = (double*)load.Point, * b = (double*)accumulatorOld.Point;
+	{double* a = (double*)Load.Point, * b = (double*)accumulatorOld.Point;
 	*a = *a > * b ? *a : *b;
 	accumulatorOld.Point = (void*)a;
 	break; 
 	}
 	case Dstring:
-		string* s1 = (string*)load.Point, * s2 = (string*)accumulatorOld.Point;
+		string* s1 = (string*)Load.Point, * s2 = (string*)accumulatorOld.Point;
 		*s1 = *s1 > * s2 ? *s1 : *s2;
 		accumulatorOld.Point = (string*)s1;
 	}
 	accumulatorOld.Type = r_tmp;
 	if(accumulatorOld.ToDouble()> a_old)
-		((FU*)((FU*)Parent))->ProgExec(((AluGeneral*)Parent)->ThreadStack.back().MaxProg);
+		((FU*)((FU*)Parent))->ProgExec(((ALUGeneral*)Parent)->ThreadStack.back().MaxProg);
 }
 
-void	Accumulator::fu_min(LoadPoint load)
+void	Accumulator::fu_min(LoadPoint Load)
 {
 	char		tmp = accumulatorOld.Type;
-	char		tmp2 = w_type[load.Type];
+	char		tmp2 = w_type[Load.Type];
 	char		r_tmp = w_type[tmp] > w_type[tmp2] ? tmp : tmp2;
 
 	double a_old = accumulatorOld.ToDouble(); // Старое значение аккумулятора
 
 	if (((tmp == Tstring || tmp == Cstring || tmp2 == Tstring || tmp2 == Cstring)))
 		error_msg(2);
-	else if (*(int*)load.Point == 0)
+	else if (*(int*)Load.Point == 0)
 		error_msg(3);
 	switch (r_tmp >> 1)
 	{
 	case Dint:
-	{int* b = (int*)load.Point, * a = (int*)accumulatorOld.Point;
+	{int* b = (int*)Load.Point, * a = (int*)accumulatorOld.Point;
 	*a = *a < * b ? *a : *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Dchar:
-	{char* a = (char*)load.Point, * b = (char*)accumulatorOld.Point;
+	{char* a = (char*)Load.Point, * b = (char*)accumulatorOld.Point;
 	*a = *a < * b ? *a : *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Dfloat:
-	{float* a = (float*)load.Point, * b = (float*)accumulatorOld.Point;
+	{float* a = (float*)Load.Point, * b = (float*)accumulatorOld.Point;
 	*a = *a < * b ? *a : *b;
 	accumulatorOld.Point = (void*)a;
 	break; }
 	case Ddouble:
-	{double* a = (double*)load.Point, * b = (double*)accumulatorOld.Point;
+	{double* a = (double*)Load.Point, * b = (double*)accumulatorOld.Point;
 	*a = *a < * b ? *a : *b;
 	accumulatorOld.Point = (void*)a;
 	break;
 	}
 	case Dstring:
-		string* s1 = (string*)load.Point, * s2 = (string*)accumulatorOld.Point;
+		string* s1 = (string*)Load.Point, * s2 = (string*)accumulatorOld.Point;
 		*s1 = *s1 < * s2 ? *s1 : *s2;
 		accumulatorOld.Point = (string*)s1;
 	}
 	accumulatorOld.Type = r_tmp;
 	if (accumulatorOld.ToDouble() > a_old)
-		((FU*)((FU*)Parent))->ProgExec(((AluGeneral*)Parent)->ThreadStack.back().MaxProg);
+		((FU*)((FU*)Parent))->ProgExec(((ALUGeneral*)Parent)->ThreadStack.back().MaxProg);
 }
 
 void	Accumulator::fu_cos()
@@ -754,15 +778,15 @@ void	Accumulator::fu_atan()
 	accumulatorOld.Type = Tdouble;
 }
 
-void	Accumulator::fu_mod(LoadPoint load)
+void	Accumulator::fu_mod(LoadPoint Load)
 {
 	char		tmp = accumulatorOld.Type;
-	char		tmp2 = load.Type;
+	char		tmp2 = Load.Type;
 
 	if ((tmp >> 1) != Dint || (tmp2 >> 1) != Dint)
 		error_msg(2);
 	
-	int* b = (int*)load.Point;
+	int* b = (int*)Load.Point;
 	int* a = (int*)accumulatorOld.Point;
 	*a = *a % *b;
 	accumulatorOld.Point = (void*)a;
@@ -782,16 +806,16 @@ void	Accumulator::fu_sqrt()
 	accumulatorOld.Type = Tdouble;
 }
 
-void	Accumulator::fu_pow(LoadPoint load)
+void	Accumulator::fu_pow(LoadPoint Load)
 {
 	char		tmp = accumulatorOld.Type;
-	char		tmp2 = load.Type;
+	char		tmp2 = Load.Type;
 
 	if ((tmp >> 1) == Dstring || (tmp2 >> 1) == Dstring)
 		error_msg(2);
 
 	double* a = (double*)accumulatorOld.Point;
-	double* b = (double*)load.Point;
+	double* b = (double*)Load.Point;
 	*a = pow(*a, *b);
 	accumulatorOld.Point = (void*)a;
 	accumulatorOld.Type = Tdouble;
@@ -878,77 +902,77 @@ void	Accumulator::fu_random()
 LoadPoint	Accumulator::getCos()
 {
 	char		tmp = accumulatorOld.Type;
-	LoadPoint   load;
+	LoadPoint   Load;
 
 	if ((tmp >> 1) == Dstring)
 		error_msg(2);
 
 	double* a = (double*)accumulatorOld.Point;
 	*a = cos(*a);
-	load.Type = Ddouble;
-	load.Point = (void*)a;
-	return load;
+	Load.Type = Ddouble;
+	Load.Point = (void*)a;
+	return Load;
 }
 
 LoadPoint	Accumulator::getSin()
 {
 	char		tmp = accumulatorOld.Type;
-	LoadPoint   load;
+	LoadPoint   Load;
 
 	if ((tmp >> 1) == Dstring)
 		error_msg(2);
 
 	double* a = (double*)accumulatorOld.Point;
 	*a = sin(*a);
-	load.Type = Ddouble;
-	load.Point = (void*)a;
-	return load;
+	Load.Type = Ddouble;
+	Load.Point = (void*)a;
+	return Load;
 }
 
 
-void		Accumulator::fu_inverse(LoadPoint load)
+void		Accumulator::fu_inverse(LoadPoint Load)
 {
 	bool		t = !getLogic();
-	accumulatorOld.Point = new bool(*(bool*)load.Point);
+	accumulatorOld.Point = new bool(*(bool*)Load.Point);
 	accumulatorOld.Type = Tbool;
 
 	bool		*val = (bool *)accumulatorOld.Point;
 	*val = t;
 }
 
-void		Accumulator::fu_and(LoadPoint load)
+void		Accumulator::fu_and(LoadPoint Load)
 {
 	bool t1 = getLogic();
-	bool t2 = getLogic(load);
+	bool t2 = getLogic(Load);
 
-	accumulatorOld.Point = new bool(*(bool*)load.Point);
+	accumulatorOld.Point = new bool(*(bool*)Load.Point);
 	accumulatorOld.Type = Tbool;
 	*(bool*)accumulatorOld.Point = t1 && t2;
 }
 
-void		Accumulator::fu_or(LoadPoint load)
+void		Accumulator::fu_or(LoadPoint Load)
 {
 	bool t1 = getLogic();
-	bool t2 = getLogic(load);
+	bool t2 = getLogic(Load);
 
-	accumulatorOld.Point = new bool(*(bool*)load.Point);
+	accumulatorOld.Point = new bool(*(bool*)Load.Point);
 	accumulatorOld.Type = Tbool;
 	*(bool*)accumulatorOld.Point = t1 || t2;
 }
 
-void		Accumulator::fu_xor(LoadPoint load)
+void		Accumulator::fu_xor(LoadPoint Load)
 {
 	bool t1 = getLogic();
-	bool t2 = getLogic(load);
+	bool t2 = getLogic(Load);
 
-	accumulatorOld.Point = new bool(*(bool*)load.Point);
+	accumulatorOld.Point = new bool(*(bool*)Load.Point);
 	accumulatorOld.Type = Tbool;
 	*(bool*)accumulatorOld.Point = (!t1 || !t2) && (t1 || t2);
 }
 
-void		Accumulator::fu_or_bit(LoadPoint load)
+void		Accumulator::fu_or_bit(LoadPoint Load)
 {
-	char t1 = load.Type >> 1;
+	char t1 = Load.Type >> 1;
 	char t2 = accumulatorOld.Type >> 1;
 
 	if (t1 == Dstring || t2 == Dstring || t1 == Ddouble || t2 == Ddouble
@@ -957,15 +981,15 @@ void		Accumulator::fu_or_bit(LoadPoint load)
 	else
 	{
 		int		*a = (int *)accumulatorOld.Point;
-		int		*b = (int *)load.Point;
+		int		*b = (int *)Load.Point;
 
 		*a = *a | *b;
 	}
 }
 
-void		Accumulator::fu_and_bit(LoadPoint load)
+void		Accumulator::fu_and_bit(LoadPoint Load)
 {
-	char t1 = load.Type >> 1;
+	char t1 = Load.Type >> 1;
 	char t2 = accumulatorOld.Type >> 1;
 
 	if (t1 == Dstring || t2 == Dstring || t1 == Ddouble || t2 == Ddouble
@@ -974,15 +998,15 @@ void		Accumulator::fu_and_bit(LoadPoint load)
 	else
 	{
 		int		*a = (int *)accumulatorOld.Point;
-		int		*b = (int *)load.Point;
+		int		*b = (int *)Load.Point;
 
 		*a = *a & *b;
 	}
 }
 
-void		Accumulator::fu_mr_bit(LoadPoint load)
+void		Accumulator::fu_mr_bit(LoadPoint Load)
 {
-	char t1 = load.Type >> 1;
+	char t1 = Load.Type >> 1;
 	char t2 = accumulatorOld.Type >> 1;
 
 	if (t1 == Dstring || t2 == Dstring || t1 == Ddouble || t2 == Ddouble
@@ -991,15 +1015,15 @@ void		Accumulator::fu_mr_bit(LoadPoint load)
 	else
 	{
 		int		*a = (int *)accumulatorOld.Point;
-		int		*b = (int *)load.Point;
+		int		*b = (int *)Load.Point;
 
 		*a = *a >> *b;
 	}
 }
 
-void		Accumulator::fu_ml_bit(LoadPoint load)
+void		Accumulator::fu_ml_bit(LoadPoint Load)
 {
-	char t1 = load.Type >> 1;
+	char t1 = Load.Type >> 1;
 	char t2 = accumulatorOld.Type >> 1;
 
 	if (t1 == Dstring || t2 == Dstring || t1 == Ddouble || t2 == Ddouble
@@ -1008,15 +1032,15 @@ void		Accumulator::fu_ml_bit(LoadPoint load)
 	else
 	{
 		int		*a = (int *)accumulatorOld.Point;
-		int		*b = (int *)load.Point;
+		int		*b = (int *)Load.Point;
 
 		*a = *a << *b;
 	}
 }
 
-void		Accumulator::fu_inv_bit(LoadPoint load)
+void		Accumulator::fu_inv_bit(LoadPoint Load)
 {
-	char t1 = load.Type >> 1;
+	char t1 = Load.Type >> 1;
 	char t2 = accumulatorOld.Type >> 1;
 
 	if (t1 == Dstring || t2 == Dstring || t1 == Ddouble || t2 == Ddouble
@@ -1025,13 +1049,13 @@ void		Accumulator::fu_inv_bit(LoadPoint load)
 	else
 	{
 		int		*a = (int *)accumulatorOld.Point;
-		int		*b = (int *)load.Point;
+		int		*b = (int *)Load.Point;
 
 		*a = ~*a;
 	}
 }
-void		Accumulator::Compar3Way(LoadPoint load){// Трехстороннее сравнение
+void		Accumulator::Compar3Way(LoadPoint Load){// Трехстороннее сравнение
 	double T1 = accumulatorOld.ToDouble();
-	double T2 = load.ToDouble();
+	double T2 = Load.ToDouble();
 	accumulatorOld.Write((T1>0)? 1:((T1==T2)?0:-1) );
 }

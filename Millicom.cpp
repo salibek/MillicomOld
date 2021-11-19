@@ -11,6 +11,7 @@
 #include <fstream>
 #include "MeanShift.h"
 #include "Bag.h"
+#include "ALUGeneral.h"
 
 using namespace std;
 
@@ -18,10 +19,17 @@ int main()
 {
 	LoadPoint LP = LoadPoint();
 	BusFU Bus;
-	MeanShift MSh;
-	Bag B;
+
+	ALUGeneral ALU;
+	int t = 10;
+//	ALU.ProgFU(26, {Cint,&t});
+
+
 //	string STR = "NetTemperat.ind";
-//	string STR = "MeanShift.txt";
+//	ALU.ProgFU(26, { Cstring,&STR });
+
+	
+	//	string STR = "MeanShift.txt";
 //	string STR = "MeanShift.ind";
 	//	string STR = "FSM.ind";
 	//	STR = "ALE.ind";

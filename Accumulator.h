@@ -14,10 +14,11 @@
 //		void		*Parent; // Ссылка на родительсний ФУ АЛУ
 	public:
 //		Accumulator(void* parent) { Parent = parent; };
-		LoadPoint	accumulatorOld;
-		unsigned int Type = 0; // Тип данных
-		double		accumulator;
-		string		accumulatorStr;
+		LoadPoint	accumulatorOld; // Старый аккумулятор (потом удалить)
+		unsigned int accumType = 0; // Тип данных
+		double		accumulator;		// Скалярный аккумулятор
+		string		accumulatorStr;		// строковой аккулятор
+		void*		accumulatorPoint;	// Указатель на аккумулятор (вектор, матрица и т.п.)
 		void* Parent = nullptr;
 
 		void		add(LoadPoint load);
@@ -70,4 +71,6 @@
 
 		LoadPoint	getCos();
 		LoadPoint	getSin();
+		// Подрограммы сообщений об ошибках
+		void*		NoOperandErrProg = nullptr;
 	};

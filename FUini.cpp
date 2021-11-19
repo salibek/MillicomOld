@@ -57,7 +57,7 @@ FU* GraphTrasfIni(FU* BusContext, FU* TEmpl)
 
 FU* AluGeneralIni(FU* BusContext, FU* TEmpl)
 {
-	return (FU*) new AluGeneral(BusContext, TEmpl);
+	return (FU*) new ALUGeneral(BusContext, TEmpl);
 }
 
 FU* InOutIni(FU* BusContext, FU* TEmpl)
