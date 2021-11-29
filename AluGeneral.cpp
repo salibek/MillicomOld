@@ -74,7 +74,7 @@ void ALUGeneral::ProgFU(int MK, LoadPoint Load)
 			ThreadStack.back().AluStack.back().accumulatorOld.Point = new bool(true);
 			ThreadStack.back().PostFlag = false;
 		}
-		for (auto i : ThreadStack.back().Out)
+		for (auto i : ThreadStack.back().Out) // Рассылка результатов вычислений
 			ThreadStack.back().AluStack.back().Out(i);
 		for (auto i : ThreadStack.back().MkOut)
 			MkExec(i, ThreadStack.back().AluStack.back().get());

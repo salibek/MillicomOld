@@ -15,7 +15,7 @@
 	public:
 //		Accumulator(void* parent) { Parent = parent; };
 		LoadPoint	accumulatorOld; // Старый аккумулятор (потом удалить)
-		unsigned int accumType = 0; // Тип данных
+		unsigned int accumType = 0; // Тип данных в аккумуляторе
 		double		accumulator;		// Скалярный аккумулятор
 		string		accumulatorStr;		// строковой аккулятор
 		void*		accumulatorPoint;	// Указатель на аккумулятор (вектор, матрица и т.п.)
@@ -71,6 +71,4 @@
 
 		LoadPoint	getCos();
 		LoadPoint	getSin();
-		// Подрограммы сообщений об ошибках
-		void*		NoOperandErrProg = nullptr;
 	};

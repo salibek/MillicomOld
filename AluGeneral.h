@@ -42,4 +42,8 @@ public:
 	ALUGeneral() : FU() {
 		Bus = nullptr;
 	};
+	// Подрограммы сообщений об ошибках
+	void* NoOperandErrProg = nullptr;
+	void* IncompatibleTypesErrProg = nullptr;
+
 };

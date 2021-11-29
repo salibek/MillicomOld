@@ -306,7 +306,7 @@ void Accumulator::dec(LoadPoint Load) // Декреминт если нагру�
 void	Accumulator::add(LoadPoint Load) // Сложение
 {
 	if (Load.Point == nullptr) {
-		((ALUGeneral*)Parent)->ProgExec(NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
+		((ALUGeneral*)Parent)->ProgExec(((ALUGeneral*)Parent)->NoOperandErrProg); // Запуск подпрограммы ошибки "Нет операнда"
 		return;
 	}
 	if (Load.isDigitBool() && Load.isDigitBool(accumType))
