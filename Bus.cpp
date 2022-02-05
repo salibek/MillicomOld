@@ -41,6 +41,15 @@ void BusFU::ProgFU(int MK, LoadPoint Load)
 			ipVect = ConvIndOld(*(string*)Load.Point);
 			if(ipVect->size()>0) ProgExec( (*ipVect)[0], this,nullptr);
 			break;
+		case 20: // NFUOut
+			Load.Write((int)FUs.size());
+			break;
+		case 21: // NFUOutMk
+		{
+			int t= FUs.size();
+			MkExec(Load, {Cint,&t});
+		}
+			break;
 		case 155:// FUTypeCorrectSet Установить коррекцию номера типа ФУ (для переноса ОА-программы на другую ОА-платформу)
 			FUTypeCorrect = *(int *)Load.Point;
 			break;

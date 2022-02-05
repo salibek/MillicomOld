@@ -23,12 +23,12 @@ private:
 public:
 	void ProgFU(int MK, LoadPoint Load);
 	Lex(FU *BusContext, FU *Templ);
-	Lex() ;
+	Lex();
 	FU *Receiver = nullptr;
 	int ReceiverMK = 0;
 	int S = 0; // Номер состояния распознающего автомата
 	bool Work = true; // Флаг рабочего режима лексера
-	int MnemoAtr = -2, SeperatAtr=-4, IntAtr=-10, DoubleAtr=-3, BoolAtr=-5, StrAtr=-6;
+	int MnemoAtr = -2, SeperatAtr=-4, IntAtr=-10, DoubleAtr=-3, BoolAtr=-5, StrAtr=-6, CharAtr=-11;
 	int ib = 0, SizeBuf = 5; // Текущая позиция выходной ИП выходной лексемы и размер буфера
 	ip *LexBuf; // Буфер выходных лексем
 	vector<ip> *ErrProg=nullptr; // Программа, запускаемая при ошибке

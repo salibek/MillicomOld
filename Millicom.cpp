@@ -11,7 +11,7 @@
 #include <fstream>
 #include "MeanShift.h"
 #include "Bag.h"
-#include "ALUGeneral.h"
+#include "Threader.h"
 
 using namespace std;
 
@@ -20,9 +20,10 @@ int main()
 	LoadPoint LP = LoadPoint();
 	BusFU Bus;
 
-	ALUGeneral ALU;
+	Threader ALU;
 	int t = 10;
-	ALU.ProgFU(26, {Cint,&t});
+//	ALU.ProgFU(26, { Cint,&t });
+//	ALU.ProgFU(30, { Cint,&t });
 
 
 //	string STR = "NetTemperat.ind";
@@ -40,10 +41,10 @@ int main()
 //	Bus.ProgFU(10, LP);
 
 //	string STR = "Gauss.ind";
-//	string STR = "ALE2.ind";
+	string STR = "ALE3.ind";
 //	string STR = "MeanShift.ind";
 	//	string STR = "Bag.ind";
-	string STR = "NetTemperat2.ind";
+//	string STR = "NetTemperat2.ind";
 	Bus.ProgFU(10, {Cstring, &STR});
 
 //	string STR5 = "Bag5.txt"; // 5 предметов

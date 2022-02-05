@@ -1,5 +1,6 @@
+\\ Описание корневой шины
+NewFU={Mnemo="Main_Bus" MkBegRange=1000 FUType=FUBusNew}
 \\ Для создания индексного файла сначала надо запустить программу !!!!
-
  CapsManager.IndexVectCreate=20000
  CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
  CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
@@ -8,7 +9,7 @@
 \\ -------------------------------------- \\
 MainBus.FUTypeCorrectSet=-96 // Корректировка номера типа ФУ для переноса на новую ОА-платформу
 
-NewFU={Mnemo="LogCons" FUType=FUConsNew Mnemo="Консоль для вывода соощений компилятора"}
+NewFU={Mnemo="LogCons" FUType=FUConsNew Hint="Консоль для вывода соощений компилятора"}
 NewFU={Mnemo="Lex" FUType=FULexNew}
 NewFU={Mnemo="ALUG" FUType=FUALUG}
 NewFU={Mnemo="Stack" FUType=FUListNew Hint="Стек приоритетов арифметического графа"}
@@ -36,7 +37,6 @@ NewFU={Mnemo="OperateionTranslate" FUType=FUListNew Hint="Транслирование операци
 MainBus.PartialResetSet \\ Запомнить число созданных ФУ
 MainBus.ModeSet=2
 // ---------------------
-
 Sep*-4
 Var
 VarInt
@@ -144,6 +144,7 @@ StartExpr.PrefixProgSet={Stack.Set} // Очистка стека
 \**\IniEQ.Set=
 >{Const ConstInt Lex.ReceiverMkSet=StartExpr.FindAnd 
   Lex.LoadOutMk=ALUG.VarNew MnemoTable.LastCopyAttach={Var} ALUG.VarOutMk=MnemoTable.LastLoadSet
+  MnemoTable.OutMk=LogCons.OutLn
  }
 >{Mnemo Var Lex.ReceiverMkSet=IniWait.FindAnd}
 >{0 LogCons.OutLn="Error 6" Lex.Stop}
@@ -263,6 +264,7 @@ StartExpr.PrefixProgSet={Stack.Set} // Очистка стека
 >{Sep="," Lex.ReceiverMkSet=OperandWait2.FindAnd}
 >{0 LogCons.OutLn="Error"  Lex.Stop}
 
+//Lex.Lexing="i=1"
 Lex.Lexing="i=1 i+=(5+5)//3"
 //Lex.Lexing="i=10 i=i=(2*(10+2))+5"
 //Lex.Lexing="7+5"
@@ -275,7 +277,6 @@ ALUG.OutMk=LogCons.OutLn
 
 LogCons.OutLn="ALE graph:"
 Stack.LastOutMk=LogCons.OutLn
-
 
 LogCons.LnOutLn="Mnemo table:"
 MnemoTable.OutMk=LogCons.LnOutLn

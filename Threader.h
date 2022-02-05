@@ -1,11 +1,11 @@
 #pragma once
 #include "Consts.h"
 #include <vector>
-#include "Accumulator.h"
+#include "ALU.h"
 
 struct ThreadContext // структура контекста
 {
-	vector <Accumulator> AluStack; // стек аккумуляторов
+	vector<ALU> AluStack; // стек аккумуляторов
 	ip* ThreadPC = nullptr;
 	bool CycleFlag = false; // Флаг для циклов
 	bool PostFlag = false;
@@ -20,12 +20,12 @@ public:
 //	void *Parent = nullptr;
 //	ThreadContext(void* parent){Parent = parent;}
 	~ThreadContext() {
-		AluStack.clear(); // Метод для освобождения стека
+//		AluStack.clear(); // Метод для освобождения стека
 	}
 
 };
 
-class ALUGeneral : public FU
+class Threader : public FU
 {
 private:
 	int breakCounter = 0;
@@ -35,15 +35,13 @@ public:
 	ip* DivisinByZeroProg = nullptr; // Программа, вызываемая при делении на 0
 
 	void ProgFU(int MK, LoadPoint Load) override;
-	ALUGeneral(FU* BusContext, FU* Templ) : FU(BusContext) {
+	Threader(FU* BusContext, FU* Templ) : FU(BusContext) {
 		Bus = BusContext;
 		ProgFU(0, { 0,nullptr });
 	};
-	ALUGeneral() : FU() {
+	Threader() : FU() {
 		Bus = nullptr;
 	};
-	// Подрограммы сообщений об ошибках
 	void* NoOperandErrProg = nullptr;
-	void* IncompatibleTypesErrProg = nullptr;
-
+	void* UncompatableTypesErrProg = nullptr;
 };

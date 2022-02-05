@@ -21,7 +21,7 @@ void Console::ProgFU(int MK, LoadPoint Load)
 			Load.print(nullptr,"",Sep,End,ArrayBracketStart,ArrayBracketFin);
 		if (MK == 2 || MK == 4) cout << endl;
 		break;
-	case 10: // LN Перевод строки
+	case 10: // Ln Перевод строки
 		cout << endl;
 		break;
 	case 15: //SepSet Установить строку-разделитель
@@ -63,6 +63,45 @@ void Console::ProgFU(int MK, LoadPoint Load)
 			;
 		else
 			freopen_s(&streamIn, Load.ToStr().c_str(), "r", stdin);
+		break;
+	case 50: //VectIn ввод вектора 
+		break;
+	case 55: //MatrIn ввод матрицы	
+		break;
+	case 60: //VarClear Очистить буфер адресов для результата ввода
+		VarBuf.clear();
+		break;
+	case 61: //VarSet Записать адрес переменной для записи результата ввода
+		VarBuf.clear();
+		VarBuf.push_back(Load);
+		break;
+	case 62: //VarAdd Добавить адрес переменной для записи результата ввода
+		VarBuf.push_back(Load);
+		break;
+	case 70: //VarClear Очистить буфер адресов для результата ввода
+		MkOutBuf.clear();
+		break;
+	case 71: //VarSet Записать адрес переменной для записи результата ввода
+		MkOutBuf.clear();
+		MkOutBuf.push_back(Load.ToInt());
+		break;
+	case 72: //VarAdd Добавить адрес переменной для записи результата ввода
+		MkOutBuf.push_back(Load.ToInt());
+		break;
+	case 80: //VarOut – выдать адрес переменной (если в буфере несколько переменных, то выдается адрес самой последней добавленной переменной)
+		if (!VarBuf.size())
+			ProgExec(NoVarToOutProg);// Сообщение об ошибке
+		else
+			Load.Write(VarBuf.back());
+		break;
+//	case 81: //VarOutAll выдать адрес всех переменных из буфера
+//		if(!VarBuf.size())
+//			ProgExec(NoVarToOutProg);// Сообщение об ошибке
+//		else
+//			for(auto i: VarBuf) // Запись всех переменных
+//				Load.Write(i);
+	case 85: // VarOutMk
+		MkExec(Load, VarBuf.back());
 		break;
 	default:
 		CommonMk(MK, Load);
