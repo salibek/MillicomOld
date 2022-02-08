@@ -144,8 +144,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Accumulator.cpp" />
-    <ClCompile Include="AluGeneral.cpp" />
+    <ClCompile Include="ALU.cpp" />
+    <ClCompile Include="ConfineSimple.cpp" />
+    <ClCompile Include="Threader.cpp" />
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Bus.cpp" />
     <ClCompile Include="Console.cpp" />
@@ -171,8 +172,9 @@
     <ClCompile Include="StrGen.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Accumulator.h" />
-    <ClInclude Include="AluGeneral.h" />
+    <ClInclude Include="ALU.h" />
+    <ClInclude Include="ConfineSimple.h" />
+    <ClInclude Include="Threader.h" />
     <ClInclude Include="Bag.h" />
     <ClInclude Include="Bus.h" />
     <ClInclude Include="Console.h" />

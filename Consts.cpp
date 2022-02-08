@@ -29,14 +29,13 @@ bool LoadPoint::ToBool(bool define) // Перевод в bool (по умолчания false)
 		return define;
 	switch (Type >> 1)
 	{
-	case Ddouble: return *(double*)Point; break;
-	case Dfloat: return *(float*)Point; break;
-	case Dint: return *(int*)Point; break;
-	case Dbool: return *(bool*)Point; break;
-	case Dstring: return ((*(string*)Point) == "") ? false : true;
+	case Ddouble: return *(double*)Point;
+	case Dfloat: return *(float*)Point;
+	case Dint: return *(int*)Point;
+	case Dbool: return *(bool*)Point;
+	case Dstring: return !((*(string*)Point) == "");
 	default:
 		return false;
-		break;
 	}
 }
 
@@ -112,8 +111,20 @@ void LoadPoint::Write(vector<int> x) // Копирование вектора
 		*(vector<int>*)Point = x;
 }
 // -----
-
-void LoadPoint::Write(size_t x)
+/*
+int LoadPoint::Write(LoadPoint x) // Запись в ячейку памяти с указателем LoadPoint
+{
+	if (x.Point == nullptr)
+		return 1; // Нет операнда
+	if (Type != TLoad || x.Type != TLoad)
+		return 2; // Несоответствие типов
+	*(LoadPoint*)Point = *(LoadPoint*)x.Point;
+	return 0;
+defoult:
+	return 1; // Несоответствие типов
+}
+*/
+int LoadPoint::Write(size_t x)
 {
 	switch (Type)
 	{
@@ -133,9 +144,40 @@ void LoadPoint::Write(size_t x)
 		*((char*)Point) = x;
 		break;
 	}
+defoult:
+	return 1; // Несоответствие типов
+	return 0;
 }
 
-void LoadPoint::Write(int x)
+int LoadPoint::Write(int x)
+{
+	switch (Type)
+	{
+	case Tdouble:
+		*((double*)Point) = x;
+		break;
+	case Tfloat:
+		*((float*)Point) = x;
+		break;
+	case Tint:
+		*((int*)Point) = x;
+		break;
+	case Tbool:
+		*((bool*)Point) = x;
+		break;
+	case Tchar:
+		if (x >= 0 && x < 256)
+			*((char*)Point) = x;
+		else
+			return 1; // Несоответствие типов
+		break;
+	defoult:
+		return 1; // Несоответствие типов
+	}
+	return 0;
+}
+
+int LoadPoint::Write(double x)
 {
 	switch (Type)
 	{
@@ -154,10 +196,13 @@ void LoadPoint::Write(int x)
 	case Tchar:
 		*((char*)Point) = x;
 		break;
+	defoult:
+		return 1; // Несоответствие типов
 	}
+	return 0;
 }
 
-void LoadPoint::Write(double x)
+int LoadPoint::Write(float x)
 {
 	switch (Type)
 	{
@@ -176,10 +221,13 @@ void LoadPoint::Write(double x)
 	case Tchar:
 		*((char*)Point) = x;
 		break;
+	defoult:
+		return 1; // Несоответствие типов
 	}
+	return 0;
 }
 
-void LoadPoint::Write(float x)
+int LoadPoint::Write(bool x)
 {
 	switch (Type)
 	{
@@ -198,10 +246,13 @@ void LoadPoint::Write(float x)
 	case Tchar:
 		*((char*)Point) = x;
 		break;
+	defoult:
+		return 1; // Несоответствие типов
 	}
+	return 0;
 }
 
-void LoadPoint::Write(bool x)
+int LoadPoint::Write(char x)
 {
 	switch (Type)
 	{
@@ -220,48 +271,68 @@ void LoadPoint::Write(bool x)
 	case Tchar:
 		*((char*)Point) = x;
 		break;
+	defoult:
+		return 1; // Несоответствие типов
 	}
+	return 0;
 }
 
-void LoadPoint::Write(char x)
-{
-	switch (Type)
-	{
-	case Tdouble:
-		*((double*)Point) = x;
-		break;
-	case Tfloat:
-		*((float*)Point) = x;
-		break;
-	case Tint:
-		*((int*)Point) = x;
-		break;
-	case Tbool:
-		*((bool*)Point) = x;
-		break;
-	case Tchar:
-		*((char*)Point) = x;
-		break;
-	}
-}
-
-void LoadPoint::Write(string x)
+int LoadPoint::Write(string x)
 {
 	switch (Type)
 	{
 	case Tstring:
 		*((string*)Point) = x;
 		break;
+	defoult:
+		return 1; // Несоответствие типов
 	}
+	return 0;
 }
-void LoadPoint::Write(LoadPoint x)
+
+int LoadPoint::Write(LoadPoint x) // Записать величино из нагрузки
 {
 	switch (Type)
 	{
 	case TLoad:
-		*(LoadPoint*)Point = x;
+		if (x.Type >> 1 != DLoad)
+			return 1;
+		*(LoadPoint*)Point = *(LoadPoint*)x.Point;
 		break;
+	case Tstring:
+		if (x.Type >> 1 != Dstring)
+			return 1;
+		*(string*)Point = *(string*)x.Point;	
+	case Tdouble:
+		if (!x.isDigitBool())
+			return 1;
+		*((double*)Point) = x.ToDouble();
+		break;
+	case Tfloat:
+		if (!x.isDigitBool())
+			return 1;
+		*((float*)Point) = x.ToFloat();
+		break;
+	case Tint:
+		if(x.Type>>1==Dint || x.Type >> 1 == Dbool || x.Type >> 1 == Dchar)
+			*((int*)Point) = x.ToInt();
+		else return 1;
+		break;
+	case Tbool:
+		if (!x.isDigitBool() || x.Type >> 1 == Dstring)
+			*((bool*)Point) = x.ToBool();
+		else return 1;
+		break;
+	case Tchar:
+		if(x.Type >> 1 == Dchar || x.Type >> 1 == Dbool ||
+			x.Type >> 1 == Dint && *(int*)x.Point>=0 && *(int*)x.Point <256)
+		*((char*)Point) = x.ToChar();
+		break;
+
+	defoult:
+		return 1; // Несоответствие типов
 	}
+	return 0;
 }
 
 void ICDel(void* Uk) // Удаление ИК
@@ -654,6 +725,7 @@ void FU::CommonMk(int Mk, LoadPoint Load)
 }
 
 // Запуск программы
+// CycleType тип цикла: 0 - без цикла, 1 - цикл, 2 - цикл с постусловием
 void FU::ProgExec(void* UK, FU* ProgBus, vector<ip>::iterator* Start) // Исполнение программы из ИК
 {
 	if (UK==nullptr)return;
@@ -678,8 +750,8 @@ void FU::ProgExec(void* UK, FU* ProgBus, vector<ip>::iterator* Start) // Исполне
 			}
 			else
 				ProgBus->ProgFU(i->atr, i->Load);
-			if (ProgStop > 1) { ProgStop--; return; }
-			if (ProgStopAll) { ProgStop = 0; return; } // Внеочередной выход из подпрограммы
+			if (ProgStop > 1) { ProgStop--; return;   }
+			if (ProgStopAll)  { ProgStop = 0; return; } // Внеочередной выход из подпрограммы
 		}
 	} while (RepeatF);
 }

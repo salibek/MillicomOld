@@ -9,7 +9,8 @@
 #include "Find.h"
 #include "List.h"
 #include "GraphTransf.h"
-#include "AluGeneral.h"
+#include "Threader.h"
+#include "ALU.h"
 #include "InOut.h"
 #include "Neuro.h"
 #include "NetModeling.h"
@@ -55,9 +56,14 @@ FU* GraphTrasfIni(FU* BusContext, FU* TEmpl)
 	return (FU*) new GraphTransf(BusContext, TEmpl);
 }
 
-FU* AluGeneralIni(FU* BusContext, FU* TEmpl)
+FU* ThreaderIni(FU* BusContext, FU* TEmpl)
 {
-	return (FU*) new ALUGeneral(BusContext, TEmpl);
+	return (FU*) new Threader(BusContext, TEmpl);
+}
+
+FU* ALUIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new ALU(BusContext, TEmpl);
 }
 
 FU* InOutIni(FU* BusContext, FU* TEmpl)

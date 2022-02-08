@@ -21,13 +21,13 @@
     <ClCompile Include="FUini.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Accumulator.cpp">
+    <ClCompile Include="ALU.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Consts.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="AluGeneral.cpp">
+    <ClCompile Include="Threader.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Bus.cpp">
@@ -90,12 +90,15 @@
     <ClCompile Include="Simplex.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="ConfineSimple.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Accumulator.h">
+    <ClInclude Include="ALU.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="AluGeneral.h">
+    <ClInclude Include="Threader.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Bus.h">
@@ -168,6 +171,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Simplex.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfineSimple.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

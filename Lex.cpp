@@ -199,12 +199,11 @@
 		case 71: // CendCopyToReceiver Переслать копию лексемы из нагрузки получателю
 			MkExec(ReceiverMK, Load.Clone());
 			break;
-
 		case 99: // Stop Остановить лексический анализ
 			Work = false;
 			ProgExec((IC_type)StopProg,Bus,nullptr); // выполнить программу по останову лексического анализа
 			break;
-		case 100: // Lexing
+		case 100: // Lexing Лексический анализ
 		{
 //			ProgExec((IC_type)StartProg,Bus);
 			string FigureBuf;

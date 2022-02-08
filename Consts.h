@@ -7,6 +7,7 @@
 #include <iterator>
 #include <map>
 #include <string>
+//#include "LocationTable.h"
 
 using namespace std;
 
@@ -40,6 +41,7 @@ const vector<int> w_type = { 10, 30, 40, 50, 60, 70, 20 };
 
 // Общие атрибуты
 const int ProgAtr = -100, Atr=-60, SubMk=900, RepeatMk=901;
+const int ListLine = -80, ListSub = -90; // Атрибуты линии списка и подсписка
 
 bool isIPinIC(void* iP, void* iC); //проверка, что ИК входит в ИП
 
@@ -54,14 +56,15 @@ public:
 	bool isDigitBool(int type=-1) { int t = type < 0 ? Type : type; return t >> 1 == Dint || t >> 1 == Dchar || t >> 1 == Dfloat || t >> 1 == Ddouble; t >> 1 == Dbool; }; // Число или булеан?
 	bool IpTest() { return (Type >> 1 == DIP || Type >> 1 == DIC); } // Является ли нагрузка ИП?
 	bool IsConvert(unsigned int T) {}; // Тест на возможность конвертации значения из Point в определенный тип
-	void Write(int x);
-	void Write(size_t x);
-	void Write(double x);
-	void Write(float x);
-	void Write(bool x);
-	void Write(char x);
-	void Write(string x);
-	void Write(LoadPoint x);
+	int Write(int x); // return 0 - корректная запись, 1 - несоотвествие типов
+	int Write(size_t x);
+	int Write(double x);
+	int Write(float x);
+	int Write(bool x);
+	int Write(char x);
+	int Write(string x);
+	int Write(LoadPoint x);
+	int WriteByLoad(LoadPoint x); // Записать величины из нагрузки
 	void Write(vector<double> x);
 	void Write(vector<float> x);
 	void Write(vector<bool> x);
@@ -69,7 +72,7 @@ public:
 	void Write(vector<int> x);
 
 	void Write(void* x) { Point = x; };
-	void WriteVar(LoadPoint x) { Point = x.Point; Type = x.Type; Type |= 1; Type--; }; //Записать ссылку и сделать ее переменной
+	void WriteVar(LoadPoint x);// { Point = x.Point; Type = x.Type; Type |= 1; Type--; }; //Записать ссылку и сделать ее переменной
 	void WriteConst(LoadPoint x) {Point = x.Point; Type = x.Type; Type |= 1;}; // Записать ссылку и сделать ее константой
 
 	string ToStr(string define=""); // Первод в string
@@ -168,6 +171,12 @@ public:
 //	double Dtime = 0; // Время выполнения текущей команды
 };
 
+class Tread { // Вычислительная нить
+	double accum = 0; // Аккумулятор
+	double* P_accum = &accum; // Ссылка на аккумулятор
+	
+};
+
 class FU {  // Ядро функционального устройства
 public:
 	virtual void ProgFU(int MK, LoadPoint Load) {}; // Реализация логики работы ФУ
@@ -186,8 +195,7 @@ public:
 
 	void MkExec(int MK, LoadPoint Load, FU* BusContext = nullptr); // Выполнить одну милликоманду 
 	void MkExec(LoadPoint MK, LoadPoint Load, FU* BusContext = nullptr); // Выдача МК с нагрузкой
-	void ProgExec(void* Uk, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
-	void ProgExec(LoadPoint Uk, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
+	void ProgExec(LoadPoint UK, FU* Bus = nullptr, vector<ip>::iterator* Start = nullptr); // Исполнение программы из ИК
 	int SubAtr=SubMk; // Атрибут входа в подпрограмму
 
 	FU *Bus; // Ссылка на контекст Шины
@@ -201,6 +209,7 @@ private:
 //	int ProgSetFaze = 0; // Фаза для установки программы ProgSet, ElseProgSet
 };
 
+//void GraphDel(void* Uk, LocatTable* Table = nullptr); // Удаление ОА-графа
 void ICDel(void* Uk);// Удаление ИК
 
 void* ICCopy(LoadPoint uk);// Копирование ИК

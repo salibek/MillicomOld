@@ -418,7 +418,7 @@ ARoot.BusModeSet=2
 
 ///////////////
 
-CreateNewFU.Set=
+\**\CreateNewFU.Set=
 >{Mnemo MnemoTableManager.CapsReset  CreateNewFU.InObjPopMk=MnemoTableManager.IpCopyAdd
 	MnemoTableManager.CapsOutMk=MnemoServiceTable.LineAdd
 	MnemoTableManager.IpCopyAdd={TreeParentLevelAtr=1}
@@ -4262,6 +4262,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="ProgExec" Mk=5 Hint="Выполнить последовательность МК из ИК"}
   Obj={Mnemo="FileOldProgExec" Mk=10 Hint="Выполнить последовательность МК из индексного файла старого формата"}
   Obj={Mnemo="NFUOut" Mk=20 Hint="Выдать количество ФУ, подключенных к шине"}
+  Obj={Mnemo="NFUOutMk" Mk=20 Hint="Выдать МК с количеством ФУ, подключенных к шине"}
   Obj=CommonMkList
 }
 // ConsNew
@@ -4580,9 +4581,10 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=23 Mnemo="Out" Hint="Выдать аккумулятор"}
   Obj={Mk=24 Mnemo="OutMk" Hint="Выдать МК аккумулятор"}
 
-  Obj={Mk=130 Mnemo="VarNew" Hint="оздать и инициализировать новую переменную"}
-  Obj={Mk=131 Mnemo="VarOut" Hint="Выдать ссылку на новую переменную"}
-  Obj={Mk=132 Mnemo="VarOutMk" Hint="Выдать MK со ссылкой на новую переменную"}
+  Obj={Mk=130 Mnemo="VarNew" Hint="Создать и инициализировать новую переменную"}
+  Obj={Mk=131 Mnemo="ConstNew" Hint="Создать и инициализировать новую константу"}
+  Obj={Mk=135 Mnemo="VarOut" Hint="Выдать ссылку на новую переменную"}
+  Obj={Mk=136 Mnemo="VarOutMk" Hint="Выдать MK со ссылкой на новую переменную"}
 
     Obj={Mnemo="Prog" Hint="Управление программой" Comment
     Obj={Mk=1  Mnemo="Prog" Hint="Выполнить подпрограмму"}
@@ -4934,18 +4936,22 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
       Obj={Mk=72 Mnemo="EpsAllSet" Hint="Установить одинаковое количество анализируемых точек для всех осей (по умолчанию 20)"}
       Obj={Mk=75 Mnemo="ClasterEpsSet" Hint="Утановить погрешность для прекращения миграции кластера"}
 
-      Obj={Mk=80 Mnemo="NExUFCallOut" Hint="Выдать количество используемых во вермя миграции исполнительных устройств для одного кластера во время миграции"}
-      Obj={Mk=81 Mnemo="NExUFCallOutMk" Hint="Выдать МК с количеством используемых во вермя миграции исполнительных устройств для одного кластера во время миграции"}
-      Obj={Mk=85 Mnemo="NExUFAllCallOut" Hint="Выдать общее количество используемых всеми кластерами во вермя миграции исполнительных устройств во время миграции"}
-      Obj={Mk=86 Mnemo="NExUFAllCallOutMk" Hint="Выдать МК с общим количеством используемых во вермя миграции исполнительных устройств во время миграции"}
+      Obj={Mk=80 Mnemo="NClusterPointCallOut" Hint="Выдать количество используемых во вермя миграции исполнительных устройств для одного кластера во время миграции"}
+      Obj={Mk=81 Mnemo="NClusterPointCallOutMk" Hint="Выдать МК с количеством используемых во вермя миграции исполнительных устройств для одного кластера во время миграции"}
+      Obj={Mk=85 Mnemo="NAllClusterPointCallOut" Hint="Выдать общее количество используемых всеми кластерами во вермя миграции исполнительных устройств во время миграции"}
+      Obj={Mk=86 Mnemo="NAllClusterPointCallOutMk" Hint="Выдать МК с общим количеством используемых во вермя миграции исполнительных устройств во время миграции"}
+      Obj={Mk=87 Mnemo="NAveragePointCallOut" Hint="Выдать среднее количество миграций на один кластер"}
+      Obj={Mk=88 Mnemo="NAveragePointCallOutMk" Hint="Выдать МК со средним количеством миграций на один кластер"}
       Obj={Mk=90 Mnemo="NClasterMovesOut" Hint="Выдать количетство итераций миграции кластера с индексом ClusterID во время миграции"}
       Obj={Mk=91 Mnemo="NClasterMovesOutMk" Hint="Выдать МК с количетством итераций миграции кластера с индексом ClusterID во время миграции"}
-      Obj={Mk=95 Mnemo="NClasterAllMovesOut" Hint="Выдать количетство итераций миграций миграции всех кластеров"}
-      Obj={Mk=96 Mnemo="NClasterAllMovesOutMk" Hint="Выдать МК с количетством итераций миграции всех кластеров"}
-      Obj={Mk=100 Mnemo="NClusterPointsOut" Hint="Выдать количество точек в кластере"}
-      Obj={Mk=101 Mnemo="NClusterPointsOut" Hint="Выдать МК с количеством точек в кластере"}
-      Obj={Mk=105 Mnemo="NClusterPointsOut" Hint="Выдать общую массу точек в кластере"}
-      Obj={Mk=106 Mnemo="NClusterPointsOut" Hint="Выдать МК общей массой точек кластере"}
+      Obj={Mk=92 Mnemo="NAllClasterMovesOut" Hint="Выдать количетство итераций миграций миграции всех кластеров"}
+      Obj={Mk=93 Mnemo="NAllClasterMovesOutMk" Hint="Выдать МК с количетством итераций миграции всех кластеров"}
+      Obj={Mk=94 Mnemo="NAverageClusterMovesOut" Hint="Выдать среднее количетство итераций миграции одного кластера"}
+      Obj={Mk=95 Mnemo="NAverageClusterMovesOutMk" Hint="Выдать МК со средним количетством итераций миграции одного кластера"}
+      Obj={Mk=120 Mnemo="NClusterNPointsOut" Hint="Выдать количество точек в кластере"}
+      Obj={Mk=121 Mnemo="NClusterNPointsOutMk" Hint="Выдать МК с количеством точек в кластере"}
+      Obj={Mk=125 Mnemo="ClusterMassOut" Hint="Выдать общую массу точек в кластере"}
+      Obj={Mk=126 Mnemo="ClusterMassMassOut" Hint="Выдать МК общей массой точек кластере"}
 
 
       Obj=CommonMkList
@@ -4977,6 +4983,68 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 	 Obj={Mk=15 Mnemo="MinSet" Hint="Установить мининмальную величину коэффициентов для случайной генерации"}
 	 Obj={Mk=100  Mnemo="CalcTimeSet" Hint="Установить время выполнения операции"}
 	 Obj={Mk=105  Mnemo="SendTimeSet" Hint="Установить время пересылки данных"}
+      Obj=CommonMkList
+   }
+// ALUNew
+     FuTypeIndexes.CellSet=113 FuTypeMkTrees.CellSet=
+   {
+  Obj={Mnemo="Ariphmetics" Hint="Арифметические функции" Comment
+//  	Obj={Mk=100 Mnemo="AccumReset" Hint="Сбросить аккумулятор"}
+  	Obj={Mk=26 Mnemo="Set" Hint="Установить значение в аккумулятор"}
+  	Obj={Mk=25 Mnemo="Get" Hint="Установить значение в аккумулятор"}
+  	Obj={Mk=34 Mnemo="Inc" Hint="Декремент (если Load=nil инкремент аккумулятора)"}
+  	Obj={Mk=35 Mnemo="Dec" Hint="Инкремент (если Load=nil инкремент аккумулятора)"}
+  	Obj={Mk=30 Mnemo="Sum" Hint="Прибавить"}
+  	Obj={Mk=31 Mnemo="Sub" Hint="Вычесть"}
+  	Obj={Mk=33 Mnemo="Mul" Hint="Умножить"}
+  	Obj={Mk=32 Mnemo="Div" Hint="Разделить"}
+  	Obj={Mk=37 Mnemo="Max" Hint=""}
+  	Obj={Mk=36 Mnemo="Min" Hint=""}
+  	Obj={Mk=44 Mnemo="Mod" Hint=""}
+  	Obj={Mk=45 Mnemo="Sqrt" Hint=""}
+  	Obj={Mk=46 Mnemo="Pow" Hint=""}
+  	Obj={Mk=51 Mnemo="Log" Hint=""}
+  	Obj={Mk=52 Mnemo="Random" Hint=""}
+  	Obj={Mk=28 Mnemo="GetLogic" Hint=""}
+  	Obj={Mk=47 Mnemo="Abs" Hint=""}
+  	Obj={Mk=48 Mnemo="Ceil" Hint=""}
+  	Obj={Mk=49 Mnemo="Floor" Hint=""}
+  	Obj={Mk=50 Mnemo="Round" Hint=""}
+  	Obj={Mk=56 Mnemo="DivInt" Hint="Целочисленное деление"}
+  	Obj={Mk=69 Mnemo="Remainder" Hint="Остаток от деления"}
+  }
+
+  Obj={Mnemo="Comparision" Hint="Триганометрические функции" Comment
+	Obj={Mk=63 Mnemo="EQ" Hint="=="}
+	Obj={Mk=64 Mnemo="NotEQ" Hint="<>"}
+	Obj={Mk=65 Mnemo="Bigger" Hint=">"}
+	Obj={Mk=66 Mnemo="BiggerEQ" Hint=">="}
+	Obj={Mk=67 Mnemo="Smaller" Hint="<"}
+	Obj={Mk=68 Mnemo="SmallerEQ" Hint="<="}
+	Obj={Mk=71 Mnemo="Compar3Way" Hint="Трехстороннее сравнение"}
+  }
+
+  Obj={Mnemo="Logic" Hint="Логические функции" Comment
+  	Obj={Mk=53 Mnemo="Not" Hint="НЕ"}
+  	Obj={Mk=55 Mnemo="Or" Hint=""}
+  	Obj={Mk=54 Mnemo="And" Hint=""}    
+  	Obj={Mk=57 Mnemo="Xor" Hint=""}    
+  	Obj={Mk=58 Mnemo="NotBit" Hint=""}    
+  	Obj={Mk=59 Mnemo="OrBit" Hint=""}    
+  	Obj={Mk=60 Mnemo="AndBit" Hint=""}    
+  	Obj={Mk=61 Mnemo="MrBit" Hint=""}    
+  	Obj={Mk=62 Mnemo="MlBit" Hint=""}    
+  	Obj={Mk=70 Mnemo="XorBit" Hint=""}    
+  }
+
+  Obj={Mnemo="Triganometric" Hint="Триганометрические функции" Comment
+  	Obj={Mk=39 Mnemo="Sin" Hint=""}
+  	Obj={Mk=38 Mnemo="Cos" Hint=""}
+  	Obj={Mk=40 Mnemo="Tan" Hint=""}
+  	Obj={Mk=42 Mnemo="Acos" Hint=""}
+  	Obj={Mk=41 Mnemo="Asin" Hint=""}
+  	Obj={Mk=52 Mnemo="Random" Hint=""}
+  }
       Obj=CommonMkList
    }
   FuTypeMkTrees.CellSet=nil
@@ -6352,7 +6420,7 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
  	FUType=109 FUTypeDef=109 Hint="ФУ контроллер событий"}
 
      FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
- 	MnemoServiceTable.LineAdd={Mnemo="FUMeanShiftMahager" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	MnemoServiceTable.LineAdd={Mnemo="FUMeanShiftManager" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
  	FUType=110 FUTypeDef=110 Hint="ФУ контроллер событий"}
 
      FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
@@ -6362,6 +6430,10 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
      FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
  	MnemoServiceTable.LineAdd={Mnemo="FUGausNew" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
  	FUType=112 FUTypeDef=112 Hint="ФУ Решения уравнени методом Гаусса"}
+
+     FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
+ 	MnemoServiceTable.LineAdd={Mnemo="FUALUNew" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=113 FUTypeDef=113 Hint="Общее последовательное АЛУ"}
 }
 FuTypeMkList.IndexModeSet=1
 FuTypeMkTrees.IndexModeSet=1
