@@ -25,7 +25,7 @@ class Scheduler : FU
 	int NCores = 1, CoreCount = 0, CoreCountPrev = 0; // Количество ядер и счетчик занятых ядер
 	int MkQueuePrev = 0; // Предыдущая длина очереди МК
 	double SchedulingTime = 0, RunTime=0; // Время планирования вычислений и запуска на выполнение
-	FU* eventser = nullptr; // Указатель на контроллер событиц
+	FU* eventser = nullptr; // Указатель на контроллер событий
 	vector<FU*>Queue; // Очередь контекстов ФУ для выдачи задания для моделирования
 	vector<double> MkTimeQueue; // Очередь времен выполнения МК, находящихся в очереди
 	double* CurrentTime = 0; // Текущее время

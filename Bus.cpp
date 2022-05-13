@@ -35,11 +35,11 @@ void BusFU::ProgFU(int MK, LoadPoint Load)
 			FUs.push_back(FUTypes[*(int *)Load.Point - FUTypeCorrect](this, FUTempl));
 			break;
 		case 5: // ProgExec Выполнить программу из ИК
-			ProgExec((vector<ip>*)Load.Point, Bus,nullptr);
+			ProgExec((vector<ip>*)Load.Point);
 			break;
 		case 10: // FileOldProgExec Выполнить программу из файла
 			ipVect = ConvIndOld(*(string*)Load.Point);
-			if(ipVect->size()>0) ProgExec( (*ipVect)[0], this,nullptr);
+			if(ipVect->size()>0) ProgExec( (*ipVect)[0], 0, this,nullptr);
 			break;
 		case 20: // NFUOut
 			Load.Write((int)FUs.size());

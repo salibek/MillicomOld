@@ -24,8 +24,11 @@ void List::ProgFU(int MK, LoadPoint Load)
 	case 3:// OutMk Выдать МК со ссылкой на список
 		MkExec(Load, { TIC,(void*)Stack.back().ListHead });
 		break;
-	case 5:	// MultiLineModeSet
-		MultiLineMode = Load.ToInt();
+	case 5:	// MultiLineModeSet 
+		MultiLineMode = Load.ToInt(1);
+		break;
+	case 6: // MultyListModeSet Установить режим многоуровневого списка для поиска (true по умолчанию)
+		MultyListMode = Load.ToBool(true);
 		break;
 	case 7: // MkModeSet Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0) При пустой нагрузке режим устанавливается
 		Searcher.MkMode = Load.ToBool(true);
@@ -502,7 +505,7 @@ void List::ProgFU(int MK, LoadPoint Load)
 			case 186:
 			case 196:
 				if (Load.Type >> 1 != DIC)
-					t->back().Load.Copy(&Load);
+					t->back().Load.Copy(Load);
 				else
 				{
 					t->back().Load.Type = Load.Type;
@@ -564,12 +567,14 @@ void List::ProgFU(int MK, LoadPoint Load)
 		Stack.back().LineCount = 0; // счетчик совпадений
 		Stack.back().LineNumOld = Stack.back().LineNum;
 		Stack.back().LineNum = 0; // Номер первой совпадающей линии
+		Stack.back().LineUk = nullptr; // Ссылка на найденную строку
 		int LineNumFirst = -1;
+
 		if (Stack.back().ListHead == nullptr)
 		{
 			Searcher.Template = { 0,nullptr };
 			Searcher.FindOr({ 0,nullptr });
-			ProgExec(FailProg, Bus, nullptr);
+			ProgExec(FailProg);
 			break;
 		}
 		auto i = Stack.back().ListHead->begin();
@@ -577,7 +582,22 @@ void List::ProgFU(int MK, LoadPoint Load)
 			i = Stack.back().ListHead->end() - 1;
 		for (; i != Stack.back().ListHead->end(); i++)
 		{
-			Stack.back().LineUk = i._Ptr;
+			if (i->atr != LineAtr) 
+				continue;
+			if (MultyListMode && AtrSearch(i->Load.Point,LineAtr)) // Попытка перехода на другой уровень списка
+				{
+					Stack.push_back(Stack.back()); // Добавить контекст в стек контекстов
+					Stack.back().ListHead = (IC_type)i->Load.Point;
+					ProgFU(MK, Load); // Поиск на следующем уровне
+					IC_type t = (Stack.end() - 1)->ListHead;
+					*(Stack.end() - 1) = Stack.back();
+					Stack.pop_back(); // Убрать из стека контекстов
+					Stack.back().ListHead = t;
+					if (Stack.back().LineCount && !MultiLineMode) // Если поиск до первого совпадения, то выход
+						break;
+				}
+
+			//Stack.back().LineUk = i._Ptr;
 			Searcher.Template = i->Load;
 			switch (MK)
 			{
@@ -613,12 +633,13 @@ void List::ProgFU(int MK, LoadPoint Load)
 		{
 			Stack.back().LineUk = &Stack.back().ListHead->at(LineNumFirst);
 			Stack.back().LineNum = LineNumFirst;
+			ProgExec(SuссessProg);
 		}
 		else
 		{
 			Stack.back().LineNum == -1;
 			Stack.back().LineUk = nullptr;
-			ProgExec(FailProg, Bus, nullptr);
+			ProgExec(FailProg);
 		}
 	}
 	if (Stack.back().LineNum > Stack.back().LineNumOld)  ProgExec(BibberProg);
@@ -630,34 +651,62 @@ void List::ProgFU(int MK, LoadPoint Load)
 	break;
 
 	// Операции с подсписками
-	case 240: // SubAdd Добавить новый уровень в список и спуститься на него (в нагрзуке атрибут подсписка, если nil атрибут по умолчанию)
+	case 238: // ToRoot Переход к корневому уровню списка
+		while (Stack.size() > 1)
+			Stack.pop_back(); // Возврат к корневому уровню
+		break;
+	case 239: // SubCopyAdd
 		Stack.back().ListHead->push_back({ Load.ToInt(ListLine), TIC, new ICVect });
+		Stack.push_back({ (vector<ip>*)Stack.back().ListHead->back().Load.Point, nullptr, -1, -1, 0 });
+		Stack.back().ListHead->push_back({ LineAtr, Load.Copy()});
+		break;
+	case 240: // SubAdd Добавить новый уровень в список и спуститься на него (в нагрзуке атрибут подсписка, если nil атрибут по умолчанию)
+		Stack.back().ListHead->push_back({ Load.ToInt(LineAtr), TIC, new ICVect });
 		Stack.push_back({ (vector<ip>*) Stack.back().ListHead->back().Load.Point,nullptr,-1,-1,0 });
 		break;
 	case 241: // SubRootAdd Добавить новый уровень в корневой список и спуститься на него оставить в стеке уровней ссылку на предыдущую ИК  (в нагрзуке атрибут подсписка, если nil атрибут по умолчанию)
+	case 242: // SubRootCopyAdd
 		Stack.back().StopSearch = true;
-		Stack.push_back(Stack[0]);
+		while (Stack.size() > 1)
+			Stack.pop_back(); // Возврат к корневому уровню
+
+		if (Stack.back().ListHead == nullptr)
+			Stack.back().ListHead = new vector<ip>;
+		Stack.back().ListHead->push_back({LineAtr,TIC, new vector<ip>});
+		Stack.push_back({ (vector<ip>*) Stack.back().ListHead->back().Load.Point, nullptr, -1, -1, 0 });
+		if(Load.isIC())
+			if(MK==241)
+				Stack.back().ListHead->push_back({ LineAtr, Load.Type, Load.Point });
+			else
+				Stack.back().ListHead->push_back({ LineAtr, Load.Copy()});
 		break;
-	case 242: // SubUp Перейти на уровень выше
+	
+	case 250: // SubUp Перейти на уровень выше
 		Stack.pop_back();
 		break;
-	case 243: // SubUpDel Перейти на уровень выше и уничтожить текущий уровень
+	case 251: // SubUpDel Перейти на уровень выше и уничтожить текущий уровень
 		ICDel(Stack.back().ListHead->back().Load.Point);
 		Stack.pop_back();
 		break;
-	case 244: // SubUpDelGraph Перейти на уровень выше и уничтожить текущий уровень с подсписками
+	case 252: // SubUpDelGraph Перейти на уровень выше и уничтожить текущий уровень с подсписками
 		//GraphDel(Stack.back().ListHead->back().Load.Point);
 		Stack.pop_back();
 		break;
-	case 245: // SubDeepOut Выдать номер текущего уровня
+	case 253: // SubDeepOut Выдать номер текущего уровня
 		Load.Write(Stack.size());
 		break;
-	case 246: // SubDeepOutMk Выдать МК с номером текущего уровня
+	case 254: // SubDeepOutMk Выдать МК с номером текущего уровня
 	{
 		int t = Stack.size();
 		MkExec(MK, {Cint,&t});
 		break;
 	}
+	case 255: // SubDown Перейти на уровень ниже (по умолчанию переход осуществляется на текущую найденную строку
+		if (Load.Point == nullptr)
+			Stack.push_back({ (IC_type)Stack.back().LineUk->Load.Point,nullptr,-1,-1,0,false});
+		else if(Load.isIC())
+			Stack.push_back({ (IC_type)Load.Point,nullptr,-1,-1,0,false });
+		break;
 
 	case 400: // LineOutMk Выдать МК с найденной линией
 			MkExec(Load, Stack.back().LineUk->Load);
@@ -753,4 +802,6 @@ void List::ProgFU(int MK, LoadPoint Load)
 		CommonMk(MK, Load);
 		break;
 	}
+	if (Stack.size() == 1)
+		ProgExec(PostfixProg); // Выполнить финальную программу
 }

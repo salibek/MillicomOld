@@ -268,7 +268,7 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 		else
 		{
 			swap(IPTemplPoint,IPPoint);
-			MainFU->ProgExec(SuccessProg, MainFU->Bus);
+			MainFU->ProgExec(SuccessProg, 0, MainFU->Bus);
 			AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
 			MkAtrExec();
 			MainFU->ProgExec(SuccessAfterProg);
@@ -313,7 +313,7 @@ bool Search::FindAndSource(LoadPoint obj) // Поиск
 	if (i != ((IC_type)Template.Point)->end())
 	{// Выполнилось условие
 		Rez = true;
-		MainFU->ProgExec(SuccessProg, MainFU->Bus);
+		MainFU->ProgExec(SuccessProg, 0, MainFU->Bus);
 		AtrProgExec((IC_type)Template.Point, Prog_atr, MainFU->Bus, true);
 		MkAtrExec();
 		MainFU->ProgExec(SuccessAfterProg);

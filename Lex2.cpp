@@ -6,6 +6,7 @@
 
 	void Lex::LexOut(bool Copy,int MK) // Выдача лексемы потребителю
 	{
+		if (Receiver == nullptr)Receiver = Bus;
 		auto uk = UnicAtr.find(LexBuf[ib].atr);
 		if (MK < 0)MK = ReceiverMK;
 		if (uk!= UnicAtr.end())
@@ -36,6 +37,11 @@
 			ReceiverMK = 0;
 			Receiver = Bus;
 			ErrProg = nullptr;
+			SizeBuf = 5;
+			if (LexBuf!=nullptr)
+				delete[] LexBuf;
+			LexBuf = new ip[SizeBuf];
+
 			break;
 		case 5: //ReceiverMKSet
 			if (Load.Type >> 1 == Dint) ReceiverMK = *(int*)Load.Point; break;
@@ -199,14 +205,15 @@
 		case 71: // CendCopyToReceiver Переслать копию лексемы из нагрузки получателю
 			MkExec(ReceiverMK, Load.Clone());
 			break;
-
 		case 99: // Stop Остановить лексический анализ
 			Work = false;
-			ProgExec((IC_type)StopProg,Bus,nullptr); // выполнить программу по останову лексического анализа
+			ProgExec((IC_type)StopProg); // выполнить программу по останову лексического анализа
 			break;
-		case 100: // Lexing
+		case 100: // Lexing Лексический анализ
 		{
 //			ProgExec((IC_type)StartProg,Bus);
+			string FigureBuf;
+			string str = *(string*)Load.Point;
 			if (Load.Type >> 1 == Dstring && *((string*)Load.Point) == "")
 			{
 				ib = (ib + 1) % SizeBuf;
@@ -214,13 +221,13 @@
 				LexBuf[ib] = { StrAtr,Tstring , new string("") };
 				LexOut();
 			}
-			(*(string*)Load.Point) += " "; // Добавление мнимого конечного элемента
+			str += " "; // Добавление мнимого конечного элемента
 			Work = true;
-			string FigureBuf;
-			for (auto i = (*(string*)Load.Point).begin(); i != (*(string*)Load.Point).end() && Work; i++)
+			for (auto i = str.begin(); i != str.end() && Work; i++) //Обход по символам строки
 				switch (S)
 				{
 				case 0: // Стартовое состояние
+				{
 					if (*i == ' ') break;
 					if (*i == '"')
 					{
@@ -228,41 +235,33 @@
 						S = 4;
 						break;
 					}
-					if (Seps.count(*i))
+					auto SepUk = Seps.find(str.substr(distance(str.begin(), i), 1));
+					auto SepUk2 = Seps.find(str.substr(distance(str.begin(), i), 2));
+					auto SepUk3 = Seps.find(str.substr(distance(str.begin(), i), 3));
+					if (SepUk != Seps.end() || SepUk2 != Seps.end() || SepUk3 != Seps.end())
 					{
 						ib = (ib + 1) % SizeBuf;
 						LexBuf[ib].Load.Clear();
-						string  *tstr = new string;
-						
-						*tstr = *i;
-						if (i + 1 != (*(string*)Load.Point).end())
+						string* tstr=new string;
+						if (SepUk3 != Seps.end() && SepUk3->size()==3)
 						{
-							*tstr += *(i + 1);
-							if (i + 2 != (*(string*)Load.Point).end())
-								*tstr += *(i + 2);
-						}
-						if (i + 1 != (*(string*)Load.Point).end() && i + 2 != (*(string*)Load.Point).end() && Seps.count(*(i + 1)) && Seps.count(*(i + 2)) && SepsComlex3.count(*tstr) )
-						{
-							LexBuf[ib] = { SeperatAtr,Tstring , tstr };
+							*tstr = *SepUk3;
 							i += 2;
-							LexOut();
-							break;
 						}
-
-						*tstr = *i;
-						if (i + 1 != (*(string*)Load.Point).end()) *tstr += *(i + 1);
-						if (i + 1 != (*(string*)Load.Point).end() && Seps.count(*(i + 1)) && SepsComlex2.count(*tstr))
+						else if (SepUk2 != Seps.end() && SepUk2->size() == 2)
 						{
-							LexBuf[ib] = { SeperatAtr,Tstring , tstr };
-							i++;
-							LexOut();
-							break;
+							*tstr = *SepUk2;
+							i += 1;
 						}
-						*tstr = *i;
+						else if(SepUk != Seps.end())
+							*tstr = *SepUk;
+
 						LexBuf[ib] = { SeperatAtr,Tstring , tstr };
 						LexOut();
 						break;
 					}
+					else
+
 					if (*i >= '0' && *i <= '9')
 					{
 						FigureBuf = *i;
@@ -277,8 +276,9 @@
 						break;
 					}
 					Work = false;
-					if (ErrProg != nullptr) ProgExec(ErrProg, Bus,nullptr);
+					if (ErrProg != nullptr) ProgExec(ErrProg);
 					break;
+				}
 				case 1: // Распознание числа
 					if (*i >= '0' && *i <= '9')
 					{
@@ -291,7 +291,7 @@
 						S = 2;
 						break;
 					}
-					if (Seps.count(*i) || *i == ' ')
+					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ')
 					{
 						int  *tint = new int;
 						*tint = atoi(FigureBuf.c_str());
@@ -305,7 +305,7 @@
 						break;
 					}
 					Work = false;
-					ProgExec(ErrProg, Bus, nullptr);
+					ProgExec(ErrProg);
 					break;
 				case 2: // После десятичной точки
 					if (*i >= '0' && *i <= '9')
@@ -313,7 +313,7 @@
 						FigureBuf = FigureBuf + (*i);
 						break;
 					}
-					if (Seps.count(*i) || *i == ' ')
+					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ')
 					{
 						double *ft = new double;
 						*ft = atof(FigureBuf.c_str());
@@ -325,10 +325,10 @@
 						i--;
 					}
 					Work = false;
-					ProgExec(ErrProg, Bus, nullptr);
+					ProgExec(ErrProg);
 					break;
 				case 3: // Мнемоника
-					if (Seps.count(*i) || *i == ' ')
+					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ')
 					{
 						S = 0;
 						i--;
@@ -346,7 +346,7 @@
 						break;
 					}
 					Work = false;
-					ProgExec(ErrProg, Bus, nullptr);
+					ProgExec(ErrProg);
 					break;
 				case 4:
 					if (*i != '"'){
@@ -357,13 +357,13 @@
 						S = 0;
 						string *st = new string;
 						*st = FigureBuf;
-						ib = (ib + 1) % SizeBuf;
+						ib = (ib + 1) % SizeBuf; // новый индекс буфера лексем
 						LexBuf[ib].Load.Clear();
-						LexBuf[ib] = { StrAtr, Cstring, st };
-						LexOut();
+						LexBuf[ib] = { StrAtr, Cstring, st }; // Добавить строковую константу
+						LexOut(); // Выдать лексему потребителю
 					}
 					Work = false;
-					ProgExec(ErrProg, Bus, nullptr);
+					ProgExec(ErrProg);
 					break;
 				case 5:
 					break;

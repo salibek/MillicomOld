@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "EnumMk.h"
-#include "Threader.h"
+#include "AluGeneral.h"
 #include <cmath>
 
-void Threader::ProgFU(int MK, LoadPoint Load)
+void ALUGeneral::ProgFU(int MK, LoadPoint Load)
 {
 	switch (MK)
 	{
@@ -31,11 +31,8 @@ void Threader::ProgFU(int MK, LoadPoint Load)
 	if (f)
 		//		if(Load.Type>>2!=DIC) // �������� ��� ������ �� ��
 	{/* ��������� �� ������ ���� */
-		ThreadStack.back().AluStack.push_back({ this,  nullptr });
-		ThreadStack.back().AluStack.back().Stack.back().accumType = Tint;
-		ThreadStack.back().AluStack.back().Stack.back().accum = 0;
-		ThreadStack.back().AluStack.back().Stack.back().accumStr = "";
-		ThreadStack.back().AluStack.back().Parent = this;
+	//	ThreadStack.push_back({ {}, (ip*)Load.Point,nullptr });
+		ThreadStack.back().AluStack.push_back({ Tint ,(void*) new int(0), 0, 0,"",this});
 		ThreadStack.back().CycleFlag = (MK - 2) % 4 == 0 || (MK - 3) % 4 == 0; // Установить флаг цикла
 		ThreadStack.back().PostFlag = (MK - 3) % 4 == 0; // Установика флаг цикла с постусловием
 
@@ -72,14 +69,12 @@ void Threader::ProgFU(int MK, LoadPoint Load)
 		}
 		else
 		{
-			bool t = true;
 			ThreadStack.back().AluStack.back().Clear();
-			ThreadStack.back().AluStack.back().set({ Cbool,&t });
-//			ThreadStack.back().AluStack.back().accumulatorOld.Type = Cbool;
-//			ThreadStack.back().AluStack.back().accumulatorOld.Point = new bool(true);
+			ThreadStack.back().AluStack.back().accumulatorOld.Type = Cbool;
+			ThreadStack.back().AluStack.back().accumulatorOld.Point = new bool(true);
 			ThreadStack.back().PostFlag = false;
 		}
-		for (auto i : ThreadStack.back().Out)
+		for (auto i : ThreadStack.back().Out) // Рассылка результатов вычислений
 			ThreadStack.back().AluStack.back().Out(i);
 		for (auto i : ThreadStack.back().MkOut)
 			MkExec(i, ThreadStack.back().AluStack.back().get());
@@ -137,21 +132,17 @@ void Threader::ProgFU(int MK, LoadPoint Load)
 			ThreadStack.push_back({});
 		if (ThreadStack.back().AluStack.size() == 0)
 		{
-			ThreadStack.back().AluStack.push_back({ this, nullptr });
+			ThreadStack.back().AluStack.push_back({});
 			ThreadStack.back().AluStack.back().Parent = this;
 		}
 		if ((Load.Type >> 1) != DIC) // Выполнение операции
 			ThreadStack.back().AluStack.back().calc(MK, Load);
 		else // АЛВ более высокого уровня 
 		{
-			ThreadStack.back().AluStack.push_back({ this , nullptr});
-			ThreadStack.back().AluStack.back().Parent = this;
-			ThreadStack.back().AluStack.back().Stack.back().accumType = Load.Type;
-			ThreadStack.back().AluStack.back().Stack.back().accum = 0;
-			ThreadStack.back().AluStack.back().Stack.back().accumStr = "";
+			ThreadStack.back().AluStack.push_back({ Tint ,(void*) new int, Load.Type, 0, "",this});
 			ProgExec(Load.Point);
 			ThreadStack.back().AluStack[ThreadStack.back()
-				.AluStack.size() - 2].calc(MK, { Tdouble,  &ThreadStack.back().AluStack.back().accum}); // Исправить
+				.AluStack.size()-2].calc(MK, ThreadStack.back().AluStack.back().accumulatorOld);
 			ThreadStack.back().AluStack.pop_back();
 		}
 		break;
@@ -165,6 +156,7 @@ void Threader::ProgFU(int MK, LoadPoint Load)
 		break;
 	case 112: //RangeProgExec Выполнить программу для цикла range
 	{
+
 		if(Load.Type>>1!=DIC)
 			if (ThreadStack.back().MkStage == 0)
 			{
@@ -175,7 +167,7 @@ void Threader::ProgFU(int MK, LoadPoint Load)
 			{
 				if (ThreadStack.back().AluStack.size() == 0)
 				{
-					ThreadStack.back().AluStack.push_back({ this,  nullptr });
+					ThreadStack.back().AluStack.push_back({});
 					ThreadStack.back().AluStack.back().Parent = this;
 				}
 				ThreadStack.back().AluStack.back().set(Load);
@@ -194,11 +186,11 @@ void Threader::ProgFU(int MK, LoadPoint Load)
 				if (ThreadStack.back().CycleLimit != 0 && i > ThreadStack.back().CycleLimit) break;
 				if (ThreadStack.back().RangeStep > 0)
 				{
-					if (ThreadStack.back().AluStack.back().accum >= ThreadStack.back().RangeStop)
+					if (ThreadStack.back().AluStack.back().accumulatorOld.ToInt() >= ThreadStack.back().RangeStop)
 						break;
 				}
 				else
-					if (ThreadStack.back().AluStack.back().accum <= ThreadStack.back().RangeStop)
+					if (ThreadStack.back().AluStack.back().accumulatorOld.ToInt() <= ThreadStack.back().RangeStop)
 						break;
 
 				ProgExec(Load.Point);
@@ -215,17 +207,13 @@ void Threader::ProgFU(int MK, LoadPoint Load)
 		break;
 	}
 	case 130: //VarNew Создать и инициализировать новую переменную
-		NewVar = Load.Clone();
+		NewVar =Load.Clone();
 		NewVar.VarTypeSet(true);
 		break;
-	case 131: //ConstNew Создать и инициализировать новую константу
-		NewVar = Load.Clone();
-		NewVar.VarTypeSet(false);
-		break;
-	case 135: // VarOut Выдать ссылку на новую переменную
+	case 131: // VarOut Выдать ссылку на новую переменную
 		Load.Write(NewVar);
 		break;
-	case 136: // VarOutMk Выдать MK со ссылкой на новую переменную
+	case 132: // VarOutMk Выдать MK со ссылкой на новую переменную
 		MkExec(Load, NewVar);
 		break;
 	default:

@@ -1,8 +1,22 @@
 	#pragma once
 	#include "stdafx.h"
-	#include "Threader.h"
 	#include "Consts.h"
+/*
+void Operator(int Mk, LoadPoint A, LoadPoint Op) // Совершение операции над скалярами различных типов
+{
+	if ((A.Type >> 1 == Dint || A.Type >> 1 == Ddouble || A.Type >> 1 == Dbool) && (Op.Type >> 1 == Dbool || Op.Type >> 1 == Dint || Op.Type >> 1 == Ddouble))
+	{
+		double op1 = A.ToDouble(), op2 = Op.ToDouble();
+		switch (Mk) // МК-орерация
+		{
+		default:
+			break;
+		}
+	}
+	// Преобразуем тип операнда
 
+}
+*/
 	// Контекст АЛУ
 	class ALUContext
 	{
@@ -10,9 +24,11 @@
 		unsigned int accumType = 0; // Тип данных
 		double		accum = 0;		// Скалярный аккумулятор
 		string		accumStr;		// строковой аккулятор
-		void* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
+		// TLoadArray - тип нагрузка, обозначающий вектор нагрузок
+		vector<LoadPoint>* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
 		vector<int> MkOut; // вектор МК для резульатов
 		vector<LoadPoint> OutAdr; // вектор адресов для записи результатов
+		bool AccumPopBlock = false; // Блокирование выдачи значения аккумулятора на уровень выше
 	};
 
 	class ALU: FU
@@ -23,17 +39,16 @@
 		void		mult(LoadPoint load);
 		void		inc(LoadPoint load);
 		void		dec(LoadPoint load);
-//		void		*Parent; // Ссылка на родительсний ФУ АЛУ
 	public:
 		unsigned int accumType = 0; // Тип данных
-		double		accum = 0;		// Скалярный аккумулятор
+		double		accum = 0;		// Скалярный выходной аккумулятор (из него другие ФУ могут считать значение аккумулятора по ссылке)
 		string		accumStr;		// строковой аккулятор
 		void* accumPoint = nullptr;	// Указатель на аккумулятор (вектор, матрица и т.п.)
 		vector<int> MkOut; // вектор МК для резульатов
 		vector<LoadPoint> OutAdr; // вектор адресов для записи результатов
 
 		vector<ALUContext> Stack = {};
-		ALU(void* parent, FU* Templ) { Parent = parent; };
+		ALU(void* parent, FU* Templ = nullptr) { Bus = (FU*)parent; Parent = parent; ProgFU(0, { 0, nullptr }); };
 		void ProgFU(int MK, LoadPoint Load) override;
 		void*		Parent = nullptr;
 
@@ -48,7 +63,6 @@
 		bool		getSign(); // 0 - положительное число, 1 - отрицательное
 		bool		getLogic(LoadPoint load);
 		void		Out(LoadPoint); // ������ ������������ � ����������
-		//	~Accumulator() { Clear(); };
 		void		fu_min(LoadPoint load);
 		void		fu_max(LoadPoint load);
 		void		fu_cos(LoadPoint Load);

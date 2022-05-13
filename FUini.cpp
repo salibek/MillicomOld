@@ -9,7 +9,6 @@
 #include "Find.h"
 #include "List.h"
 #include "GraphTransf.h"
-#include "Threader.h"
 #include "ALU.h"
 #include "InOut.h"
 #include "Neuro.h"
@@ -19,6 +18,9 @@
 #include "Gauss.h"
 #include "Bag.h"
 #include "Gauss.h"
+#include "CellularAutomat.h"
+#include "Counter.h"
+#include "Router.h"
 
 using namespace std;
 
@@ -54,11 +56,6 @@ FU *ListIni(FU *BusContext, FU *TEmpl)
 FU* GraphTrasfIni(FU* BusContext, FU* TEmpl)
 {
 	return (FU*) new GraphTransf(BusContext, TEmpl);
-}
-
-FU* ThreaderIni(FU* BusContext, FU* TEmpl)
-{
-	return (FU*) new Threader(BusContext, TEmpl);
 }
 
 FU* ALUIni(FU* BusContext, FU* TEmpl)
@@ -110,4 +107,24 @@ FU* BagIni(FU* BusContext, FU* TEmpl)
 FU* GaussIni(FU* BusContext, FU* TEmpl)
 {
 	return (FU*) new Gauss(BusContext, TEmpl);
+}
+
+FU* CellularAutomatIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new CellularAutomat(BusContext, TEmpl);
+}
+
+FU* CellularAutomatManagerIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new CellularAutomatManager(BusContext, TEmpl);
+}
+
+FU* CounterIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new Counter(BusContext, TEmpl);
+}
+
+FU* RouterIni(FU* BusContext, FU* TEmpl)
+{
+	return (FU*) new Router(BusContext, TEmpl);
 }

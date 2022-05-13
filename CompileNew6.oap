@@ -1,4 +1,4 @@
- CapsManager.IndexVectCreate=40000
+ CapsManager.IndexVectCreate=60000
  CapsManager.IpIcIdOutMk=MainBus.IpIcIdSet
  CapsManager.IpIcIdOutMk=VariableManager.IpIcIdSet
  CapsManager.IpIcIdOutMk=ListSyntez.IpIcIdSet
@@ -452,7 +452,7 @@ Bus={FuTypeIndexes.RowSet=300 FuTypeIndexes.ColSet=1 FuTypeIndexes.Create=10000 
 	FuTypeMkTrees.RowSet=300 FuTypeMkTrees.ColSet=1 FuTypeMkTrees.Create=nil FuTypeMkTrees.IndexModeSet=2
 	FuTypeMkList.RowSet=300 FuTypeMkList.ColSet=1 FuTypeMkList.Create=nil FuTypeMkList.IndexModeSet=2
 }
-// Дырки: 958-...
+// Дырки: 958-970 919-949
 CommonMkList{
  	Mnemo="Common Mk" Hint="Общие милликоманды для всех типов ФУ" Comment
 
@@ -460,12 +460,41 @@ CommonMkList{
 	Obj={Mnemo="SubProg" Mk=900 Hint="Вызов подпрограммы во время выполнения ProgExec"}
 	Obj={Mnemo="RepeatProg" Mk=901 Hint="Повторение подпрограммы"}
 	Obj={Mnemo="HalfReset" Mk=971 Hint="Установить значение в ячейку памяти"}
-	Obj={Mnemo="ActiveSet" Mk=902 Hint="Выдать знечение из ячейки памяти"}
+	Obj={Mnemo="ActiveSet" Mk=902 Hint="Установить режим активности/пассивности ФУ"}
  
 	Obj={Mnemo="ValPointerSet" Mk=955 Hint="Сброс ФУ"}
 	Obj={Mnemo="ValSet" Mk=956 Hint="Полусброс ФУ (не сбрасываются основные настройки)"}
 	Obj={Mnemo="ValOutMk" Mk=957 Hint="Установить флаг активного поведения ФУ (если load=nil, то устанавливается активный режим)"}
  
+	Obj={Mnemo="Prog thread" Comment Hint="Вычислительная нить"
+		Obj={Mnemo="Prog" Mk=958 Hint="Вызов подпрограммы"}
+		Obj={Mnemo="CycleProg" Mk=959 Hint="Вызов цикла"}
+		Obj={Mnemo="PostCycleProg" Mk=960 Hint="Вызов пост цикла"}
+		Obj={Mnemo="YesProg" Mk=961 Hint="Вызов подпрограммы по ДА"}
+		Obj={Mnemo="YesCycleProg" Mk=962 Hint="Вызов цикла по ДА"}
+		Obj={Mnemo="YesPostCycleProg" Mk=963 Hint="Вызов пост цикла по ДА"}
+		Obj={Mnemo="NoProg" Mk=964 Hint="Вызов подпрограммы по НЕТ"}
+		Obj={Mnemo="NoCycleProg" Mk=965 Hint="Вызов цикла по НЕТ"}
+
+		Obj={Mnemo="NoPostCycleProg" Mk=966 Hint="Вызов пост цикла по НЕТ"}
+		Obj={Mnemo="Break" Mk=967 Hint="Выход из подпрограммы (в нагрузке количество уровней подъема (по умолчанию 0))"}
+		Obj={Mnemo="Next" Mk=968 Hint="Продолжение цикла (в нагрузке количество уровней подъема (по умолчанию 0))"}
+		Obj={Mnemo="YesContinue" Mk=969 Hint="Продлжение цикла по да"}
+		Obj={Mnemo="NoConitnue" Mk=970 Hint="Продолженпие цикла по нет"}
+	}
+
+	Obj={Mnemo="Accumulator and ALU" Comment Hint="Работа с аккумулятором"
+		Obj={Mnemo="AccumPointerSet" Mk=919 Hint="Установить ссылку на аккумулятор"}
+		Obj={Mnemo="AccumPointerOut" Mk=920 Hint="Выдать ссылку на аккумулятор"}
+		Obj={Mnemo="AccumPointerOutMk" Mk=921 Hint="Выдать МК со ссылкой на аккумулятор"}
+		Obj={Mnemo="AccumSet" Mk=922 Hint="Установить значение аккумулятора"}
+		Obj={Mnemo="AccumOut" Mk=923 Hint="Выдать значение аккумулятора"}
+		Obj={Mnemo="AccumOutMk" Mk=925 Hint="Выдать МК со значением аккумулятора"}
+		Obj={Mnemo="Calc" Mk=927 Hint="Вычислить АЛВ"}
+		Obj={Mnemo="ALUSet" Mk=928 Hint="Установить ссылку на АЛУ"}
+
+	}
+
 	Obj={Mnemo="Prog execution" Comment Hint="Запуск миллипрограмм"
 		Obj={Mnemo="ProgStop" Mk=989 Hint="Остановка запущенной на выполнение миллипрограммы для данного ФУ"}
 		Obj={Mnemo="ProgStopAll" Mk=988 Hint="Остановка всех запущенных на выполнение миллипрограммы для данного ФУ"}
@@ -4281,6 +4310,8 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="StdOutFileSet" Mk=30 Hint="Установить файл для ввода"}
   Obj={Mnemo="StdOutFileAppend" Mk=31 Hint="Установить файл для дополнения"}
   Obj={Mnemo="StdInFileSet" Mk=35 Hint="Установить префикс перед строкой"}
+  Obj={Mnemo="AtrMnemoAdd" Mk=40 Hint="Добавить мнемоники атрибутов (на входе ИП или ИК)"}
+  Obj={Mnemo="AtrMnemoClear" Mk=41 Hint="Очистить мнемоники атрибутов"}
 
   Obj=CommonMkList
 }
@@ -4313,6 +4344,7 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mnemo="ReceiverMkSet" Mk=5 Hint="Установить МК для приемника лексем"}
 
   Obj={Mnemo="ErrProgSet" Mk=10 Hint="Установить на программу-обработчик ошибки"}
+  Obj={Mnemo="TabErrProgSet" Mk=11 Hint="Установить на программу-обработчик ошибки табуляции"}
   Obj={Mnemo="StartProgSet" Mk=12 Hint="Установить программу, запускаемую перед началом компиляции"}
   Obj={Mnemo="StopProgSet" Mk=13 Hint="Установить программу, запускаемую при досрочном завершении лексисческого анализа по МК Stop"}
   Obj={Mnemo="FinProgSet" Mk=14 Hint="Установить программу, запускаемую после окончания анализа строки"}
@@ -4490,11 +4522,24 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
     Obj={Mk=141 Mnemo="MarkAtrLessZeroExec" Hint="Запуск программы при атрибуте текущей строки меньше или равным 0"}
     Obj={Mk=142 Mnemo="LastMarkAtrkLessZeroExec" Hint="Запуск программы при атрибуте последней строки меньше или равным 0"}
   }
-
+  Obj={Mnemo="Sub list" Hint="Работа с атрибутом линии" Comment
+    Obj={Mk=240 Mnemo="SubAdd" Hint="Добавить новый уровень в список и спуститься на него (в нагрзуке атрибут подсписка, если nil атрибут по умолчанию)"}
+    Obj={Mk=239 Mnemo="SubCopyAdd" Hint="Добавить Копию ИК на новый уровень в список и спуститься на него (в нагрзуке атрибут подсписка, если nil атрибут по умолчанию)"}
+    Obj={Mk=241 Mnemo="SubRootAdd" Hint="Добавить новый уровень в корневой список и спуститься на него оставить в стеке уровней ссылку на предыдущую ИК"}
+    Obj={Mk=242 Mnemo="SubRootCopyAdd" Hint="Добавить на новый уровень в корневой список копию ИК и спуститься на него оставить в стеке уровней ссылку на предыдущую ИК"}
+    Obj={Mk=238 Mnemo="ToRoot" Hint="Переход к корневому уровню списка"}
+    Obj={Mk=250 Mnemo="SubUp" Hint="Перейти на уровень выше"}
+    Obj={Mk=251 Mnemo="SubUpDel" Hint="Перейти на уровень выше и уничтожить текущий уровень"}
+    Obj={Mk=252 Mnemo="SubUpDelGraph" Hint="Перейти на уровень выше и уничтожить текущий уровень с подсписками"}
+    Obj={Mk=253 Mnemo="SubDeepOut" Hint="Выдать номер текущего уровня"}
+    Obj={Mk=254 Mnemo="SubDeepOutMk" Hint="Выдать МК с номером текущего уровня"}
+    Obj={Mk=255 Mnemo="SubDown" Hint="Перейти на уровень ниже (по умолчанию переход осуществляется на текущую найденную строку"}
+  }
   Obj={Mk=1 Mnemo="Set" Hint="Установить указатель на список"}
   Obj={Mk=2 Mnemo="Out" Hint="Выдать ссылку на список"}
   Obj={Mk=3 Mnemo="OutMk" Hint="Выдать МК со ссылкой на список"}
-  Obj={Mk=5 Mnemo="MultiLineModeSet" Hint="Установить режим многострочного поиска"}
+  Obj={Mk=5 Mnemo="MultiLineModeSet" Hint="Установить режим многострочного поиска (0 - обычный режим, 1 - мнострочный)"}
+  Obj={Mk=6 Mnemo="MultiListModeSet" Hint="Установить режим многоуровневого списка для поиска (true по умолчанию)"}
   Obj={Mk=7 Mnemo="MkModeSet" Hint="Режим выполнения всех МК в ИК-шаблоне (МК-ой считается любой атрибут, индекс которого больше 0). При пустой нагрузке режим устанавливается"}
 
   Obj={Mk=500 Mnemo="LineEmptyExec" Hint="Выполнить подпрограмму, если текущая строка пустая"}
@@ -4512,10 +4557,11 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=15 Mnemo="FailLineProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска в линии списка"}
   Obj={Mk=16 Mnemo="FailAfterLineProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска в линии списка после обоработки программ линии"}
   Obj={Mk=17 Mnemo="FailProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
-  Obj={Mk=18 Mnemo="SuccessLineProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
-  Obj={Mk=19 Mnemo="SuссessProgSet" Hint=" Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
+  Obj={Mk=18 Mnemo="FailLineProgSet" Hint="Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
+  Obj={Mk=19 Mnemo="FailProgSet" Hint=" Установить указатель на программу, выполняемую в случае неудачного поиска во всем  списке"}
   Obj={Mk=20 Mnemo="ProgAtrSet" Hint="Установить атрибут программы"}
-  Obj={Mk=21 Mnemo="MarkAtrDef" Hint="Установить атрибут марки списка по умолчанию"}
+  Obj={Mk=21 Mnemo="LineAtrDef" Hint="Установить атрибут линии списка по умолчанию"}
+  Obj={Mk=22 Mnemo="SubAtrDef" Hint="Установить атрибут подсписка по умолчанию"}
   Obj={Mk=25 Mnemo="BackOut" Hint="Выдать входной объект для поиска"}
   Obj={Mk=30 Mnemo="BackOutMk" Hint="Выдать МК со входным объектом для поиска"}
   Obj={Mk=31 Mnemo="CopyBackOutMk" Hint="Выдать МК с копией входного объекта для поиска"}
@@ -4567,115 +4613,43 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   Obj={Mk=83 Mnemo="GoToBackIc" Hint="Отойти к предыдущей ИК"}
 }
 
-// ALUGeneral
-	FuTypeIndexes.CellSet=103 FuTypeMkTrees.CellSet=
-{
-//  Obj={Mk=30   Mnemo="ErrorCodeOut" Hint="Выдать код ошибки"}
-//  Obj={Mk=31   Mnemo="ErrorCodeOutMk" Hint="Выдать МК с кодом ошибки"}
-//  Obj={Mk=32   Mnemo="GeneralErrorProgSet" Hint="Установить укаатель на общую программу обработки ошибки"}
+// Counter Счетчик
+     FuTypeIndexes.CellSet=103 FuTypeMkTrees.CellSet=
+	{
+	 Obj={Mk=1 Mnemo="Set" Hint="Установить значение аккумулятора"}
+	 Obj={Mk=5 Mnemo="Push" Hint="Положить значенпие аккумулятора. Если нагрузка nil, то в аккумуляторе остается прежнее значение"}
+	 Obj={Mk=8 Mnemo="Pop" Hint="Вытолкнуть значение аккумулятора"}
+	 Obj={Mk=9 Mnemo="PopMk" Hint="Вытолкнуть значение аккумулятора"}
+	 Obj={Mk=20 Mnemo="Out" Hint=""}
+	 Obj={Mk=21 Mnemo="OutMk" Hint=""}
+	 Obj={Mk=25 Mnemo="AutoIncSet" Hint="Установить значение автоматического инкремента при операции считывания значения"}
+	 Obj={Mk=30 Mnemo="Inc" Hint="Инкремент"}
+	 Obj={Mk=31 Mnemo="Dec" Hint="Декремент"}
+	 Obj={Mk=40 Mnemo="Add" Hint="Сложить"}
+	 Obj={Mk=41 Mnemo="Sub" Hint="Вычесть"}
+	 Obj={Mk=42 Mnemo="Mul" Hint="Умножить"}
+	 Obj={Mk=43 Mnemo="Div" Hint="Целочисленное деление"}
+	 Obj={Mk=44 Mnemo="Mod" Hint="Остаток от деления"}
 
-  Obj={Mk=21   Mnemo="OutSet"  Hint="Установить ссылку на переменную для записи резульатата"}
-  Obj={Mk=22   Mnemo="OutMkSet"  Hint="Установить МК для выдачи резульатата"}
+	 Obj={Mnemo="Prog set" Hint="Установика программ-обработчиков событий" Comment
+	 Obj={Mk=50 Mnemo="EQProgSet" Hint=""}
+	 Obj={Mk=51 Mnemo="NEQProgSet" Hint=""}
+	 Obj={Mk=52 Mnemo="BiggerProgSet" Hint=""}
+	 Obj={Mk=53 Mnemo="LessProgSet" Hint=""}
+	 Obj={Mk=54 Mnemo="BiggerEQProgSet" Hint=""}
+	 Obj={Mk=55 Mnemo="LessEQProgSet" Hint=""}
+	}
 
-  Obj={Mk=95   Mnemo="Nop"  Hint="Пустая операция"}
-  Obj={Mk=23 Mnemo="Out" Hint="Выдать аккумулятор"}
-  Obj={Mk=24 Mnemo="OutMk" Hint="Выдать МК аккумулятор"}
-
-  Obj={Mk=130 Mnemo="VarNew" Hint="Создать и инициализировать новую переменную"}
-  Obj={Mk=131 Mnemo="ConstNew" Hint="Создать и инициализировать новую константу"}
-  Obj={Mk=135 Mnemo="VarOut" Hint="Выдать ссылку на новую переменную"}
-  Obj={Mk=136 Mnemo="VarOutMk" Hint="Выдать MK со ссылкой на новую переменную"}
-
-    Obj={Mnemo="Prog" Hint="Управление программой" Comment
-    Obj={Mk=1  Mnemo="Prog" Hint="Выполнить подпрограмму"}
-    Obj={Mk=2  Mnemo="ProgCycle" Hint="Выполнить подпрограмму с циклом"}
-    Obj={Mk=3  Mnemo="ProgPost" Hint="Выполнить подпрограмму с циклом с поистусловием"}
-    Obj={Mk=4  Mnemo="ProgBreak" Hint="Выполнить подпрограмму и выйти из программы"}
-    Obj={Mk=5  Mnemo="YesProg" Hint="Выполнить подпрограмму по true"}
-    Obj={Mk=6  Mnemo="YesProgCycle" Hint="Выполнить подпрограмму по true с циклом"}
-    Obj={Mk=7  Mnemo="YesProgPost" Hint="Выполнить подпрограмму по true с циклом с поистусловием"}
-    Obj={Mk=8  Mnemo="YesProgBreak" Hint="Выполнить подпрограмму по true и выйти из программы"}
-    Obj={Mk=9 Mnemo="NoProg" Hint="Выполнить подпрограмму  по false"}
-    Obj={Mk=10 Mnemo="NoProgCycle" Hint="Выполнить подпрограмму по false  с циклом"}
-    Obj={Mk=11 Mnemo="NoProgPost" Hint="Выполнить подпрограмму по false  с циклом с поистусловием"}
-    Obj={Mk=12 Mnemo="NoProgBreak" Hint="Выполнить подпрограмму по false и выйти"}
-    Obj={Mk=13 Mnemo="Break" Hint="Досрочный выход из цикла"}
-    Obj={Mk=14 Mnemo="Continue" Hint="Досрочный переход к следующей итерации цикла"}
-    Obj={Mk=15 Mnemo="Calc" Hint="Вычислить формулу"}
-    Obj={Mk=16 Mnemo="DeepOut" Hint="Выдать глубину программы"}
-    Obj={Mk=17 Mnemo="DeepOutMk" Hint="Выдать МК с глубиной программы"}
-    Obj={Mk=18   Mnemo="Go"    Hint="Переход"}
-    Obj={Mk=19   Mnemo="YesGo" Hint="Переход по true"}
-    Obj={Mk=20   Mnemo="NoGo"  Hint="Переход по false"}
-
-    Obj={Mk=109 Mnemo="CycleLimitSet" Hint="Установить лимит итераций цикла (чтобы не было зацикливания)"}
-    Obj={Mk=110 Mnemo="RangeStopSet" Hint="Установить конечное значение диапазона range (может передаваться указатель на множество/массив для перебора range)"}
-    Obj={Mk=111 Mnemo="RangeStepSet" Hint="Установить шаг для диапазона range"}
-    Obj={Mk=112 Mnemo="RangeProgExec" Hint="Выполнить программу для цикла range"}
-
-    Obj={Mk=115 Mnemo="MaxProgSet" Hint=" Программа при нахождении промежуточного максимума"}
-    Obj={Mk=117 Mnemo="MinProgSet" Hint="Программа при нахождении промежуточного минимума"}
-
-  }
-  Obj={Mnemo="Ariphmetics" Hint="Арифметические функции" Comment
-//  	Obj={Mk=100 Mnemo="AccumReset" Hint="Сбросить аккумулятор"}
-  	Obj={Mk=26 Mnemo="Set" Hint="Установить значение в аккумулятор"}
-  	Obj={Mk=25 Mnemo="Get" Hint="Установить значение в аккумулятор"}
-  	Obj={Mk=34 Mnemo="Inc" Hint="Декремент (если Load=nil инкремент аккумулятора)"}
-  	Obj={Mk=35 Mnemo="Dec" Hint="Инкремент (если Load=nil инкремент аккумулятора)"}
-  	Obj={Mk=30 Mnemo="Sum" Hint="Прибавить"}
-  	Obj={Mk=31 Mnemo="Sub" Hint="Вычесть"}
-  	Obj={Mk=33 Mnemo="Mul" Hint="Умножить"}
-  	Obj={Mk=32 Mnemo="Div" Hint="Разделить"}
-  	Obj={Mk=37 Mnemo="Max" Hint=""}
-  	Obj={Mk=36 Mnemo="Min" Hint=""}
-  	Obj={Mk=44 Mnemo="Mod" Hint=""}
-  	Obj={Mk=45 Mnemo="Sqrt" Hint=""}
-  	Obj={Mk=46 Mnemo="Pow" Hint=""}
-  	Obj={Mk=51 Mnemo="Log" Hint=""}
-  	Obj={Mk=52 Mnemo="Random" Hint=""}
-  	Obj={Mk=28 Mnemo="GetLogic" Hint=""}
-  	Obj={Mk=47 Mnemo="Abs" Hint=""}
-  	Obj={Mk=48 Mnemo="Ceil" Hint=""}
-  	Obj={Mk=49 Mnemo="Floor" Hint=""}
-  	Obj={Mk=50 Mnemo="Round" Hint=""}
-  	Obj={Mk=56 Mnemo="DivInt" Hint="Целочисленное деление"}
-  	Obj={Mk=69 Mnemo="Remainder" Hint="Остаток от деления"}
-  }
-
-  Obj={Mnemo="Comparision" Hint="Триганометрические функции" Comment
-	Obj={Mk=63 Mnemo="EQ" Hint="=="}
-	Obj={Mk=64 Mnemo="NotEQ" Hint="<>"}
-	Obj={Mk=65 Mnemo="Bigger" Hint=">"}
-	Obj={Mk=66 Mnemo="BiggerEQ" Hint=">="}
-	Obj={Mk=67 Mnemo="Smaller" Hint="<"}
-	Obj={Mk=68 Mnemo="SmallerEQ" Hint="<="}
-	Obj={Mk=71 Mnemo="Compar3Way" Hint="Трехстороннее сравнение"}
-  }
-
-  Obj={Mnemo="Logic" Hint="Логические функции" Comment
-  	Obj={Mk=53 Mnemo="Not" Hint="НЕ"}
-  	Obj={Mk=55 Mnemo="Or" Hint=""}
-  	Obj={Mk=54 Mnemo="And" Hint=""}    
-  	Obj={Mk=57 Mnemo="Xor" Hint=""}    
-  	Obj={Mk=58 Mnemo="NotBit" Hint=""}    
-  	Obj={Mk=59 Mnemo="OrBit" Hint=""}    
-  	Obj={Mk=60 Mnemo="AndBit" Hint=""}    
-  	Obj={Mk=61 Mnemo="MrBit" Hint=""}    
-  	Obj={Mk=62 Mnemo="MlBit" Hint=""}    
-  	Obj={Mk=70 Mnemo="XorBit" Hint=""}    
-  }
-
-  Obj={Mnemo="Triganometric" Hint="Триганометрические функции" Comment
-  	Obj={Mk=39 Mnemo="Sin" Hint=""}
-  	Obj={Mk=38 Mnemo="Cos" Hint=""}
-  	Obj={Mk=40 Mnemo="Tan" Hint=""}
-  	Obj={Mk=42 Mnemo="Acos" Hint=""}
-  	Obj={Mk=41 Mnemo="Asin" Hint=""}
-  	Obj={Mk=52 Mnemo="Random" Hint=""}
-  }
-  Obj=CommonMkList
-}
+	 Obj={Mnemo="Prog execute" Hint="выполение программ по событиям" Comment
+	 Obj={Mk=60 Mnemo="EQExec" Hint=""}
+	 Obj={Mk=61 Mnemo="NEQExec" Hint=""}
+	 Obj={Mk=62 Mnemo="BiggerExec" Hint=""}
+	 Obj={Mk=63 Mnemo="LessExec" Hint=""}
+	 Obj={Mk=64 Mnemo="BiggerEQExec" Hint=""}
+	 Obj={Mk=65 Mnemo="LessEQExec" Hint=""}
+	}
+      Obj=CommonMkList
+   }
 
 // InOutNewMkList
 	FuTypeIndexes.CellSet=104 FuTypeMkTrees.CellSet=
@@ -4988,6 +4962,13 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
 // ALUNew
      FuTypeIndexes.CellSet=113 FuTypeMkTrees.CellSet=
    {
+  	Obj={Mk=1 Mnemo="Out" Hint="Выдать значение аккумулятора"}
+  	Obj={Mk=2 Mnemo="OutMk" Hint="Выдать МК со значением аккумулятора"}
+  	Obj={Mk=10 Mnemo="OutMkAdd" Hint="Добавить адрес для выдачи результата вычисления"}
+  	Obj={Mk=11 Mnemo="OutMkClear" Hint="Очистить буфер МК для выдачи результата"}
+  	Obj={Mk=12 Mnemo="OutAdrAdd" Hint="Добавить адрес для выдачи результатов"}
+  	Obj={Mk=13 Mnemo="OutAdrClear" Hint="Очислить буфер адресов для записи выходного результата"}
+
   Obj={Mnemo="Ariphmetics" Hint="Арифметические функции" Comment
 //  	Obj={Mk=100 Mnemo="AccumReset" Hint="Сбросить аккумулятор"}
   	Obj={Mk=26 Mnemo="Set" Hint="Установить значение в аккумулятор"}
@@ -5047,6 +5028,76 @@ Bus={FuTypeIndexes.RowSet=0 FuTypeMkTrees.RowSet=0 FuTypeMkTrees.IndexModeSet=2
   }
       Obj=CommonMkList
    }
+
+// CellularAutomat Клеточный автомат
+     FuTypeIndexes.CellSet=114 FuTypeMkTrees.CellSet=
+	{
+	 Obj={Mk=700 Mnemo="N_NeighbourSet" Hint="Установить количество соседей"}
+	 Obj={Mk=701 Mnemo="N_PlySet" Hint="Установить количество слоев для расчета"}
+	 Obj={Mnemo="Pareveters" Hint="Работа с параметрами автомата" Comment
+		 Obj={Mnemo="Set" Hint="Работа с параметрами автомата" Comment
+			Obj={Mk=401 Mnemo="Parametr_1_Set" Hint="Установить 1-й параметр"}
+		
+	//		Obj={Mk=0 Mnemo="" Hint=""}
+		}
+		 Obj={Mnemo="Out" Hint="Работа с параметрами автомата" Comment
+			Obj={Mk=401 Mnemo="Parametr_1_Out" Hint="Выдать 1-й параметр"}
+		
+	//		Obj={Mk=0 Mnemo="" Hint=""}
+		}
+		 Obj={Mnemo="OutMk" Hint="Работа с параметрами автомата" Comment
+			Obj={Mk=401 Mnemo="Parametr_1_OutMk" Hint="Выдать  МК с 1-м параметром"}
+		
+	//		Obj={Mk=0 Mnemo="" Hint=""}
+		}
+	 }
+	 Obj={Mnemo="NeighbourMk" Hint="Работа с параметрами автомата" Comment
+		Obj={Mk=301 Mnemo="NeighbourMk_1_Set" Hint="Установить МК для 1-го соседа"}
+	 }
+	 Obj={Mnemo="Result" Hint="Выдача результатов расчета" Comment
+		Obj={Mk=0 Mnemo="" Hint=""}
+	 }
+	 Obj={Mnemo="Input data" Hint="Обработка входящей информации от соседей" Comment
+		Obj={Mk=0 Mnemo="" Hint=""}
+	 }
+
+      Obj=CommonMkList
+	}
+// CellularAutomatManager Менеджер клеточного автомата
+     FuTypeIndexes.CellSet=115 FuTypeMkTrees.CellSet=
+	{
+	 Obj={Mk=1 Mnemo="NetTypeSet" Hint="Установить тип сетки"}
+	 Obj={Mk=3 Mnemo="DimAdd" Hint="Добавить измерение"}
+	 Obj={Mk=5 Mnemo="DimClear" Hint="Очистить вектора размерностей"}
+	 Obj={Mk=10 Mnemo="IniAutmataProgSet" Hint="Установить программу инициализации автомата"}
+
+      Obj=CommonMkList
+	}
+
+// Router Маршрутизатор
+     FuTypeIndexes.CellSet=116 FuTypeMkTrees.CellSet=
+	{
+	 Obj={Mk=1 Mnemo="ChCreate" Hint="Создать новый канал (на входе МК нижняя граница диапазона)"}
+	 Obj={Mk=3 Mnemo="ChClear" Hint="Сбросить настройки каналов"}
+	 Obj={Mk=5 Mnemo="DelayTimeSet" Hint="Установить время передачи МК"}
+	 Obj={Mk=6 Mnemo="MkCounterSet" Hint="Установить значение счетчика МК"}
+	 Obj={Mk=8 Mnemo="ErrRoutingProgset" Hint="Ссылка на программу обработки ошибки 'Не найден маршрут'"}
+	 Obj={Mk=9 Mnemo="ReceiverMkDefaultSet" Hint="Установить значение МК для приемника по умолчанию"}
+	 Obj={Mk=10 Mnemo="ReceiverSet" Hint="Установить адрес ФУ-приемника"}
+	 Obj={Mk=11 Mnemo="ReceiverMkSet" Hint="Установить МК ФУ-приемника"}
+	 Obj={Mk=15 Mnemo="RangeUpSet" Hint="становить верхний диапазон адресов"}
+	 Obj={Mk=20 Mnemo="RangeDownSet" Hint="становить нижний диапазон адресов"}
+	 Obj={Mk=25 Mnemo="MkCountOut" Hint="Выдать количество переданных МК"}
+	 Obj={Mk=30 Mnemo="MkCountOutMk" Hint="Выдать МК с количеством переданных МК"}
+	 Obj={Mk=35 Mnemo="MaxMkQeueOut" Hint="Выдать макс длину очереди МК"}
+	 Obj={Mk=40 Mnemo="MaxMkQeueOutMk" Hint="Выдать МК с макс длиной очереди МК"}
+	 Obj={Mk=45 Mnemo="EverageMkQeueOut" Hint="Выдать среднюю длину очереди МК"}
+	 Obj={Mk=50 Mnemo="EverageMkQeueOutMk" Hint="Выдать МК со средней длиной очереди МК"}
+	 Obj={Mk=200 Mnemo="Routing" Hint="Произвести марштуризацию MK"}
+
+      Obj=CommonMkList
+	}
+
   FuTypeMkTrees.CellSet=nil
 }
 
@@ -5872,6 +5923,7 @@ MnemoTable.Set=
 	>{Mnemo="Atr" Atr=-8  Hint="Обозначение атрибута"}
 	>{Mnemo="Mnemo" Atr=-2  Hint="Атрибут мнемоники"}
 	>{Mnemo="Obj" Atr=-6  Hint="Ссылка на объект"}
+//	>{Mnemo="SubObj" Atr=-7  Hint="Ссыка на подобъект"}
 	>{Mnemo="Const" Atr=-13  Hint="Атрибут константы"}
 	>{Mnemo="ConstInt" Atr=-10 Hint="Атрибут целой константы"}
 	>{Mnemo="ConstFloat" Atr=-11 Hint="Атрибут дробной константы"}
@@ -5931,6 +5983,7 @@ MnemoTable.Set=
 	>{Mnemo="Func" Atr=-78 Hint="Атрибут ссылки на функцию для универсального АЛУ"}
 	>{Mnemo="Proc" Atr=-79 Hint="Атрибут ссылки на процедуру для универсального АЛУ"}
 	>{Mnemo="ListLine" Atr=-80 Hint="Атрибут линии списка"}
+	>{Mnemo="ListSub" Atr=-90 Hint="Атрибут подсписка"}
 
 	>{Mnemo="YesProg" Atr=-81 Hint="Атрибут линии списка"}
 	>{Mnemo="NoProg" Atr=-82 Hint="Атрибут линии списка"}
@@ -5941,6 +5994,8 @@ MnemoTable.Set=
 	>{Mnemo="DownProg" Atr=-87 Hint="Атрибут программы при переходе порога вниз"}
 	>{Mnemo="CalcAtr" Atr=-88 Hint="Атрибут ссылки на арифметический граф"}
 	>{Mnemo="RepeatAtr" Atr=-89 Hint="Атрибут повторения (например, части кода)"}
+	>{Mnemo="Calc" Atr=927 Hint="МК для вычислений арифетико-логического выражения"}
+//	>{Mnemo="" Atr=-91 Hint=""}
 
 	>{Mnemo="sin"  Func=501  Hint="Функция sin"}
 	>{Mnemo="cos"  Func=502  Hint="Функция cos"}
@@ -6226,7 +6281,6 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
 	MnemoServiceTable.LineAdd={Mnemo="FUIsing" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
 		FUType=61 FUTypeDef=61 Hint="Тип ФУ исполнительное устройство теста Изинга"}
 
-
 	FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2 
 	MnemoServiceTable.LineAdd={Mnemo="FURegexp" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
 		FUType=62 FUTypeDef=62 Hint="Тип ФУ исполнительное устройство теста GREP"}
@@ -6392,8 +6446,8 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
 		FUType=102 FUTypeDef=102 Hint="ФУ трансформации ОА-графа"}
 
 	FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
-	MnemoServiceTable.LineAdd={Mnemo="FUALUG" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
-		FUType=103 FUTypeDef=103 Hint="ФУ Универсальное АЛУ и Реализатор вычислительной нити"}
+	MnemoServiceTable.LineAdd={Mnemo="FUCounterNew" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+		FUType=103 FUTypeDef=103 Hint="ФУ счетчик"}
 
 	FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
 	MnemoServiceTable.LineAdd={Mnemo="FUInOutNew" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
@@ -6434,6 +6488,18 @@ Bus={FuTypeMkList.RowSet=FUBus; FuTypeMkList.CellPop=temp
      FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
  	MnemoServiceTable.LineAdd={Mnemo="FUALUNew" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
  	FUType=113 FUTypeDef=113 Hint="Общее последовательное АЛУ"}
+
+     FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
+ 	MnemoServiceTable.LineAdd={Mnemo="FUCellularAutomat" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=114 FUTypeDef=114 Hint="Исполнительный клеточный автомат"}
+
+     FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
+ 	MnemoServiceTable.LineAdd={Mnemo="FUCellularAutomatManager" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=115 FUTypeDef=115 Hint="Менеджер клеточного автомата"}
+
+     FuTypeMkList.CellPop=temp FuTypeMkTrees.CellPop=temp2
+ 	MnemoServiceTable.LineAdd={Mnemo="FURouter" TreeParentLevelAtr=1 MkList=temp(nil)! MkTree=temp2(nil)!
+ 	FUType=116 FUTypeDef=116 Hint="Маршрутизатор милликоманд"}
 }
 FuTypeMkList.IndexModeSet=1
 FuTypeMkTrees.IndexModeSet=1

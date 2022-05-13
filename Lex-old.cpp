@@ -17,7 +17,7 @@
 					uk->second.Fu->ProgFU(uk->second.Mk, { TIP, LexBuf[ib].Сlone() });
 		}
 		else
-			if (Receiver != nullptr)
+			if (Receiver != nullptr) 
 				if (Copy)
 					Receiver->ProgFU(MK, { TIP, LexBuf[ib].Сlone() });
 				else
@@ -36,21 +36,21 @@
 			ReceiverMK = 0;
 			Receiver = Bus;
 			ErrProg = nullptr;
+			SizeBuf = 5;
+			Receiver = Bus;
+			if (LexBuf != nullptr)
+				delete[] LexBuf;
+			LexBuf = new ip[SizeBuf];
 			break;
 		case 5: //ReceiverMKSet
-			if (Load.Type >> 1 == Dint) ReceiverMK = Load.ToInt(); break;
+			if (Load.Type >> 1 == Dint) ReceiverMK = *(int*)Load.Point; break;
 		case 10: //ErrProgSet
-			if (Load.IsProg())
-				ErrProg = Load.Point;
-			break;
-		case 11: // TabErrorProgSet Ошибка табуляции
-			if(Load.IsProg())
-				TabErrProg = Load.Point;
+			ErrProg = (vector<ip> *)Load.Point;
 			break;
 		case 12: // StartProgSet Установить программу, запускаемую перед началом компиляции 
 			StartProg = (IC_type)Load.Point;
 			break;
-		case 13: // StopProgSet Установить программу, запускаемую при досрочном завершении лексического анализа по МК Stop 
+		case 13: // StopProgSet Установить программу, запускаемую при досрочном завершении лексисческого анализа по МК Stop 
 			StopProg = (IC_type)Load.Point;
 			break;
 		case 14: // FinProgSet  Установить программу, запускаемую после окончания анализа строки
@@ -74,12 +74,9 @@
 			if (Load.Type >> 1 != Dint) break;
 			for (int i = 0; i < SizeBuf; LexBuf[i++].Load.Clear());
 			delete[] LexBuf;
-			SizeBuf = Load.ToInt(2);
+			SizeBuf = *(int*)Load.Point;
 			LexBuf = new ip[SizeBuf];
 			for (int i = 0; i < SizeBuf; LexBuf[i++].Load = { 0,nullptr });
-			LexBuf[0].atr=SeperatAtr;// Установить атрибут сеирататора для для начального псевдосимвола
-			ib = 0;
-			ProgLevel = 0; // Уровень счетчик программный скобок
 			break;
 		case 26: // NoUnucToReseiver Выдать лексему, не учитывая уникальных атрибутов (при нулевой нагрузке выдается текущая лексема)
 			if (Load.Point == nullptr)
@@ -187,10 +184,10 @@
 			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Load = Load;
 			break;
 		case 57: // LoadCopySet Установить копию нагрзузки у последней лексемы
-			LexBuf[ib].Load.Copy(Load);
+			LexBuf[ib].Load.Copy(&Load);
 			break;
 		case 58: // PrevLoadCopySet Установить копию нагрзузки у предыдущей лексемы
-			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Load.Copy(Load);
+			LexBuf[(ib - 1 + SizeBuf) % SizeBuf].Load.Copy(&Load);
 			break;
 		case 65: // VarSet Установить тип переменной для нагрузки последней лексемы
 			LexBuf[ib].Load.Type |= 1;
@@ -208,103 +205,35 @@
 			MkExec(ReceiverMK, Load.Clone());
 			break;
 
-		case 98: // LexReset Сбросить настройки лексического анализа
-			S = 0;
-			LexBuf[0].atr = SeperatAtr;
-			ProgLevel = 0; // Счетчик табуляций
-
-			break;
-		case 99: // Stop Остановить лексический анализ (Эту МК необходимо выполнить при перезапуске лексичекого анализа)
+		case 99: // Stop Остановить лексический анализ
 			Work = false;
-			ProgExec((IC_type)StopProg,0, Bus,nullptr); // выполнить программу по останову лексического анализа
-			S = 0;
-			LexBuf[0].atr = SeperatAtr;
-			ProgLevel = 0; // Счетчик табуляций
+			ProgExec((IC_type)StopProg); // выполнить программу по останову лексического анализа
 			break;
 		case 100: // Lexing
 		{
 //			ProgExec((IC_type)StartProg,Bus);
-			string FigureBuf;
-			string str = Load.ToStr();
-			str += EOL; // Дабавить символы конца строки
-			S = 0; // --- установка начального состояния автомата
-			if (Load.Type >> 1 == Dstring && Load.ToStr() == "")
+			string FigureBuf; 
+			string str = *(string*)Load.Point;
+			if (Load.Type >> 1 == Dstring && *((string*)Load.Point) == "")
 			{
 				ib = (ib + 1) % SizeBuf;
 				LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
 				LexBuf[ib] = { StrAtr,Tstring , new string("") };
 				LexOut();
 			}
-//			str += " "; // Добавление мнимого конечного элемента
+			str += " "; // Добавление мнимого конечного элемента
 			Work = true;
-			int tabCounter = 0;
-			while (str[tabCounter] == '\t')
-				tabCounter++;
-			if (tabCounter > ProgLevel)
-			{
-				ProgExec(TabErrProg); // Ошибка табуляции
-				if(TabErrProg==nullptr)
-					ProgExec(ErrProg); // Общая ошибка лексического анализа
-				break;
-			}
-			for (int i = ProgLevel - tabCounter; i > 0; i--) // Выдать закрывающеся програмные скобкк
-			{
-				ib = (ib + 1) % SizeBuf;
-				LexBuf[ib].Load.Clear(); // Удаляем нагрузку ИП
-				string t;
-				t += ProgFinBracket;
-				LexBuf[ib] = { SeperatAtr,Tstring , &t };
-				LexOut();
-			}
-			ProgLevel = tabCounter; // Запомнить текущий программный уровень
-			if (tabCounter) // Убрать символы табуляции
-				str = str.substr(tabCounter, string::npos);
 			for (auto i = str.begin(); i != str.end() && Work; i++)
 				switch (S) //LEXER
 				{
 				// Стартовое состояние
 				case 0: 
 				{
-					if (*i == ' ') //разделитель; 0 -> 0
-					{
-						//Debug(*i, S, FigureBuf); // --- отладка
-						break;
-					}
-					if (*i == ProgBracket) // открыающаяся программная скобка
-					{
-						auto j = i+1;
-						for (; *j == ' ' || *j == '\t'; j++);
-						if (j == str.end() || *j == '\n') // Конечная программная скобка в строке
-							ProgLevel++;
-					}
+					if (*i == ' ') break; //разделитель; 0 -> 0
 					if (*i == '"') //кавычка; 0 -> 4
 					{
-						FigureBuf = ""; //буферная лексема
 						S = 4; //переход в 4 состояние
-						//Debug(*i, S, FigureBuf); // --- отладка
-						break;
-					}
-					if ((*i == '+' || *i == '-') && (LexBuf[(ib + SizeBuf) % SizeBuf].atr == SeperatAtr)) // символ (+,-); 0 -> 10
-					{
-						FigureBuf = *i; //запись в буферную переменную
-						S = 10; //переход в состояние 10
-						//Debug(*i, S, FigureBuf); // --- отладка
-						break;
-					}
-					if (*i == '/') // символ (/); 0 -> 5
-					{
-						FigureBuf = *i; //запись в буферную переменную
-						S = 5; //переход в состояние 5
-						//Debug(*i, S, FigureBuf); // --- отладка
-						break;
-					}
-					if (*i == '\n') //переход на новую строку; 0 -> 12
-					{
-						//FigureBuf = *i; //запись в буферную переменную
-						// TO DO tabCounter = 0 (реализация соответствующих действий)
-						
-						S = 12; //переход в состояние 12
-						//Debug(*i, S, FigureBuf); // --- отладка
+						FigureBuf = ""; //буферная лексема
 						break;
 					}
 					auto SepUk = Seps.find(str.substr(distance(str.begin(), i), 1));
@@ -328,324 +257,273 @@
 						else if(SepUk != Seps.end())
 							*tstr = *SepUk;
 
-						LexBuf[ib] = { SeperatAtr,Tstring , tstr };
+						LexBuf[ib] = { SeperatAtr,Tstring , tstr }; // Атрибут, тип, ссылка
 						LexOut();
 						break;
 					}
 					else
 
-					if ((Digit.count(*i)) && (*i != '0')) // --- цифра (1..9); 0 -> 1
+					if (*i >= '1' && *i <= '9') //цифра (1..9); 0 -> 1
 					{
-						FigureBuf = *i; //запись в буферную переменную
 						S = 1; //переход в состояние 1
-						//Debug(*i, S, FigureBuf); // --- отла/дка
+						FigureBuf = *i; //запись в буферную переменную
 						//TO DO numberFormat = DEC (реализация соответствующих действий)
 						break;
 					}
 					if (ABC.count(*i)) //буква; 0 -> 3
 					{
-						FigureBuf = *i; //запись в буферную переменную
 						S = 3; //переход в состояние 3
-						//Debug(*i, S, FigureBuf); // --- отладка
+						FigureBuf = *i; //запись в буферную переменную
 						break;
 					}
 					if (*i == '0') // цифра (0); 0 -> 9
 					{
-						FigureBuf = *i; //запись в буферную переменную
 						S = 9; //переход в состояние 9
-						//Debug(*i, S, FigureBuf); // --- отладка
+						FigureBuf = *i; //запись в буферную переменную
 						break;
 					}
-					if (DigitSeps.count(*i))  // --- символ разделения дробной и целой части (. ,); 0 -> 2
+					if (*i == '+' || *i == '-') // символ (+,-); 0 -> 10
 					{
-						FigureBuf = '0'; // --- добавление символа 0 в буферную переменную, так как .5 = 0.5; ,5 = 0,5
-						FigureBuf += *i; //добавление символа в буферную переменную
-						//TO DO numberFormat = DEC (реализация соответствующих действий)
-						S = 2; //переход в состояние 2
-						//Debug(*i, S, FigureBuf); // --- отладка
+						S = 10; //переход в состояние 10
+						FigureBuf = *i; //запись в буферную переменную
+						break;
+					}
+					if (*i == '/') // символ (/); 0 -> 5
+					{
+						S = 5; //переход в состояние 5
+						FigureBuf = *i; //запись в буферную переменную
+						break;
+					}
+					if (*i == '\n') //переход на новую строку; 0 -> 12
+					{
+						S = 12; //переход в состояние 12
+						FigureBuf = *i; //запись в буферную переменную
+						// TO DO tabCounter = 0 (реализация соответствующих действий)
 						break;
 					}
 					Work = false; //установка флага рабочего режима лексера на false
-					if (ErrProg != nullptr) ProgExec(ErrProg, 0, Bus, nullptr); //обработка ошибки
+					if (ErrProg != nullptr) ProgExec(ErrProg); //обработка ошибки
 					break;
 				}
 				// Обработка целой части
 				case 1: 
-					if (Digit.count(*i)) // --- число (0..9); 1 -> 1
+					if (*i >= '0' && *i <= '9') // число (0..9); 1 -> 1
 					{
 						FigureBuf += *i; //добавление символа в буферную переменную
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
-					if (*i == '_') //символ разделения чисел (_); 1 -> 1
+					if (*i == HintChar) break; //символ разделения чисел (_); 1 -> 1
+					if (*i == FloatPoint)  // символ разделения дробной и целой части (. ,); 1 -> 2
 					{
-						//Debug(*i, S, FigureBuf); // --- отладка
-						break;
-					}
-					if (DigitSeps.count(*i))  // --- символ разделения дробной и целой части (. ,); 1 -> 2
-					{
-						FigureBuf += *i; //добавление символа в буферную переменную
 						S = 2; //переход в состояние 2
-						//Debug(*i, S, FigureBuf); // --- отладка
+						FigureBuf += *i; //добавление символа в буферную переменную
 						break;
 					}
 					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 1 -> 0
 					{
+						S = 0; //переход в состояние 0
 						i--; // Для обработки сепаратора
 						int  *tint = new int;
 						*tint = atoi(FigureBuf.c_str()); //запись лексемы в переменную
 						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
 						LexBuf[ib] = { IntAtr,Tint , tint }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
-						LexOut();
-						S = 0; //переход в состояние 0
+						LexOut();	
 						break;
 					}
 					Work = false; //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				// Обработка дробной части
 				case 2: 
-					if (Digit.count(*i))  // --- число (0..9); 2 -> 2
+					if (*i >= '0' && *i <= '9')  // число (0..9); 2 -> 2
 					{
 						FigureBuf += *i; //добавление символа в буферную переменную
-					//	Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
-					if (*i == '_') //символ разделения чисел (_); 2 -> 2
-					{
-					//	Debug(*i, S, FigureBuf); // --- отладка
-						break;
-					}
+					if (*i == '_') break; //символ разделения чисел (_); 2 -> 2
 					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 2 -> 0
 					{
+						S = 0; //переход в состояние 0
 						i--; // Для обработки сепаратора
 						double *ft = new double;
 						*ft = atof(FigureBuf.c_str()); //запись лексемы в переменную
 						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-						LexBuf[ib] = { ConstAtr, Tdouble, ft }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
+						LexBuf[ib] = { DoubleAtr, Tdouble, ft }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						LexOut();
-						S = 0; //переход в состояние 0
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				//Обработка мнемоники
 				case 3:
 					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 3 -> 0
 					{
+						S = 0; //переход в состояние 0
 						i--; // Для обработки сепаратора
-						if (find(TrueConst.begin(), TrueConst.end(), FigureBuf) != TrueConst.end())
-						{
-							bool* t = new bool(true);
-							ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
-							LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-							LexBuf[ib] = { ConstAtr, Tbool, t };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
-							S = 0;
-							break;
-						}
-						if (find(FalseConst.begin(), TrueConst.end(), FigureBuf) != FalseConst.end())
-						{
-							bool* t = new bool(false);
-							ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
-							LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
-							LexBuf[ib] = { ConstAtr, Tbool, t };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
-							S = 0;
-							break;
-						}
-						string *st = new string;
+						string *st = new string; 
 						*st = FigureBuf; //запись лексемы в переменную
 						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
 						LexBuf[ib] = { MnemoAtr, Tstring, st };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						LexOut();
-						S = 0; //переход в состояние 0
 						break;
 					}
-					if (ABC.count(*i) || Digit.count(*i)) // --- буква либо число; 3 -> 3
+					if (ABC.count(*i) || (*i >= '0' && *i <= '9')) // буква либо число; 3 -> 3
 					{
 						FigureBuf += *i; //добавление символа в буферную переменную
-					//	Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				//Обработка кавычек
 				case 4:
 					if (*i != '"' && *i != '\\') //любой символ кроме кавычки и \; 4 -> 4
 					{
 						FigureBuf += *i;  //добавление символа в буферную переменную
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}		
 					else 
 						if (*i == '\\')//символ (\); 4 -> 8
 						{
 							S = 8; //переход в состояние 8
-						//Debug(*i, S, FigureBuf); // --- отладка
 							break;
 						}
 						else 
 							if (*i == '"')//кавычка; 4 -> 0
 							{
+								S = 0; //переход в состояние 0
 								string *st2 = new string;
 								*st2 = FigureBuf; //запись лексемы в переменную
 								ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 								LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
 								LexBuf[ib] = { StrAtr, Cstring, st2 }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 								LexOut();
-								S = 0; //переход в состояние 0
-							//	Debug(*i, S, FigureBuf); // --- отладка
 								break;
 							}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				//Обработка строчного комментария
 				case 5:
 					if (*i == '/') //символ (/); 5 -> 11
 					{
-						FigureBuf += *i; //добавление символа в буферную переменную
 						S = 11; //переход в состояние 11
-						//Debug(*i, S, FigureBuf); // --- отладка
+						FigureBuf += *i; //добавление символа в буферную переменную
 						break;
 					}
 					if (*i == '*') //символ (*); 5 -> 6
 					{
-						FigureBuf += *i; //добавление символа в буферную переменную
 						S = 6; //переход в состояние 6
-						//Debug(*i, S, FigureBuf); // --- отладка
+						FigureBuf += *i; //добавление символа в буферную переменную
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				//Обработка многострочного комментария
 				case 6:
 					if (*i != '/') //любой символ кроме (/); 6 -> 6
 					{
 						FigureBuf += *i;  //добавление символа в буферную переменную
-					//	Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					if (*i == '/') //символ (/); 6 -> 7
 					{
-						FigureBuf += *i; //добавление символа в буферную переменную
 						S = 7; //переход в состояние 7
-					//	Debug(*i, S, FigureBuf); // --- отладка
+						FigureBuf += *i; //добавление символа в буферную переменную
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				//Обработка многострочного комментария
 				case 7:
 					if (*i != '*') //любой символ кроме (*); 7 -> 6
 					{
-						FigureBuf += *i;  //добавление символа в буферную переменную
 						S = 6; //переход в состояние 6
-						//Debug(*i, S, FigureBuf); // --- отладка
+						FigureBuf += *i;  //добавление символа в буферную переменную
 						break;
 					}
 					else //символ (*); 7 -> 0
 					{
+						S = 0; //переход в состояние 0
 						string* multiLineComment = new string;
 						*multiLineComment = FigureBuf; //запись лексемы в переменную
 						ib = (ib + 1) % SizeBuf; //увеличение текущего адреса буфера выходных лексем на 1
 						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
 						LexBuf[ib] = { StrAtr, Cstring, multiLineComment }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						LexOut();
-						S = 0; //переход в состояние 0
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				//Обработка экранирования
 				case 8:
 					if (*i == '"' || *i == 'n' || *i == '\'') //символы (", n, '); 8 -> 4
 					{
+						S = 4; //переход в состояние 4
 						FigureBuf += *i; //добавление символа в буферную переменную
 						//TO DO Обработка экранирования (реализация соответствующих действий)
-						S = 4; //переход в состояние 4
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					else //любой символ кроме (n, ", '); 8 -> 4
 						{
-							FigureBuf += *i; //добавление символа в буферную переменную
 							S = 4; //переход в состояние 4
-							//Debug(*i, S, FigureBuf); // --- отладка
+							FigureBuf += *i; //добавление символа в буферную переменную
 							break;
 						}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				//Определитель системы счисления
 				case 9:
-					if (*i == '_') //символ разделения чисел (_); 9 -> 9
+					if (*i == '0') //число (0); 9 -> 1
 					{
-						//Debug(*i, S, FigureBuf); // --- отладка
-						break;
-					}
-					if (Digit.count(*i)) // --- число (0..9); 9 -> 1
-					{
+						S = 1; //переход в состояние 1
 						FigureBuf += *i; //добавление символа в буферную переменную
 						//TO DO numberFormat = DEC (реализация соответствующих действий)
-						S = 1; //переход в состояние 1
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					if (*i == 'x') //символ (x); 9 -> 1
 					{
+						S = 1; //переход в состояние 1
 						FigureBuf += *i; //добавление символа в буферную переменную
 						//TO DO numberFormat = HEX (реализация соответствующих действий)
-						S = 1; //переход в состояние 1
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					if (*i == 'b') //символ (b); 9 -> 1
 					{
+						S = 1; //переход в состояние 1
 						FigureBuf += *i; //добавление символа в буферную переменную
 						//TO DO numberFormat = BIN (реализация соответствующих действий)
-						S = 1; //переход в состояние 1
-						//Debug(*i, S, FigureBuf); // --- отладка
-						break;
-					}
-					if (DigitSeps.count(*i))  // --- символ разделения дробной и целой части (. ,); 9 -> 2
-					{
-						FigureBuf += *i; //добавление символа в буферную переменную
-						//TO DO numberFormat = DEC (реализация соответствующих действий)
-						S = 2; //переход в состояние 2
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				//Обработка АЛВ
 				case 10:
-					if ((Digit.count(*i)) && (*i != '0')) // --- число (1..9); 10 -> 1
+					if (*i >= '0' && *i <= '9') // число (0..9); 10 -> 1
 					{
+						S = 1; //переход в состояние 1
 						FigureBuf += *i; //добавление символа в буферную переменную
 						//TO DO numberFormat = DEC (реализация соответствующих действий)
-						S = 1; //переход в состояние 1
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
-					if (*i == '0') //число 0; 10 -> 9
+					if (*i == '0') //символ (x); 10 -> 9
 					{
-						FigureBuf += *i; //добавление символа в буферную переменную
 						S = 9; //переход в состояние 9
-						//Debug(*i, S, FigureBuf); // --- отладка
+						FigureBuf += *i; //добавление символа в буферную переменную
 						break;
 					}
 					if (Seps.count(str.substr(distance(str.begin(), i), 1)) || *i == ' ') //разделитель; 10 -> 0
 					{
+						S = 0; //переход в состояние 0
 						i--; // Для обработки сепаратора
 						string* sep = new string;
 						*sep = FigureBuf; //запись лексемы в переменную
@@ -653,30 +531,27 @@
 						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
 						LexBuf[ib] = { SeperatAtr, Tstring, sep };  //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						LexOut();
-						S = 0; //переход в состояние 0
 						break;
 					}
 					Work = false;  //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				//Обработка строчного комментария
 				case 11:
 					if (*i != '\n') //любой символ кроме (\n); 11 -> 11
 					{
 						FigureBuf += *i;  //добавление символа в буферную переменную
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					if (*i == '\n') //символ (\n); 11 -> 12
 					{
+						S = 12; //переход в состояние 12
 						FigureBuf += *i; //добавление символа в буферную переменную
 						// TO DO tabCounter = 0 (реализация соответствующих действий)
-						S = 12; //переход в состояние 12
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					Work = false; //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				//Обработка табуляции
 				case 12:
@@ -690,6 +565,7 @@
 						If (bracketAmount < 0)
 						Замена табуляции на кол-во } равное bracketAmount
 						*/
+						S = 0; //переход в состояние 0
 						i--; // Для обработки сепаратора
 						string* st3 = new string;
 						*st3 = FigureBuf; //запись лексемы в переменную
@@ -697,26 +573,22 @@
 						LexBuf[ib].Load.Clear(); //удаление нагрузки ИП
 						LexBuf[ib] = { StrAtr, Cstring, st3 }; //добавление лексемы в буфер выходных лексем в виде ИП {атрибут, тип, указатель}
 						LexOut();
-						S = 0; //переход в состояние 0
-					//	Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					if (*i == '\n') //символ (\n); 12 -> 12
 					{
-					//	FigureBuf += *i; //добавление символа в буферную переменную
+						FigureBuf += *i; //добавление символа в буферную переменную
 						// TO DO tabCounter = 0 (реализация соответствующих действий)
-					//	Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					if (*i == '\t') //символ (\n); 12 -> 12
 					{
 						FigureBuf += *i; //добавление символа в буферную переменную
 						// TO DO tabCounter++ (реализация соответствующих действий)
-						//Debug(*i, S, FigureBuf); // --- отладка
 						break;
 					}
 					Work = false; //установка флага рабочего режима лексера на false
-					ProgExec(ErrProg, 0, Bus, nullptr); //обработчик ошибок
+					ProgExec(ErrProg); //обработчик ошибок
 					break;
 				default:
 					break;
@@ -728,25 +600,15 @@
 			CommonMk(MK, Load);
 		}
 	}
-/*
-	void Lex::Debug(char i, int S, string FigureBuf) // --- для отладки, позже удалить
-	{
-		cout << " Current symbol: " << i << "; "; // --- отладка
-		cout << "New condition: " << S << "; "; // --- отладка
-		cout << " FigureBuf: " << FigureBuf << endl; // --- отладка
-	}
-*/
+
 	Lex::Lex(FU *BusContext, FU *Templ) 
 	{
 		Bus = BusContext;
 		Receiver = BusContext;
 		copy(ABC_templ.begin(), ABC_templ.end(), inserter(ABC, ABC.end()));
-		copy(Digit_templ.begin(), Digit_templ.end(), inserter(Digit, Digit.end())); // --- Добавление в множество чисел
-		copy(Digit_seps_templ.begin(), Digit_seps_templ.end(), inserter(DigitSeps, DigitSeps.end())); // --- Добавление в множество разделителей дробных и целых частей чисел
 		copy(Seps_templ.begin(), Seps_templ.end(), inserter(Seps, Seps.end()));
 		LexBuf = new ip[SizeBuf];
 		for (int i = 0; i < SizeBuf; LexBuf[i++].Load = { 0,nullptr });
-		LexBuf[0].atr = SeperatAtr;
 		ProgFU(0, {0,nullptr});
 	}
 

@@ -19,7 +19,7 @@ public:
 	void ProgFU(int MK, LoadPoint Load) override;
 	vector<ListContext> Stack;
 	int MultiLineMode = 0; // 0 - поиск только первого совпадения, 1 - поиск всех совпадений
-	int MultiLavelSearch = 0; // Режим поиска не нескольких уровнях списка
+	int MultiLavelSearch = 0; // Режим поиска на нескольких уровнях списка
 	// 0 - на текущем уровне, 1 - на всех уровнях, 2- только в текущей иерархии
 	int ReceiverMk = 0; // Мк для выдаваемой лексемы
 	int* ReceiverMkUk = &ReceiverMk; // Указатель на Мк для выдаваемой лексемы
@@ -32,9 +32,10 @@ public:
 	int *ReceiverMkUk = &ReceiverMk; // Указатель на Мк для выдаваемой лексемы
 	int LineCount = 0; // Количество найденных строк
 */	// -----
-	int SearchMode = 0; // Режим поиска 0 - локальный поиск 1 - общий поиск (по всем подспискам), 2 - восходящий поиск (с текущего уровне и до корневого)
-	int LineAtr = Atr; // Атрибут линии списка
-	int SubLineAtr = Atr; // Атрибут подсписка
+	bool MultyLineMode = false, MultyListMode = false, BackSearchMode = false; //  Режимы поиска нескольки линий, иерархического списка и поиска в обратном направлении
+	bool BackListSerch = false; // Поиск вверх по списку (по иерархии)
+	int LineAtr = SubObj; // Атрибут линии списка
+	set<int> SubListAtrs = { LineAtr };
 	void* LessProg = nullptr, * BibberProg = nullptr, *EQProg = nullptr, *LessEQProg = nullptr, *BibberEQProg = nullptr;
 	vector<int> LineStack; // Стек номеров линий
 	Search Searcher; // Устройство поиска

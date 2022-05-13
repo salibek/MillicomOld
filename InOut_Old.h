@@ -63,9 +63,9 @@ private:
 	vector <Channel*> Channels; // Вектор каналов
 	int Ind = -1; // Номер текущего канала
 	int AutoInc = 0; // Автоинкремент
-//	int Nch = 0; // Количество каналов
+	int Nch = 0; // Количество каналов
 public:
-//	int CurrentCh = -1; // Номер текущего канала (т.е. канала, на который пришли данные)
+	int CurrentCh = -1; // Номер текущего канала (т.е. канала, на который пришли данные)
 	void ProgFU(int MK, LoadPoint Load) override;
 	InOut(FU* BusContext, FU* Templ) : FU(BusContext) { Bus = BusContext; ProgFU(0, { 0,0 }); };
 	InOut() : FU() { Bus = nullptr; };
