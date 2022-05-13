@@ -755,11 +755,11 @@ void FU::ProgExec(void* UK, FU* ProgBus, vector<ip>::iterator* Start) // Исполне
 	} while (RepeatF);
 }
 // Запуск программы по указателю из нарузки ИП
-void FU::ProgExec(LoadPoint Uk, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
-{
-	if (Uk.Type >> 1 == DIC)
-		ProgExec(Uk.Point, Bus, Start);
-}
+//void FU::ProgExec(LoadPoint Uk, FU* Bus, vector<ip>::iterator* Start) // Исполнение программы из ИК
+//{
+//	if (Uk.Type >> 1 == DIC)
+//		ProgExec(Uk.Point, Bus, Start);
+//}
 
 void FU::MkExec(int MK, LoadPoint Load, FU* BusContext) // Выдача МК с нагрузкой
 {

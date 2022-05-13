@@ -181,6 +181,8 @@ public:
 	string FUName; //  Имя ФУ
 //	int MkStage = 0; // Стадия выполнения милликоманды (когда МК выполняется за несколько стадий)
 	bool Active = true;
+	double *accum = nullptr; // Указатель на Аккумулятор
+	bool AccumCreating = false; // Флаг создания аккумулятора (аккумулятор создается при первой записи в него какого-либо значения)
 
 	FUModeling *Modeling=nullptr; // Моделирование
 
